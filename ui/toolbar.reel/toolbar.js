@@ -28,22 +28,47 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-.flow-Editor {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 500px;
-}
-.flow-Editor-TopView {
-    border-bottom: 1px solid #000;
-}
-.flow-Editor-parametersEditor {
-    position: absolute;
-    background: white;
-    width: 490px;
-    top: 0;
-    bottom: 38px;
-    display: none;
-    font-size: 19px;
-}
+/**
+    @module "ui/toolbar.reel"
+    @requires montage
+    @requires montage/ui/component
+*/
+var Montage = require("montage").Montage,
+    Component = require("montage/ui/component").Component;
+
+/**
+    Description TODO
+    @class module:"ui/toolbar.reel".Toolbar
+    @extends module:montage/ui/component.Component
+*/
+exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".Toolbar# */ {
+
+    selectedTool: {
+        value: "add"
+    },
+
+    handleClick: {
+        enumerable: false,
+        value: function (event) {
+            if (event.target !== this._element) {
+                var elements = this.element.getElementsByTagName("*"),
+                    i;
+
+                for (i = 0; i < elements.length; i++) {
+                    elements[i].classList.remove("flow-Editor-Toolbar-Button--selected");
+                }
+                event.target.classList.add("flow-Editor-Toolbar-Button--selected");
+                this.selectedTool = event.target.getAttribute("data-tool")
+            }
+            event.preventDefault();
+        }
+    },
+
+    prepareForActivationEvents: {
+        enumerable: false,
+        value: function () {
+            this._element.addEventListener("click", this, false);
+        }
+    }
+
+});

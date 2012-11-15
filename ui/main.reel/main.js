@@ -12,5 +12,4 @@ var Montage = require("montage").Montage,
     @extends module:montage/ui/component.Component
 */
 exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# */ {
-
 });
