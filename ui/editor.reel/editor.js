@@ -45,8 +45,21 @@ var Montage = require("montage").Montage,
 exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Editor# */ {
 
 
-    flow: {
+    _flow: {
         value: null
+    },
+
+    flow: {
+        get: function () {
+            return this._flow;
+        },
+        set: function (value) {
+            this._cameraPosition = value.cameraPosition;
+            this._cameraTargetPoint = value.cameraTargetPoint;
+            this._cameraRoll = value.cameraRoll;
+            this._cameraFov = value.cameraFov;
+            this._flow = value;
+        }
     },
 
     topView: {
@@ -87,8 +100,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         },
         set: function (value) {
             this._cameraPosition = value;
-            this._hasSplineUpdated = true;
-            this.flow._updateLength();
+            this.flow.cameraPosition = value;
         }
     },
 
@@ -98,8 +110,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         },
         set: function (value) {
             this._cameraTargetPoint = value;
-            this._hasSplineUpdated = true;
-            this.flow._updateLength();
+            this.flow.cameraTargetPoint = value;
         }
     },
 
@@ -109,8 +120,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         },
         set: function (value) {
             this._cameraFov = value;
-            this._hasSplineUpdated = true;
-            this.flow._updateLength();
+            this.flow.cameraFov = value;
         }
     },
 
@@ -120,8 +130,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         },
         set: function (value) {
             this._cameraRoll = value;
-            this._hasSplineUpdated = true;
-            this.flow._updateLength();
+            this.flow.cameraRoll = value;
         }
     },
 
