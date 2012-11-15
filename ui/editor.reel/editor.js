@@ -44,6 +44,14 @@ var Montage = require("montage").Montage,
 */
 exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Editor# */ {
 
+    object: {
+        get: function () {
+            return this.flow;
+        },
+        set: function (value) {
+            this.flow = value;
+        }
+    },
 
     _flow: {
         value: null
