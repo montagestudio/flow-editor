@@ -517,7 +517,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         value: function () {
             var self = this;
 
-            this.spline = Montage.create(FlowBezierSpline).init();
+            this.spline = Montage.create(FlowBezierSpline);
             this.flow._paths = [];
             this.flow._paths.push({
                 headOffset: 0,
