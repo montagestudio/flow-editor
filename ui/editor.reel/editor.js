@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    FlowBezierSpline = require("montage/ui/flow-bezier-spline").FlowBezierSpline;;
+    FlowBezierSpline = require("montage/ui/flow-bezier-spline").FlowBezierSpline;
 
 /**
     Description TODO
@@ -250,11 +250,10 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
             this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
             this.topView.mousedownDelegate = this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
                 if (knot !== null) {
-                    //self.spline.removeKnot(knot);
-                    self.spline._knots.splice(knot, 1);
-                    self.spline._nextHandlers.splice(knot, 1);
-                    self.spline._previousHandlers.splice(knot, 1);
-                    self.spline._densities = [];
+                    self.spline.knots.splice(knot, 1);
+                    self.spline.nextHandlers.splice(knot, 1);
+                    self.spline.previousHandlers.splice(knot, 1);
+                    self.spline.densities.splice(knot, 1);
                     self.frontView.updateSpline();
                     self.topView.updateSpline();
                     self.hasSplineUpdated = true;
