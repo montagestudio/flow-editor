@@ -10,7 +10,7 @@ exports.Controller = Montage.create(Montage, {
 
     editorComponent: {
         value: function () {
-            return require.async("ui/editor").get("Editor");
+            return require.async("ui/editor.reel").get("Editor");
         }
     }
 
