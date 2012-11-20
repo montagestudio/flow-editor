@@ -88,3 +88,10 @@ POSSIBILITY OF SUCH DAMAGE.
 .flow-Editor-Toolbar-Button-ZoomExtents:after {
     background-position: -100px 0;
 }
+.flow-Editor-Toolbar-Button-Close:after {
+    background-position: -220px 0;
+}
+
+.flow-Editor-Toolbar-Button-Close {
+    float: right;
+}
