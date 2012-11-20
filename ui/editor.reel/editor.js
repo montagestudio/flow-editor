@@ -516,13 +516,47 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         value: function () {
             var self = this;
 
-            this.spline = Montage.create(FlowBezierSpline);
-            this.flow._paths = [];
-            this.flow._paths.push({
-                headOffset: 0,
-                tailOffset: 0
-            });
-            this.flow.splinePaths.push(this.spline);
+            if (this.flow.splinePaths[0]) {
+                var i;
+
+                this.spline = this.flow.splinePaths[0];
+                if (!this.spline.previousDensities) {
+                    this.spline.previousDensities = [];
+                }
+                if (!this.spline.nextDensities) {
+                    this.spline.nextDensities = [];
+                }
+                for (i = 0; i < this.spline.knots.length; i++) {
+                    if (typeof this.spline.previousHandlers[i] === "undefined") {
+                        this.spline.previousHandlers[i] = [
+                            2 * this.spline.knots[i][0] - this.spline.nextHandlers[i][0],
+                            2 * this.spline.knots[i][1] - this.spline.nextHandlers[i][1],
+                            2 * this.spline.knots[i][2] - this.spline.nextHandlers[i][2]
+                        ];
+                    }
+                    if (typeof this.spline.nextHandlers[i] === "undefined") {
+                        this.spline.nextHandlers[i] = [
+                            2 * this.spline.knots[i][0] - this.spline.previousHandlers[i][0],
+                            2 * this.spline.knots[i][1] - this.spline.previousHandlers[i][1],
+                            2 * this.spline.knots[i][2] - this.spline.previousHandlers[i][2]
+                        ];
+                    }
+                    if (typeof this.spline.previousDensities[i] === "undefined") {
+                        this.spline.previousDensities[i] = 3;
+                    }
+                    if (typeof this.spline.nextDensities[i] === "undefined") {
+                        this.spline.nextDensities[i] = 3;
+                    }
+                }
+            } else {
+                this.spline = Montage.create(FlowBezierSpline);
+                this.flow._paths = [];
+                this.flow._paths.push({
+                    headOffset: 0,
+                    tailOffset: 0
+                });
+                this.flow.splinePaths.push(this.spline);
+            }
             window.addEventListener("resize", this, false);
             this.parametersEditor.textContent = JSON.stringify(this.spline.parameters);
             this.parametersEditor.addEventListener("keyup", function () {
