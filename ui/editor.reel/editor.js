@@ -186,7 +186,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                 tmp;
 
             this.topView.isDrawingHandlers = this.frontView.isDrawingHandlers = true;
-            this.topView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
+            this.topView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
                 self.spline.previousHandlers.push([x, 0, y]);
                 self.spline.knots.push([x, 0, y]);
                 self.spline.nextHandlers.push([x, 0, y]);
@@ -200,7 +200,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                 sY = y;
                 return false;
             };
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
                 self.spline.previousHandlers.push([x, y, 0]);
                 self.spline.knots.push([x, y, 0]);
                 self.spline.nextHandlers.push([x, y, 0]);
@@ -214,7 +214,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                 sY = y;
                 return false;
             };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 sX -= x;
                 sY -= y;
                 tmp = self.spline.knots[self.spline.knots.length - 1];
@@ -226,7 +226,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                 self.flow._updateLength();
                 return false;
             };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 sX -= x;
                 sY -= y;
                 tmp = self.spline.knots[self.spline.knots.length - 1];
@@ -248,7 +248,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
             this.topView.isDrawingHandlers = this.frontView.isDrawingHandlers = false;
             this.topView.isDrawingDensities = this.frontView.isDrawingDensities = false;
             this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
-            this.topView.mousedownDelegate = this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
+            this.topView.mousedownDelegate = this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (knot !== null) {
                     self.spline.knots.splice(knot, 1);
                     self.spline.nextHandlers.splice(knot, 1);
@@ -273,7 +273,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
 
             this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
             this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (knot !== null) {
                     self._selectedKnot = knot;
                     return false;
@@ -282,7 +282,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                     return true;
                 }
             };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (self._selectedKnot !== null) {
                     self.spline.knots[self._selectedKnot][0] -= x;
                     self.spline.knots[self._selectedKnot][2] -= y;
@@ -296,7 +296,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                     self.flow._updateLength();
                 }
             };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (self._selectedKnot !== null) {
                     self.spline.knots[self._selectedKnot][0] -= x;
                     self.spline.knots[self._selectedKnot][1] -= y;
@@ -320,51 +320,80 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
             this.topView.isDrawingHandlers = this.frontView.isDrawingHandlers = true;
             this.topView.isHighlightingCloserHandler = this.frontView.isHighlightingCloserHandler = true;
             this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (handler !== null) {
                     self._selectedHandler = handler;
+                    self._selectedHandlerType = type;
                     return false;
                 } else {
                     self._selectedHandler = null;
                     return true;
                 }
             };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (self._selectedHandler !== null) {
-                    var sX = self.spline.nextHandlers[self._selectedHandler][0] - x,
-                        sY = self.spline.nextHandlers[self._selectedHandler][2] - y,
-                        tmp;
+                    if (self._selectedHandlerType === "next") {
+                        var sX = self.spline.nextHandlers[self._selectedHandler][0] - x,
+                            sY = self.spline.nextHandlers[self._selectedHandler][2] - y,
+                            tmp;
 
-                    // TODO: add previousHandlers
+                        tmp = self.spline.knots[self._selectedHandler];
+                        self.spline.previousHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
+                        self.spline.previousHandlers[self._selectedHandler][2] = tmp[2] * 2 - sY;
+                        self.spline.nextHandlers[self._selectedHandler][0] = sX
+                        self.spline.nextHandlers[self._selectedHandler][2] = sY;
+                        self.frontView.updateSpline(true);
+                        self.topView.updateSpline(true);
+                        self.hasSplineUpdated = true;
+                        self.flow._updateLength();
+                    } else {
+                        var sX = self.spline.previousHandlers[self._selectedHandler][0] - x,
+                            sY = self.spline.previousHandlers[self._selectedHandler][2] - y,
+                            tmp;
 
-                    tmp = self.spline.knots[self._selectedHandler];
-                    self.spline.previousHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
-                    self.spline.previousHandlers[self._selectedHandler][2] = tmp[2] * 2 - sY;
-                    self.spline.nextHandlers[self._selectedHandler][0] = sX
-                    self.spline.nextHandlers[self._selectedHandler][2] = sY;
-                    self.frontView.updateSpline(true);
-                    self.topView.updateSpline(true);
-                    self.hasSplineUpdated = true;
-                    self.flow._updateLength();
+                        tmp = self.spline.knots[self._selectedHandler];
+                        self.spline.nextHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
+                        self.spline.nextHandlers[self._selectedHandler][2] = tmp[2] * 2 - sY;
+                        self.spline.previousHandlers[self._selectedHandler][0] = sX
+                        self.spline.previousHandlers[self._selectedHandler][2] = sY;
+                        self.frontView.updateSpline(true);
+                        self.topView.updateSpline(true);
+                        self.hasSplineUpdated = true;
+                        self.flow._updateLength();
+                    }
                 }
             };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (self._selectedHandler !== null) {
-                    var sX = self.spline.nextHandlers[self._selectedHandler][0] - x,
-                        sY = self.spline.nextHandlers[self._selectedHandler][1] - y,
-                        tmp;
+                    if (self._selectedHandlerType === "next") {
+                        var sX = self.spline.nextHandlers[self._selectedHandler][0] - x,
+                            sY = self.spline.nextHandlers[self._selectedHandler][1] - y,
+                            tmp;
 
-                    // TODO: add previousHandlers
+                        tmp = self.spline.knots[self._selectedHandler];
+                        self.spline.previousHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
+                        self.spline.previousHandlers[self._selectedHandler][1] = tmp[1] * 2 - sY;
+                        self.spline.nextHandlers[self._selectedHandler][0] = sX
+                        self.spline.nextHandlers[self._selectedHandler][1] = sY;
+                        self.frontView.updateSpline(true);
+                        self.topView.updateSpline(true);
+                        self.hasSplineUpdated = true;
+                        self.flow._updateLength();
+                    } else {
+                        var sX = self.spline.previousHandlers[self._selectedHandler][0] - x,
+                            sY = self.spline.previousHandlers[self._selectedHandler][1] - y,
+                            tmp;
 
-                    tmp = self.spline.knots[self._selectedHandler];
-                    self.spline.previousHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
-                    self.spline.previousHandlers[self._selectedHandler][1] = tmp[1] * 2 - sY;
-                    self.spline.nextHandlers[self._selectedHandler][0] = sX
-                    self.spline.nextHandlers[self._selectedHandler][1] = sY;
-                    self.frontView.updateSpline(true);
-                    self.topView.updateSpline(true);
-                    self.hasSplineUpdated = true;
-                    self.flow._updateLength();
+                        tmp = self.spline.knots[self._selectedHandler];
+                        self.spline.nextHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
+                        self.spline.nextHandlers[self._selectedHandler][1] = tmp[1] * 2 - sY;
+                        self.spline.previousHandlers[self._selectedHandler][0] = sX
+                        self.spline.previousHandlers[self._selectedHandler][1] = sY;
+                        self.frontView.updateSpline(true);
+                        self.topView.updateSpline(true);
+                        self.hasSplineUpdated = true;
+                        self.flow._updateLength();
+                    }
                 }
             };
         }
@@ -375,17 +404,17 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
             var self = this;
 
             this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
                 return false;
             };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 self.cameraPosition = [
                     self.cameraPosition[0] - x,
                     self.cameraPosition[1],
                     self.cameraPosition[2] - y
                 ];
             };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 self.cameraPosition = [
                     self.cameraPosition[0] - x,
                     self.cameraPosition[1] - y,
@@ -402,7 +431,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
             this.topView.isDrawingDensities = this.frontView.isDrawingDensities = true;
             this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
             this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
+            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (knot !== null) {
                     self._selectedKnot = knot;
                     return false;
@@ -412,7 +441,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                 }
             };
             this.frontView.mousemoveDelegate =
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
+            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
                 if (self._selectedKnot !== null) {
                     self.spline.densities[self._selectedKnot] += y * self.frontView._scale / 20;
                     if (self.spline.densities[self._selectedKnot] < 0.05) {

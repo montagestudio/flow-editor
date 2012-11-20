@@ -638,10 +638,38 @@ exports.Viewport = Montage.create(Component, /** @lends module:"ui/viewport.reel
         }
     },
 
+    _closerHandlerType: {
+        value: "next"
+    },
+
     _computeCloserHandler: {
         value: function (spline, x, y) {
-            // TODO: Add previousHandlers
-            this.closerHandler = this._computeCloserVector(this._transformedSpline.nextHandlers, x, y);
+            var closerNext,
+                closerPrevious,
+                distanceToNext,
+                distanceToPrevious,
+                dX,
+                dY;
+
+            closerNext = this._computeCloserVector(this._transformedSpline.nextHandlers, x, y);
+            closerPrevious = this._computeCloserVector(this._transformedSpline.previousHandlers, x, y);
+            if (closerNext !== null) {
+                dX = this._transformedSpline.nextHandlers[closerNext][0] - x;
+                dY = this._transformedSpline.nextHandlers[closerNext][1] - y;
+                distanceToNext = dX * dX + dY * dY;
+            }
+            if (closerPrevious !== null) {
+                dX = this._transformedSpline.previousHandlers[closerPrevious][0] - x;
+                dY = this._transformedSpline.previousHandlers[closerPrevious][1] - y;
+                distanceToPrevious = dX * dX + dY * dY;
+            }
+            if ((closerPrevious === null) || (distanceToNext < distanceToPrevious)) {
+                this._closerHandlerType = "next";
+                this.closerHandler = closerNext;
+            } else {
+                this._closerHandlerType = "previous";
+                this.closerHandler = closerPrevious;
+            }
         }
     },
 
@@ -690,7 +718,7 @@ exports.Viewport = Montage.create(Component, /** @lends module:"ui/viewport.reel
                 deltaY = (this._pointerPageY - event.pageY) / this._scale;
 
             if (this._isDragging && !this._isScrolling && this.mousemoveDelegate) {
-                this.mousemoveDelegate(deltaX, deltaY, this._closerKnot, this._closerHandler, this._isScrolling);
+                this.mousemoveDelegate(deltaX, deltaY, this._closerKnot, this._closerHandler, this._closerHandlerType, this._isScrolling);
             }
             if (!this._isDragging) {
                 if (this._isHighlightingCloserKnot) {
@@ -759,6 +787,7 @@ exports.Viewport = Montage.create(Component, /** @lends module:"ui/viewport.reel
                     (this._pointerOffsetY - this._halfHeight) / this.scale + this._centralY,
                     this._closerKnot,
                     this._closerHandler,
+                    this._closerHandlerType,
                     this._isScrolling
                 );
             }
@@ -810,10 +839,17 @@ exports.Viewport = Montage.create(Component, /** @lends module:"ui/viewport.reel
                     this._context.restore();
                 }
                 if (this._isHighlightingCloserHandler && (this.closerHandler !== null)) {
-                    this._context.save();
-                    this._context.fillStyle = this.handlerColor;
-                    this._context.fillRect((this._transformedSpline._nextHandlers[this.closerHandler][0] >> 0) - 4, (this._transformedSpline._nextHandlers[this.closerHandler][1] >> 0) - 4, 9, 9);
-                    this._context.restore();
+                    if (this._closerHandlerType === "next") {
+                        this._context.save();
+                        this._context.fillStyle = this.handlerColor;
+                        this._context.fillRect((this._transformedSpline._nextHandlers[this.closerHandler][0] >> 0) - 4, (this._transformedSpline._nextHandlers[this.closerHandler][1] >> 0) - 4, 9, 9);
+                        this._context.restore();
+                    } else {
+                        this._context.save();
+                        this._context.fillStyle = this.handlerColor;
+                        this._context.fillRect((this._transformedSpline._previousHandlers[this.closerHandler][0] >> 0) - 4, (this._transformedSpline._previousHandlers[this.closerHandler][1] >> 0) - 4, 9, 9);
+                        this._context.restore();
+                    }
                 }
                 this.drawSpline(this._transformedSpline);
                 this.drawKnots(this._transformedSpline);
