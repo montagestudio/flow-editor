@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 .flow-Editor-Toolbar-Button {
     display: block;
+    box-sizing: content-box;
     float: left;
     width: 19px;
     height: 19px;
