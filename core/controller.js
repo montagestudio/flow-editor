@@ -3,9 +3,7 @@ var Montage = require("montage").Montage;
 exports.Controller = Montage.create(Montage, {
 
     hasEditor: {
-        value: function () {
-            return true;
-        }
+        value: true
     },
 
     editorComponent: {
