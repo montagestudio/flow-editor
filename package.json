@@ -1,8 +1,8 @@
 {
     "name": "flow-editor",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "main": "core/controller",
     "dependencies": {
-        "montage": "*"
+        "montage": "0.12.x"
     }
  }
