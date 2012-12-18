@@ -124,6 +124,22 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(2)).toEqual(-6);
             });
         });
+        describe("translate", function() {
+            it("should define expected coordinates", function() {
+                vector.translate([1,2,3]);
+                expect(vector.getCoordinate(0)).toEqual(3);
+                expect(vector.getCoordinate(1)).toEqual(6);
+                expect(vector.getCoordinate(2)).toEqual(9);
+            });
+        });
+        describe("scale", function() {
+            it("should define expected coordinates", function() {
+                vector.scale([2,3,4]);
+                expect(vector.getCoordinate(0)).toEqual(4);
+                expect(vector.getCoordinate(1)).toEqual(12);
+                expect(vector.getCoordinate(2)).toEqual(24);
+            });
+        });
     });
     describe("dot product", function() {
         it("should return expected value", function() {
@@ -260,6 +276,56 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(-4);
             });
         });
+        describe("translate", function() {
+            it("should define expected coordinates", function() {
+                vector.translate([1,2]);
+                expect(vector.getCoordinate(0)).toEqual(3);
+                expect(vector.getCoordinate(1)).toEqual(6);
+            });
+        });
+        describe("scale", function() {
+            it("should define expected coordinates", function() {
+                vector.scale([2,3]);
+                expect(vector.getCoordinate(0)).toEqual(4);
+                expect(vector.getCoordinate(1)).toEqual(12);
+            });
+        });
+        describe("skewX", function() {
+            it("should define expected coordinates", function() {
+                vector.skewX(45 * Math.PI * 2 / 360);
+                expect(vector.getCoordinate(0)).toBeCloseTo(6, 6);
+                expect(vector.getCoordinate(1)).toEqual(4);
+            });
+        });
+        describe("skewY", function() {
+            it("should define expected coordinates", function() {
+                vector.skewY(45 * Math.PI * 2 / 360);
+                expect(vector.getCoordinate(1)).toBeCloseTo(6, 6);
+                expect(vector.getCoordinate(0)).toEqual(2);
+            });
+        });
+        describe("rotate", function() {
+            it("should return expected value", function() {
+                var vector = Vector2.create().initWithCoordinates([2, 4]),
+                    vector2 = Vector2.create().initWithCoordinates([1000, 600]);
+
+                vector.rotate(Math.PI / 2);
+                expect(vector.x).toBeCloseTo(-4, 6);
+                expect(vector.y).toBeCloseTo(2, 6);
+                vector2.rotate(.3);
+                expect(vector2.x).toBeCloseTo(778.024, 3);
+                expect(vector2.y).toBeCloseTo(868.722, 3);
+            });
+        });
+        describe("transformMatrix", function() {
+            it("should return expected value", function() {
+                var vector = Vector2.create().initWithCoordinates([1000, 600]);
+
+                vector.transformMatrix([.5, .2, .7, .8, 300, 140]);
+                expect(vector.x).toBeCloseTo(1220, 2);
+                expect(vector.y).toBeCloseTo(820, 2);
+            });
+        });
     });
     describe("dot product", function() {
         it("should return expected value", function() {
@@ -284,28 +350,6 @@ describe("pen-tool-math Vector2-spec", function() {
             vector2.setCoordinate(0, 5);
             expect(vector2.getCoordinate(0)).toEqual(5);
             expect(vector.getCoordinate(0)).toEqual(1);
-        });
-    });
-    describe("rotate", function() {
-        it("should return expected value", function() {
-            var vector = Vector2.create().initWithCoordinates([2, 4]),
-                vector2 = Vector2.create().initWithCoordinates([1000, 600]);
-
-            vector.rotate(Math.PI / 2);
-            expect(vector.x).toBeCloseTo(-4, 6);
-            expect(vector.y).toBeCloseTo(2, 6);
-            vector2.rotate(.3);
-            expect(vector2.x).toBeCloseTo(778.024, 3);
-            expect(vector2.y).toBeCloseTo(868.722, 3);
-        });
-    });
-    describe("transform", function() {
-        it("should return expected value", function() {
-            var vector = Vector2.create().initWithCoordinates([1000, 600]);
-
-            vector.transform([.5, .2, .7, .8, 300, 140]);
-            expect(vector.x).toBeCloseTo(1220, 2);
-            expect(vector.y).toBeCloseTo(820, 2);
         });
     });
 });
@@ -441,6 +485,132 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(2)).toEqual(34);
             });
         });
+        describe("translate", function() {
+            it("should define expected coordinates", function() {
+                vector.translate([1,2,3]);
+                expect(vector.getCoordinate(0)).toEqual(3);
+                expect(vector.getCoordinate(1)).toEqual(6);
+                expect(vector.getCoordinate(2)).toEqual(9);
+            });
+        });
+        describe("scale", function() {
+            it("should define expected coordinates", function() {
+                vector.scale([2,3,4]);
+                expect(vector.getCoordinate(0)).toEqual(4);
+                expect(vector.getCoordinate(1)).toEqual(12);
+                expect(vector.getCoordinate(2)).toEqual(24);
+            });
+        });
+        describe("skewX", function() {
+            it("should define expected coordinates", function() {
+                vector.skewX(45 * Math.PI * 2 / 360);
+                expect(vector.getCoordinate(0)).toBeCloseTo(6, 6);
+                expect(vector.getCoordinate(1)).toEqual(4);
+                expect(vector.getCoordinate(2)).toEqual(6);
+            });
+        });
+        describe("skewY", function() {
+            it("should define expected coordinates", function() {
+                vector.skewY(45 * Math.PI * 2 / 360);
+                expect(vector.getCoordinate(1)).toBeCloseTo(6, 6);
+                expect(vector.getCoordinate(0)).toEqual(2);
+                expect(vector.getCoordinate(2)).toEqual(6);
+            });
+        });
+        describe("rotateX", function() {
+            it("should return expected value", function() {
+                var vector = Vector3.create().initWithCoordinates([400, 1000, 600]);
+
+                vector.rotateX(.3);
+                expect(vector.y).toBeCloseTo(778.024, 3);
+                expect(vector.z).toBeCloseTo(868.722, 3);
+            });
+        });
+        describe("rotateY", function() {
+            it("should return expected value", function() {
+                var vector = Vector3.create().initWithCoordinates([1000, 400, 600]);
+
+                vector.rotateY(-.3);
+                expect(vector.x).toBeCloseTo(778.024, 3);
+                expect(vector.z).toBeCloseTo(868.722, 3);
+            });
+        });
+        describe("rotateZ", function() {
+            it("should return expected value", function() {
+                var vector = Vector3.create().initWithCoordinates([1000, 600, 400]);
+
+                vector.rotateZ(.3);
+                expect(vector.x).toBeCloseTo(778.024, 3);
+                expect(vector.y).toBeCloseTo(868.722, 3);
+            });
+        });
+        describe("multiple rotations", function() {
+            it("should return expected value", function() {
+                var vector = Vector3.create().initWithCoordinates([1000, 600, 400]);
+
+                vector.rotateX(Math.PI);
+                vector.rotateY(Math.PI);
+                vector.rotateZ(Math.PI);
+                expect(vector.x).toBeCloseTo(1000, 3);
+                expect(vector.y).toBeCloseTo(600, 3);
+                expect(vector.z).toBeCloseTo(400, 3);
+            });
+        });
+        describe("transformMatrix", function() {
+            it("should return expected value", function() {
+                var vector = Vector3.create().initWithCoordinates([1000, 600, 123]);
+
+                vector.transformMatrix([.5, .2, .7, .8, 300, 140]);
+                expect(vector.x).toBeCloseTo(1220, 2);
+                expect(vector.y).toBeCloseTo(820, 2);
+                expect(vector.z).toEqual(123);
+            });
+        });
+        describe("transformMatrix3d", function() {
+            it("should return expected value", function() {
+                vector.transformMatrix3d([
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                ]);
+                expect(vector.x).toBeCloseTo(2, 6);
+                expect(vector.y).toBeCloseTo(4, 6);
+                expect(vector.z).toBeCloseTo(6, 6);
+                vector.transformMatrix3d([
+                    2, 6, 10, 14,
+                    3, 7, 11, 15,
+                    4, 8, 12, 16,
+                    5, 9, 13, 17
+                ]);
+                expect(vector.x).toBeCloseTo(2 * 2 + 4 * 3 + 6 * 4 + 5, 5);
+                expect(vector.y).toBeCloseTo(2 * 6 + 4 * 7 + 6 * 8 + 9, 5);
+                expect(vector.z).toBeCloseTo(10 * 2 + 4 * 11 + 6 * 12 + 13, 5);
+            });
+        });
+        describe("transformPerspectiveMatrix3d", function() {
+            it("should return expected value", function() {
+                vector.transformPerspectiveMatrix3d([
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                ]);
+                expect(vector.x).toBeCloseTo(2, 6);
+                expect(vector.y).toBeCloseTo(4, 6);
+                expect(vector.z).toBeCloseTo(6, 6);
+                vector.transformPerspectiveMatrix3d([
+                    2, 6, 10, 14,
+                    3, 7, 11, 15,
+                    4, 8, 12, 16,
+                    5, 9, 13, 17
+                ]);
+                var w = 2 * 14 + 4 * 15 + 6 * 16 + 17;
+                expect(vector.x).toBeCloseTo((2 * 2 + 4 * 3 + 6 * 4 + 5) / w, 5);
+                expect(vector.y).toBeCloseTo((2 * 6 + 4 * 7 + 6 * 8 + 9) / w, 5);
+                expect(vector.z).toBeCloseTo((10 * 2 + 4 * 11 + 6 * 12 + 13) / w, 5);
+            });
+        });
     });
     describe("dot product", function() {
         it("should return expected value", function() {
@@ -466,45 +636,6 @@ describe("pen-tool-math Vector3-spec", function() {
             vector2.setCoordinate(0, 5);
             expect(vector2.getCoordinate(0)).toEqual(5);
             expect(vector.getCoordinate(0)).toEqual(1);
-        });
-    });
-    describe("rotateX", function() {
-        it("should return expected value", function() {
-            var vector = Vector3.create().initWithCoordinates([400, 1000, 600]);
-
-            vector.rotateX(.3);
-            expect(vector.y).toBeCloseTo(778.024, 3);
-            expect(vector.z).toBeCloseTo(868.722, 3);
-        });
-    });
-    describe("rotateY", function() {
-        it("should return expected value", function() {
-            var vector = Vector3.create().initWithCoordinates([1000, 400, 600]);
-
-            vector.rotateY(-.3);
-            expect(vector.x).toBeCloseTo(778.024, 3);
-            expect(vector.z).toBeCloseTo(868.722, 3);
-        });
-    });
-    describe("rotateZ", function() {
-        it("should return expected value", function() {
-            var vector = Vector3.create().initWithCoordinates([1000, 600, 400]);
-
-            vector.rotateZ(.3);
-            expect(vector.x).toBeCloseTo(778.024, 3);
-            expect(vector.y).toBeCloseTo(868.722, 3);
-        });
-    });
-    describe("multiple rotations", function() {
-        it("should return expected value", function() {
-            var vector = Vector3.create().initWithCoordinates([1000, 600, 400]);
-
-            vector.rotateX(Math.PI);
-            vector.rotateY(Math.PI);
-            vector.rotateZ(Math.PI);
-            expect(vector.x).toBeCloseTo(1000, 3);
-            expect(vector.y).toBeCloseTo(600, 3);
-            expect(vector.z).toBeCloseTo(400, 3);
         });
     });
 });

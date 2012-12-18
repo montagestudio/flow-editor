@@ -224,6 +224,36 @@ var Vector = exports.Vector = Montage.create(Montage, {
         value: function () {
             return Montage.create(Vector).initWithCoordinates(this._coordinates);
         }
+    },
+
+    /**
+        In-place translation by provided offsets array. Dimensions of self vector and
+        length of provided array are assumed to be the same
+    */
+    translate: {
+        value: function (offsetsArray) {
+            var dimensions = this.dimensions,
+                i;
+
+            for (i = 0; i < dimensions; i++) {
+                this.setCoordinate(i, this.getCoordinate(i) + offsetsArray[i]);
+            }
+        }
+    },
+
+    /**
+        In-place scaling by provided factors array. Dimensions of self vector and
+        length of provided array are assumed to be the same
+    */
+    scale: {
+        value: function (factorsArray) {
+            var dimensions = this.dimensions,
+                i;
+
+            for (i = 0; i < dimensions; i++) {
+                this.setCoordinate(i, this.getCoordinate(i) * factorsArray[i]);
+            }
+        }
     }
 });
 
@@ -387,7 +417,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         In-place matrix transform. It takes a 2 rows by 3 colums matrix linearized as
         an array in the same format as CSS 2d transform matrix (column-major order)
     */
-    transform: {
+    transformMatrix: {
         value: function (matrix) {
             var tmp = this._coordinates[0];
 
@@ -399,6 +429,46 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
                 tmp * matrix[1] +
                 this._coordinates[1] * matrix[3] +
                 matrix[5];
+        }
+    },
+
+    /**
+        In-place translation by provided offsets array. Length of provided
+        array is assumed to be 2
+    */
+    translate: {
+        value: function (offsetsArray) {
+            this._coordinates[0] += offsetsArray[0];
+            this._coordinates[1] += offsetsArray[1];
+        }
+    },
+
+    /**
+        In-place scaling by provided factors array. Length of provided
+        array is assumed to be 2
+    */
+    scale: {
+        value: function (factorsArray) {
+            this._coordinates[0] *= factorsArray[0];
+            this._coordinates[1] *= factorsArray[1];
+        }
+    },
+
+    /**
+        In-place skewing x axis by provided angle (in radians)
+    */
+    skewX: {
+        value: function (angle) {
+            this._coordinates[0] += this._coordinates[1] * Math.tan(angle);
+        }
+    },
+
+    /**
+        In-place skewing y axis by provided angle (in radians)
+    */
+    skewY: {
+        value: function (angle) {
+            this._coordinates[1] += this._coordinates[0] * Math.tan(angle);
         }
     }
 });
@@ -629,7 +699,132 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._coordinates[0] = this._coordinates[0] * cos - this._coordinates[1] * sin;
             this._coordinates[1] = this._coordinates[1] * cos + tmp * sin;
         }
+    },
+
+    /**
+        In-place matrix 2d transform. It takes a 2 rows by 3 colums matrix linearized as
+        an array in the same format as CSS 2d transform matrix (column-major order).
+        It only affects x and y coordinates
+    */
+    transformMatrix: {
+        value: function (matrix) {
+            var tmp = this._coordinates[0];
+
+            this._coordinates[0] =
+                this._coordinates[0] * matrix[0] +
+                this._coordinates[1] * matrix[2] +
+                matrix[4];
+            this._coordinates[1] =
+                tmp * matrix[1] +
+                this._coordinates[1] * matrix[3] +
+                matrix[5];
+        }
+    },
+
+    /**
+        In-place matrix 3d transform. It takes a 4 by 4 matrix linearized
+        as an array in column-major order
+    */
+    transformMatrix3d: {
+        value: function (matrix) {
+            var tmpX = this._coordinates[0],
+                tmpY = this._coordinates[1];
+
+            this._coordinates[0] =
+                this._coordinates[0] * matrix[0] +
+                this._coordinates[1] * matrix[4] +
+                this._coordinates[2] * matrix[8] +
+                matrix[12];
+            this._coordinates[1] =
+                tmpX * matrix[1] +
+                this._coordinates[1] * matrix[5] +
+                this._coordinates[2] * matrix[9] +
+                matrix[13];
+            this._coordinates[2] =
+                tmpX * matrix[2] +
+                tmpY * matrix[6] +
+                this._coordinates[2] * matrix[10] +
+                matrix[14];
+        }
+    },
+
+    /**
+        In-place perspective matrix 3d transform. It takes a 4 by 4 matrix
+        linearized as an array in column-major order. The result is equivalent
+        to CSS 3d transform matrix3d
+    */
+    transformPerspectiveMatrix3d: {
+        value: function (matrix) {
+            var tmpX = this._coordinates[0],
+                tmpY = this._coordinates[1],
+                w;
+
+            w = this._coordinates[0] * matrix[3] +
+                this._coordinates[1] * matrix[7] +
+                this._coordinates[2] * matrix[11] +
+                matrix[15];
+
+            this._coordinates[0] =
+               (this._coordinates[0] * matrix[0] +
+                this._coordinates[1] * matrix[4] +
+                this._coordinates[2] * matrix[8] +
+                matrix[12]) / w;
+            this._coordinates[1] =
+               (tmpX * matrix[1] +
+                this._coordinates[1] * matrix[5] +
+                this._coordinates[2] * matrix[9] +
+                matrix[13]) / w;
+            this._coordinates[2] =
+               (tmpX * matrix[2] +
+                tmpY * matrix[6] +
+                this._coordinates[2] * matrix[10] +
+                matrix[14]) / w;
+        }
+    },
+
+    /**
+        In-place translation by provided offsets array. Length of provided
+        array is assumed to be 3
+    */
+    translate: {
+        value: function (offsetsArray) {
+            this._coordinates[0] += offsetsArray[0];
+            this._coordinates[1] += offsetsArray[1];
+            this._coordinates[2] += offsetsArray[2];
+        }
+    },
+
+    /**
+        In-place scaling by provided factors array. Length of provided
+        array is assumed to be 3
+    */
+    scale: {
+        value: function (factorsArray) {
+            this._coordinates[0] *= factorsArray[0];
+            this._coordinates[1] *= factorsArray[1];
+            this._coordinates[2] *= factorsArray[2];
+        }
+    },
+
+    /**
+        In-place skewing x axis relative to y axis by provided angle (in radians)
+    */
+    skewX: {
+        value: function (angle) {
+            this._coordinates[0] += this._coordinates[1] * Math.tan(angle);
+        }
+    },
+
+    /**
+        In-place skewing y axis relative to x axis by provided angle (in radians)
+    */
+    skewY: {
+        value: function (angle) {
+            this._coordinates[1] += this._coordinates[0] * Math.tan(angle);
+        }
     }
+
+    // TODO: skewXZ, skewYZ, skewZX, skewZY, translateX, translateY, translateZ (very low priority)
 });
 
 var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
