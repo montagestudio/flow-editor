@@ -1,13 +1,63 @@
 var Montage = require("montage").Montage;
 
-var Vector = exports.Vector = Montage.create(Montage, {
+var MapReducible = exports.MapReducible = Montage.create(Montage, {
 
     init: {
         value: function () {
-            this._coordinates = [];
+            this._data = [];
             return this;
         }
     },
+
+    _data: {
+        serializable: true,
+        value: null
+    },
+
+    every: {
+        value: function () {
+            return this._data.every.apply(this._data, arguments);
+        }
+    },
+
+    reduce: {
+        value: function () {
+            return this._data.reduce.apply(this._data, arguments);
+        }
+    },
+
+    reduceRight: {
+        value: function () {
+            return this._data.reduceRight.apply(this._data, arguments);
+        }
+    },
+
+    some: {
+        value: function () {
+            return this._data.some.apply(this._data, arguments);
+        }
+    },
+
+    forEach: {
+        value: function () {
+            return this._data.forEach.apply(this._data, arguments);
+        }
+    },
+
+    map: {
+        value: function () {
+            return this._data.map.apply(this._data, arguments);
+        }
+    },
+
+    filter: {
+        value: function () {
+            return this._data.filter.apply(this._data, arguments);
+        }
+    }
+});
+
+var Vector = exports.Vector = Montage.create(MapReducible, {
 
     initWithCoordinates: {
         value: function (coordinatesArray) {
@@ -17,29 +67,21 @@ var Vector = exports.Vector = Montage.create(Montage, {
     },
 
     /**
-        Internal array storing vector coordinates
-    */
-    _coordinates: {
-        serializable: true,
-        value: null
-    },
-
-    /**
-        Length of the _coordinates array. Using "dimensions" instead of "length"
+        Length of the _data array. Using "dimensions" instead of "length"
         to avoid confusion with vector magnitude that is also known as length
     */
     dimensions: {
         get: function () {
-            return this._coordinates.length;
+            return this._data.length;
         }
     },
 
     /**
-        Copy the provided array into the internal _coordinates array
+        Copy the provided array into the internal _data array
     */
     setCoordinates: {
         value: function (coordinatesArray) {
-            this._coordinates = coordinatesArray.slice(0);
+            this._data = coordinatesArray.slice(0);
         }
     },
 
@@ -48,7 +90,7 @@ var Vector = exports.Vector = Montage.create(Montage, {
     */
     setCoordinate: {
         value: function (index, value) {
-            this._coordinates[index] = value;
+            this._data[index] = value;
         }
     },
 
@@ -57,7 +99,7 @@ var Vector = exports.Vector = Montage.create(Montage, {
     */
     getCoordinate: {
         value: function (index) {
-            return this._coordinates[index];
+            return this._data[index];
         }
     },
 
@@ -222,7 +264,7 @@ var Vector = exports.Vector = Montage.create(Montage, {
     */
     clone: {
         value: function () {
-            return Montage.create(Vector).initWithCoordinates(this._coordinates);
+            return Montage.create(Vector).initWithCoordinates(this._data);
         }
     },
 
@@ -261,7 +303,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
 
     init: {
         value: function () {
-            this._coordinates = [0, 0];
+            this._data = [0, 0];
             return this;
         }
     },
@@ -271,7 +313,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     initWithCoordinates: {
         value: function (coordinatesArray) {
-            this._coordinates = [];
+            this._data = [];
             this.setCoordinates(coordinatesArray);
             return this;
         }
@@ -287,13 +329,13 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     },
 
     /**
-        Copy the provided array into the internal _coordinates array
+        Copy the provided array into the internal _data array
         Provided array expected to be of length 2
     */
     setCoordinates: {
         value: function (coordinatesArray) {
-            this._coordinates[0] = coordinatesArray[0];
-            this._coordinates[1] = coordinatesArray[1];
+            this._data[0] = coordinatesArray[0];
+            this._data[1] = coordinatesArray[1];
         }
     },
 
@@ -303,10 +345,10 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     x: {
         serializable: false,
         get: function () {
-            return this._coordinates[0];
+            return this._data[0];
         },
         set: function (value) {
-            this._coordinates[0] = value;
+            this._data[0] = value;
         }
     },
 
@@ -316,10 +358,10 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     y: {
         serializable: false,
         get: function () {
-            return this._coordinates[1];
+            return this._data[1];
         },
         set: function (value) {
-            this._coordinates[1] = value;
+            this._data[1] = value;
         }
     },
 
@@ -330,8 +372,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         serializable: false,
         get: function () {
             return Math.sqrt(
-                this._coordinates[0] * this._coordinates[0] +
-                this._coordinates[1] * this._coordinates[1]
+                this._data[0] * this._data[0] +
+                this._data[1] * this._data[1]
             );
         }
     },
@@ -341,8 +383,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     add: {
         value: function (vector2) {
-            this._coordinates[0] += vector2._coordinates[0];
-            this._coordinates[1] += vector2._coordinates[1];
+            this._data[0] += vector2._data[0];
+            this._data[1] += vector2._data[1];
         }
     },
 
@@ -351,8 +393,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     subtract: {
         value: function (vector2) {
-            this._coordinates[0] -= vector2._coordinates[0];
-            this._coordinates[1] -= vector2._coordinates[1];
+            this._data[0] -= vector2._data[0];
+            this._data[1] -= vector2._data[1];
         }
     },
 
@@ -361,8 +403,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     negate: {
         value: function () {
-            this._coordinates[0] = -this._coordinates[0];
-            this._coordinates[1] = -this._coordinates[1];
+            this._data[0] = -this._data[0];
+            this._data[1] = -this._data[1];
         }
     },
 
@@ -371,8 +413,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     multiply: {
         value: function (scalar) {
-            this._coordinates[0] *= scalar;
-            this._coordinates[1] *= scalar;
+            this._data[0] *= scalar;
+            this._data[1] *= scalar;
         }
     },
 
@@ -381,8 +423,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     divide: {
         value: function (scalar) {
-            this._coordinates[0] /= scalar;
-            this._coordinates[1] /= scalar;
+            this._data[0] /= scalar;
+            this._data[1] /= scalar;
         }
     },
 
@@ -393,8 +435,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     dot: {
         value: function (vector2) {
             return (
-                this._coordinates[0] * vector2._coordinates[0] +
-                this._coordinates[1] * vector2._coordinates[1]
+                this._data[0] * vector2._data[0] +
+                this._data[1] * vector2._data[1]
             );
         }
     },
@@ -406,10 +448,10 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (angle) {
             var cos = Math.cos(angle),
                 sin = Math.sin(angle),
-                tmp = this._coordinates[0];
+                tmp = this._data[0];
 
-            this._coordinates[0] = this._coordinates[0] * cos - this._coordinates[1] * sin;
-            this._coordinates[1] = this._coordinates[1] * cos + tmp * sin;
+            this._data[0] = this._data[0] * cos - this._data[1] * sin;
+            this._data[1] = this._data[1] * cos + tmp * sin;
         }
     },
 
@@ -419,15 +461,15 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     transformMatrix: {
         value: function (matrix) {
-            var tmp = this._coordinates[0];
+            var tmp = this._data[0];
 
-            this._coordinates[0] =
-                this._coordinates[0] * matrix[0] +
-                this._coordinates[1] * matrix[2] +
+            this._data[0] =
+                this._data[0] * matrix[0] +
+                this._data[1] * matrix[2] +
                 matrix[4];
-            this._coordinates[1] =
+            this._data[1] =
                 tmp * matrix[1] +
-                this._coordinates[1] * matrix[3] +
+                this._data[1] * matrix[3] +
                 matrix[5];
         }
     },
@@ -438,8 +480,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     translate: {
         value: function (offsetsArray) {
-            this._coordinates[0] += offsetsArray[0];
-            this._coordinates[1] += offsetsArray[1];
+            this._data[0] += offsetsArray[0];
+            this._data[1] += offsetsArray[1];
         }
     },
 
@@ -449,8 +491,8 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     scale: {
         value: function (factorsArray) {
-            this._coordinates[0] *= factorsArray[0];
-            this._coordinates[1] *= factorsArray[1];
+            this._data[0] *= factorsArray[0];
+            this._data[1] *= factorsArray[1];
         }
     },
 
@@ -459,7 +501,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     skewX: {
         value: function (angle) {
-            this._coordinates[0] += this._coordinates[1] * Math.tan(angle);
+            this._data[0] += this._data[1] * Math.tan(angle);
         }
     },
 
@@ -468,7 +510,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     skewY: {
         value: function (angle) {
-            this._coordinates[1] += this._coordinates[0] * Math.tan(angle);
+            this._data[1] += this._data[0] * Math.tan(angle);
         }
     }
 });
@@ -477,7 +519,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
     init: {
         value: function () {
-            this._coordinates = [0, 0, 0];
+            this._data = [0, 0, 0];
             return this;
         }
     },
@@ -487,7 +529,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     initWithCoordinates: {
         value: function (coordinatesArray) {
-            this._coordinates = [];
+            this._data = [];
             this.setCoordinates(coordinatesArray);
             return this;
         }
@@ -503,14 +545,14 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     },
 
     /**
-        Copy the provided array into the internal _coordinates array
+        Copy the provided array into the internal _data array
         Provided array expected to be of length 2
     */
     setCoordinates: {
         value: function (coordinatesArray) {
-            this._coordinates[0] = coordinatesArray[0];
-            this._coordinates[1] = coordinatesArray[1];
-            this._coordinates[2] = coordinatesArray[2];
+            this._data[0] = coordinatesArray[0];
+            this._data[1] = coordinatesArray[1];
+            this._data[2] = coordinatesArray[2];
         }
     },
 
@@ -520,10 +562,10 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     x: {
         serializable: false,
         get: function () {
-            return this._coordinates[0];
+            return this._data[0];
         },
         set: function (value) {
-            this._coordinates[0] = value;
+            this._data[0] = value;
         }
     },
 
@@ -533,10 +575,10 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     y: {
         serializable: false,
         get: function () {
-            return this._coordinates[1];
+            return this._data[1];
         },
         set: function (value) {
-            this._coordinates[1] = value;
+            this._data[1] = value;
         }
     },
 
@@ -546,10 +588,10 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     z: {
         serializable: false,
         get: function () {
-            return this._coordinates[2];
+            return this._data[2];
         },
         set: function (value) {
-            this._coordinates[2] = value;
+            this._data[2] = value;
         }
     },
 
@@ -560,9 +602,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
         serializable: false,
         get: function () {
             return Math.sqrt(
-                this._coordinates[0] * this._coordinates[0] +
-                this._coordinates[1] * this._coordinates[1] +
-                this._coordinates[2] * this._coordinates[2]
+                this._data[0] * this._data[0] +
+                this._data[1] * this._data[1] +
+                this._data[2] * this._data[2]
             );
         }
     },
@@ -572,9 +614,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     add: {
         value: function (vector3) {
-            this._coordinates[0] += vector3._coordinates[0];
-            this._coordinates[1] += vector3._coordinates[1];
-            this._coordinates[2] += vector3._coordinates[2];
+            this._data[0] += vector3._data[0];
+            this._data[1] += vector3._data[1];
+            this._data[2] += vector3._data[2];
         }
     },
 
@@ -583,9 +625,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     subtract: {
         value: function (vector3) {
-            this._coordinates[0] -= vector3._coordinates[0];
-            this._coordinates[1] -= vector3._coordinates[1];
-            this._coordinates[2] -= vector3._coordinates[2];
+            this._data[0] -= vector3._data[0];
+            this._data[1] -= vector3._data[1];
+            this._data[2] -= vector3._data[2];
         }
     },
 
@@ -594,9 +636,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     negate: {
         value: function () {
-            this._coordinates[0] = -this._coordinates[0];
-            this._coordinates[1] = -this._coordinates[1];
-            this._coordinates[2] = -this._coordinates[2];
+            this._data[0] = -this._data[0];
+            this._data[1] = -this._data[1];
+            this._data[2] = -this._data[2];
         }
     },
 
@@ -605,9 +647,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     multiply: {
         value: function (scalar) {
-            this._coordinates[0] *= scalar;
-            this._coordinates[1] *= scalar;
-            this._coordinates[2] *= scalar;
+            this._data[0] *= scalar;
+            this._data[1] *= scalar;
+            this._data[2] *= scalar;
         }
     },
 
@@ -616,9 +658,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     divide: {
         value: function (scalar) {
-            this._coordinates[0] /= scalar;
-            this._coordinates[1] /= scalar;
-            this._coordinates[2] /= scalar;
+            this._data[0] /= scalar;
+            this._data[1] /= scalar;
+            this._data[2] /= scalar;
         }
     },
 
@@ -627,18 +669,18 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     cross: {
         value: function (vector3) {
-            var tmpX = this._coordinates[0],
-                tmpY = this._coordinates[1];
+            var tmpX = this._data[0],
+                tmpY = this._data[1];
 
-            this._coordinates[0] =
-                this._coordinates[1] * vector3._coordinates[2] -
-                this._coordinates[2] * vector3._coordinates[1];
-            this._coordinates[1] =
-                this._coordinates[2] * vector3._coordinates[0] -
-                tmpX * vector3._coordinates[2];
-            this._coordinates[2] =
-                tmpX * vector3._coordinates[1] -
-                tmpY * vector3._coordinates[0];
+            this._data[0] =
+                this._data[1] * vector3._data[2] -
+                this._data[2] * vector3._data[1];
+            this._data[1] =
+                this._data[2] * vector3._data[0] -
+                tmpX * vector3._data[2];
+            this._data[2] =
+                tmpX * vector3._data[1] -
+                tmpY * vector3._data[0];
         }
     },
 
@@ -649,9 +691,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     dot: {
         value: function (vector3) {
             return (
-                this._coordinates[0] * vector3._coordinates[0] +
-                this._coordinates[1] * vector3._coordinates[1] +
-                this._coordinates[2] * vector3._coordinates[2]
+                this._data[0] * vector3._data[0] +
+                this._data[1] * vector3._data[1] +
+                this._data[2] * vector3._data[2]
             );
         }
     },
@@ -664,10 +706,10 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
         value: function (angle) {
             var cos = Math.cos(angle),
                 sin = Math.sin(angle),
-                tmp = this._coordinates[1];
+                tmp = this._data[1];
 
-            this._coordinates[1] = this._coordinates[1] * cos - this._coordinates[2] * sin;
-            this._coordinates[2] = this._coordinates[2] * cos + tmp * sin;
+            this._data[1] = this._data[1] * cos - this._data[2] * sin;
+            this._data[2] = this._data[2] * cos + tmp * sin;
         }
     },
 
@@ -679,10 +721,10 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
         value: function (angle) {
             var cos = Math.cos(angle),
                 sin = Math.sin(angle),
-                tmp = this._coordinates[0];
+                tmp = this._data[0];
 
-            this._coordinates[0] = this._coordinates[0] * cos + this._coordinates[2] * sin;
-            this._coordinates[2] = this._coordinates[2] * cos - tmp * sin;
+            this._data[0] = this._data[0] * cos + this._data[2] * sin;
+            this._data[2] = this._data[2] * cos - tmp * sin;
         }
     },
 
@@ -694,10 +736,10 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
         value: function (angle) {
             var cos = Math.cos(angle),
                 sin = Math.sin(angle),
-                tmp = this._coordinates[0];
+                tmp = this._data[0];
 
-            this._coordinates[0] = this._coordinates[0] * cos - this._coordinates[1] * sin;
-            this._coordinates[1] = this._coordinates[1] * cos + tmp * sin;
+            this._data[0] = this._data[0] * cos - this._data[1] * sin;
+            this._data[1] = this._data[1] * cos + tmp * sin;
         }
     },
 
@@ -708,15 +750,15 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     transformMatrix: {
         value: function (matrix) {
-            var tmp = this._coordinates[0];
+            var tmp = this._data[0];
 
-            this._coordinates[0] =
-                this._coordinates[0] * matrix[0] +
-                this._coordinates[1] * matrix[2] +
+            this._data[0] =
+                this._data[0] * matrix[0] +
+                this._data[1] * matrix[2] +
                 matrix[4];
-            this._coordinates[1] =
+            this._data[1] =
                 tmp * matrix[1] +
-                this._coordinates[1] * matrix[3] +
+                this._data[1] * matrix[3] +
                 matrix[5];
         }
     },
@@ -727,23 +769,23 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     transformMatrix3d: {
         value: function (matrix) {
-            var tmpX = this._coordinates[0],
-                tmpY = this._coordinates[1];
+            var tmpX = this._data[0],
+                tmpY = this._data[1];
 
-            this._coordinates[0] =
-                this._coordinates[0] * matrix[0] +
-                this._coordinates[1] * matrix[4] +
-                this._coordinates[2] * matrix[8] +
+            this._data[0] =
+                this._data[0] * matrix[0] +
+                this._data[1] * matrix[4] +
+                this._data[2] * matrix[8] +
                 matrix[12];
-            this._coordinates[1] =
+            this._data[1] =
                 tmpX * matrix[1] +
-                this._coordinates[1] * matrix[5] +
-                this._coordinates[2] * matrix[9] +
+                this._data[1] * matrix[5] +
+                this._data[2] * matrix[9] +
                 matrix[13];
-            this._coordinates[2] =
+            this._data[2] =
                 tmpX * matrix[2] +
                 tmpY * matrix[6] +
-                this._coordinates[2] * matrix[10] +
+                this._data[2] * matrix[10] +
                 matrix[14];
         }
     },
@@ -755,29 +797,29 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     transformPerspectiveMatrix3d: {
         value: function (matrix) {
-            var tmpX = this._coordinates[0],
-                tmpY = this._coordinates[1],
+            var tmpX = this._data[0],
+                tmpY = this._data[1],
                 w;
 
-            w = this._coordinates[0] * matrix[3] +
-                this._coordinates[1] * matrix[7] +
-                this._coordinates[2] * matrix[11] +
+            w = this._data[0] * matrix[3] +
+                this._data[1] * matrix[7] +
+                this._data[2] * matrix[11] +
                 matrix[15];
 
-            this._coordinates[0] =
-               (this._coordinates[0] * matrix[0] +
-                this._coordinates[1] * matrix[4] +
-                this._coordinates[2] * matrix[8] +
+            this._data[0] =
+               (this._data[0] * matrix[0] +
+                this._data[1] * matrix[4] +
+                this._data[2] * matrix[8] +
                 matrix[12]) / w;
-            this._coordinates[1] =
+            this._data[1] =
                (tmpX * matrix[1] +
-                this._coordinates[1] * matrix[5] +
-                this._coordinates[2] * matrix[9] +
+                this._data[1] * matrix[5] +
+                this._data[2] * matrix[9] +
                 matrix[13]) / w;
-            this._coordinates[2] =
+            this._data[2] =
                (tmpX * matrix[2] +
                 tmpY * matrix[6] +
-                this._coordinates[2] * matrix[10] +
+                this._data[2] * matrix[10] +
                 matrix[14]) / w;
         }
     },
@@ -788,9 +830,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     translate: {
         value: function (offsetsArray) {
-            this._coordinates[0] += offsetsArray[0];
-            this._coordinates[1] += offsetsArray[1];
-            this._coordinates[2] += offsetsArray[2];
+            this._data[0] += offsetsArray[0];
+            this._data[1] += offsetsArray[1];
+            this._data[2] += offsetsArray[2];
         }
     },
 
@@ -800,9 +842,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     scale: {
         value: function (factorsArray) {
-            this._coordinates[0] *= factorsArray[0];
-            this._coordinates[1] *= factorsArray[1];
-            this._coordinates[2] *= factorsArray[2];
+            this._data[0] *= factorsArray[0];
+            this._data[1] *= factorsArray[1];
+            this._data[2] *= factorsArray[2];
         }
     },
 
@@ -811,7 +853,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     skewX: {
         value: function (angle) {
-            this._coordinates[0] += this._coordinates[1] * Math.tan(angle);
+            this._data[0] += this._data[1] * Math.tan(angle);
         }
     },
 
@@ -820,28 +862,14 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     skewY: {
         value: function (angle) {
-            this._coordinates[1] += this._coordinates[0] * Math.tan(angle);
+            this._data[1] += this._data[0] * Math.tan(angle);
         }
     }
 
-    // TODO: skewXZ, skewYZ, skewZX, skewZY, translateX, translateY, translateZ (very low priority)
+    // TODO: skewXZ / YZ / ZX / ZY, translateX / Y / Z, rotate3d (very low priority)
 });
 
-var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
-
-    init: {
-        value: function () {
-            this._controlPoints = [];
-            return this;
-        }
-    },
-
-    /**
-        Internal array for control points storage
-    */
-    _controlPoints: {
-        value: null
-    },
+var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
 
     /**
         Number of control points not including starting point.
@@ -850,7 +878,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
     */
     order: {
         get: function () {
-            return this._controlPoints.length - 1;
+            return this._data.length - 1;
         }
     },
 
@@ -860,7 +888,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
     */
     pushControlPoint: {
         value: function (vector) {
-            this._controlPoints.push(vector);
+            this._data.push(vector);
         }
     },
 
@@ -870,7 +898,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
     */
     popControlPoint: {
         value: function () {
-            return this._controlPoints.pop();
+            return this._data.pop();
         }
     },
 
@@ -879,7 +907,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
     */
     getControlPoint: {
         value: function (index) {
-            return this._controlPoints[index];
+            return this._data[index];
         }
     },
 
@@ -889,7 +917,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
     */
     setControlPoint: {
         value: function (index, vector) {
-            this._controlPoints[index] = vector;
+            this._data[index] = vector;
         }
     },
 
@@ -930,6 +958,154 @@ var BezierCurve = exports.BezierCurve = Montage.create(Montage, {
             return Montage.create(Vector).initWithCoordinates(
                 intermediateValues.slice(0, dimensions)
             );
+        }
+    },
+
+    /**
+        In-place translation of control points by provided offsets array. Dimensions
+        of control points and length of provided array are assumed to be the same
+    */
+    translate: {
+        value: function (offsetsArray) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).translate(offsetsArray);
+            }
+        }
+    },
+
+    /**
+        In-place scaling of control points by provided factors array. Dimensions
+        of control points and length of provided array are assumed to be the same
+    */
+    scale: {
+        value: function (factorsArray) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).scale(factorsArray);
+            }
+        }
+    },
+
+    /**
+        In-place CCW 2d rotation of control points by a given angle in radians
+    */
+    rotate: {
+        value: function (angle) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).rotate(angle);
+            }
+        }
+    },
+
+    /**
+        In-place CCW 3d rotation around X axis of control points by a
+        given angle in radians
+    */
+    rotateX: {
+        value: function (angle) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).rotateX(angle);
+            }
+        }
+    },
+
+    /**
+        In-place CCW 3d rotation around Y axis of control points by a
+        given angle in radians
+    */
+    rotateY: {
+        value: function (angle) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).rotateY(angle);
+            }
+        }
+    },
+
+    /**
+        In-place CCW 3d rotation around Z axis of control points by a
+        given angle in radians
+    */
+    rotateZ: {
+        value: function (angle) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).rotateZ(angle);
+            }
+        }
+    },
+
+    /**
+        In-place matrix 2d transform. It takes a 2 rows by 3 colums matrix linearized as
+        an array in the same format as CSS 2d transform matrix (column-major order).
+        It only affects x and y coordinates of control points
+    */
+    transformMatrix: {
+        value: function (matrix) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).transformMatrix(matrix);
+            }
+        }
+    },
+
+    /**
+        In-place matrix 3d transform. It takes a 4 by 4 matrix linearized
+        as an array in column-major order
+    */
+    transformMatrix3d: {
+        value: function (matrix) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).transformMatrix3d(matrix);
+            }
+        }
+    },
+
+    /**
+        In-place skewing x axis relative to y axis by provided angle (in radians)
+    */
+    skewX: {
+        value: function (angle) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).skewX(angle);
+            }
+        }
+    },
+
+    /**
+        In-place skewing y axis relative to x axis by provided angle (in radians)
+    */
+    skewY: {
+        value: function (angle) {
+            var order = this.order,
+                i;
+
+            for (i = 0; i <= order; i++) {
+                this.getControlPoint(i).skewY(angle);
+            }
         }
     }
 });
