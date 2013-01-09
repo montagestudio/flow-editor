@@ -2,7 +2,8 @@ var Montage = require("montage").Montage,
     Vector = require("flow-editor/ui/pen-tool.reel/pen-tool-math").Vector,
     Vector2 = require("flow-editor/ui/pen-tool.reel/pen-tool-math").Vector2,
     Vector3 = require("flow-editor/ui/pen-tool.reel/pen-tool-math").Vector3,
-    BezierCurve = require("flow-editor/ui/pen-tool.reel/pen-tool-math").BezierCurve;
+    BezierCurve = require("flow-editor/ui/pen-tool.reel/pen-tool-math").BezierCurve,
+    BezierSpline = require("flow-editor/ui/pen-tool.reel/pen-tool-math").BezierSpline;
 
 /* Vector spec */
 
@@ -68,6 +69,14 @@ describe("pen-tool-math Vector-spec", function() {
             vector.setCoordinate(3, 4);
             expect(vector._data).toEqual([1, 2, 3, 4]);
         });
+        it("setCoordinate should return this", function() {
+            var vector = Vector.create().initWithCoordinates([0, 0, 0, 0]);
+
+            vector.x = 1;
+            vector.y = 2;
+            vector.z = 3;
+            expect(vector.setCoordinate(3, 4)).toBe(vector);
+        });
     });
     describe("in-place operations", function() {
         var vector, vector2;
@@ -83,6 +92,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(1)).toBeCloseTo(.53452, 5);
                 expect(vector.getCoordinate(2)).toBeCloseTo(.80178, 5);
             });
+            it("should return this", function() {
+                expect(vector.normalize()).toBe(vector);
+            });
         });
         describe("add", function() {
             it("should define expected coordinates", function() {
@@ -90,6 +102,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(3);
                 expect(vector.getCoordinate(1)).toEqual(6);
                 expect(vector.getCoordinate(2)).toEqual(9);
+            });
+            it("should return this", function() {
+                expect(vector.add(vector2)).toBe(vector);
             });
         });
         describe("subtract", function() {
@@ -99,6 +114,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(2);
                 expect(vector.getCoordinate(2)).toEqual(3);
             });
+            it("should return this", function() {
+                expect(vector.subtract(vector2)).toBe(vector);
+            });
         });
         describe("multiply", function() {
             it("should define expected coordinates", function() {
@@ -106,6 +124,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(4);
                 expect(vector.getCoordinate(1)).toEqual(8);
                 expect(vector.getCoordinate(2)).toEqual(12);
+            });
+            it("should return this", function() {
+                expect(vector.multiply(2)).toBe(vector);
             });
         });
         describe("divide", function() {
@@ -115,6 +136,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(2);
                 expect(vector.getCoordinate(2)).toEqual(3);
             });
+            it("should return this", function() {
+                expect(vector.divide(2)).toBe(vector);
+            });
         });
         describe("negate", function() {
             it("should define expected coordinates", function() {
@@ -122,6 +146,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(-2);
                 expect(vector.getCoordinate(1)).toEqual(-4);
                 expect(vector.getCoordinate(2)).toEqual(-6);
+            });
+            it("should return this", function() {
+                expect(vector.negate()).toBe(vector);
             });
         });
         describe("translate", function() {
@@ -131,6 +158,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(6);
                 expect(vector.getCoordinate(2)).toEqual(9);
             });
+            it("should return this", function() {
+                expect(vector.translate([1,2,3])).toBe(vector);
+            });
         });
         describe("scale", function() {
             it("should define expected coordinates", function() {
@@ -138,6 +168,9 @@ describe("pen-tool-math Vector-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(4);
                 expect(vector.getCoordinate(1)).toEqual(12);
                 expect(vector.getCoordinate(2)).toEqual(24);
+            });
+            it("should return this", function() {
+                expect(vector.scale([2,3,4])).toBe(vector);
             });
         });
     });
@@ -165,6 +198,18 @@ describe("pen-tool-math Vector-spec", function() {
             vector2.setCoordinate(0, 5);
             expect(vector2.getCoordinate(0)).toEqual(5);
             expect(vector.getCoordinate(0)).toEqual(1);
+        });
+    });
+    describe("outOfPlaceLerp", function() {
+        var vector, vector2;
+
+        vector = Vector.create().initWithCoordinates([1, 2, 3]);
+        vector2 = vector.create().initWithCoordinates([2, 3, 4]);
+        it("should return expected vector", function() {
+            expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25, 3.25]);
+        });
+        it("should not return this", function() {
+            expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
         });
     });
     describe("MapReducible functions", function() {
@@ -274,6 +319,11 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(1);
                 expect(vector.getCoordinate(1)).toEqual(2);
             });
+            it("should return this", function() {
+                var vector = Vector2.create().init();
+
+                expect(vector.setCoordinates([1, 2])).toBe(vector);
+            });
         });
     });
     describe("magnitude", function() {
@@ -307,12 +357,18 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector.getCoordinate(0)).toBeCloseTo(.44721, 5);
                 expect(vector.getCoordinate(1)).toBeCloseTo(.89443, 5);
             });
+            it("should return this", function() {
+                expect(vector.normalize()).toBe(vector);
+            });
         });
         describe("add", function() {
             it("should define expected coordinates", function() {
                 vector.add(vector2);
                 expect(vector.getCoordinate(0)).toEqual(3);
                 expect(vector.getCoordinate(1)).toEqual(6);
+            });
+            it("should return this", function() {
+                expect(vector.add(vector2)).toBe(vector);
             });
         });
         describe("subtract", function() {
@@ -321,12 +377,18 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(1);
                 expect(vector.getCoordinate(1)).toEqual(2);
             });
+            it("should return this", function() {
+                expect(vector.subtract(vector2)).toBe(vector);
+            });
         });
         describe("multiply", function() {
             it("should define expected coordinates", function() {
                 vector.multiply(2);
                 expect(vector.getCoordinate(0)).toEqual(4);
                 expect(vector.getCoordinate(1)).toEqual(8);
+            });
+            it("should return this", function() {
+                expect(vector.multiply(2)).toBe(vector);
             });
         });
         describe("divide", function() {
@@ -335,12 +397,18 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(1);
                 expect(vector.getCoordinate(1)).toEqual(2);
             });
+            it("should return this", function() {
+                expect(vector.divide(2)).toBe(vector);
+            });
         });
         describe("negate", function() {
             it("should define expected coordinates", function() {
                 vector.negate();
                 expect(vector.getCoordinate(0)).toEqual(-2);
                 expect(vector.getCoordinate(1)).toEqual(-4);
+            });
+            it("should return this", function() {
+                expect(vector.negate()).toBe(vector);
             });
         });
         describe("translate", function() {
@@ -349,12 +417,18 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(3);
                 expect(vector.getCoordinate(1)).toEqual(6);
             });
+            it("should return this", function() {
+                expect(vector.translate([1,2])).toBe(vector);
+            });
         });
         describe("scale", function() {
             it("should define expected coordinates", function() {
                 vector.scale([2,3]);
                 expect(vector.getCoordinate(0)).toEqual(4);
                 expect(vector.getCoordinate(1)).toEqual(12);
+            });
+            it("should return this", function() {
+                expect(vector.scale([2,3])).toBe(vector);
             });
         });
         describe("skewX", function() {
@@ -363,12 +437,18 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector.getCoordinate(0)).toBeCloseTo(6, 6);
                 expect(vector.getCoordinate(1)).toEqual(4);
             });
+            it("should return this", function() {
+                expect(vector.skewX(45 * Math.PI * 2 / 360)).toBe(vector);
+            });
         });
         describe("skewY", function() {
             it("should define expected coordinates", function() {
                 vector.skewY(45 * Math.PI * 2 / 360);
                 expect(vector.getCoordinate(1)).toBeCloseTo(6, 6);
                 expect(vector.getCoordinate(0)).toEqual(2);
+            });
+            it("should return this", function() {
+                expect(vector.skewY(45 * Math.PI * 2 / 360)).toBe(vector);
             });
         });
         describe("rotate", function() {
@@ -383,6 +463,9 @@ describe("pen-tool-math Vector2-spec", function() {
                 expect(vector2.x).toBeCloseTo(778.024, 3);
                 expect(vector2.y).toBeCloseTo(868.722, 3);
             });
+            it("should return this", function() {
+                expect(vector2.rotate(.3)).toBe(vector2);
+            });
         });
         describe("transformMatrix", function() {
             it("should return expected value", function() {
@@ -391,6 +474,9 @@ describe("pen-tool-math Vector2-spec", function() {
                 vector.transformMatrix([.5, .2, .7, .8, 300, 140]);
                 expect(vector.x).toBeCloseTo(1220, 2);
                 expect(vector.y).toBeCloseTo(820, 2);
+            });
+            it("should return this", function() {
+                expect(vector.transformMatrix([.5, .2, .7, .8, 300, 140])).toBe(vector);
             });
         });
     });
@@ -417,6 +503,21 @@ describe("pen-tool-math Vector2-spec", function() {
             vector2.setCoordinate(0, 5);
             expect(vector2.getCoordinate(0)).toEqual(5);
             expect(vector.getCoordinate(0)).toEqual(1);
+        });
+    });
+    describe("outOfPlaceLerp", function() {
+        var vector, vector2;
+
+        vector = Vector2.create().initWithCoordinates([1, 2]);
+        vector2 = Vector2.create().initWithCoordinates([2, 3]);
+        it("should return expected vector", function() {
+            expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25]);
+        });
+        it("should be an instance of Vector2", function() {
+            expect(Object.getPrototypeOf(vector.outOfPlaceLerp(vector2, .25))).toBe(Vector2);
+        });
+        it("should not return this", function() {
+            expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
         });
     });
     describe("MapReducible functions", function() {
@@ -529,6 +630,11 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(2);
                 expect(vector.getCoordinate(2)).toEqual(3);
             });
+            it("should return this", function() {
+                var vector = Vector3.create().init();
+
+                expect(vector.setCoordinates([1, 2, 3])).toBe(vector);
+            });
         });
     });
     describe("magnitude", function() {
@@ -564,6 +670,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toBeCloseTo(.53452, 5);
                 expect(vector.getCoordinate(2)).toBeCloseTo(.80178, 5);
             });
+            it("should return this", function() {
+                expect(vector.normalize()).toBe(vector);
+            });
         });
         describe("add", function() {
             it("should define expected coordinates", function() {
@@ -571,6 +680,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(3);
                 expect(vector.getCoordinate(1)).toEqual(6);
                 expect(vector.getCoordinate(2)).toEqual(9);
+            });
+            it("should return this", function() {
+                expect(vector.add(vector2)).toBe(vector);
             });
         });
         describe("subtract", function() {
@@ -580,6 +692,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(2);
                 expect(vector.getCoordinate(2)).toEqual(3);
             });
+            it("should return this", function() {
+                expect(vector.subtract(vector2)).toBe(vector);
+            });
         });
         describe("multiply", function() {
             it("should define expected coordinates", function() {
@@ -587,6 +702,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(4);
                 expect(vector.getCoordinate(1)).toEqual(8);
                 expect(vector.getCoordinate(2)).toEqual(12);
+            });
+            it("should return this", function() {
+                expect(vector.multiply(2)).toBe(vector);
             });
         });
         describe("divide", function() {
@@ -596,6 +714,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(2);
                 expect(vector.getCoordinate(2)).toEqual(3);
             });
+            it("should return this", function() {
+                expect(vector.divide(2)).toBe(vector);
+            });
         });
         describe("negate", function() {
             it("should define expected coordinates", function() {
@@ -603,6 +724,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(-2);
                 expect(vector.getCoordinate(1)).toEqual(-4);
                 expect(vector.getCoordinate(2)).toEqual(-6);
+            });
+            it("should return this", function() {
+                expect(vector.negate()).toBe(vector);
             });
         });
         describe("cross", function() {
@@ -618,6 +742,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(-8);
                 expect(vector.getCoordinate(2)).toEqual(34);
             });
+            it("should return this", function() {
+                expect(vector.cross(vector2)).toBe(vector);
+            });
         });
         describe("translate", function() {
             it("should define expected coordinates", function() {
@@ -625,6 +752,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(0)).toEqual(3);
                 expect(vector.getCoordinate(1)).toEqual(6);
                 expect(vector.getCoordinate(2)).toEqual(9);
+            });
+            it("should return this", function() {
+                expect(vector.translate([1,2,3])).toBe(vector);
             });
         });
         describe("scale", function() {
@@ -634,6 +764,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(12);
                 expect(vector.getCoordinate(2)).toEqual(24);
             });
+            it("should return this", function() {
+                expect(vector.scale([2,3,4])).toBe(vector);
+            });
         });
         describe("skewX", function() {
             it("should define expected coordinates", function() {
@@ -642,6 +775,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toEqual(4);
                 expect(vector.getCoordinate(2)).toEqual(6);
             });
+            it("should return this", function() {
+                expect(vector.skewX(45 * Math.PI * 2 / 360)).toBe(vector);
+            });
         });
         describe("skewY", function() {
             it("should define expected coordinates", function() {
@@ -649,6 +785,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(1)).toBeCloseTo(6, 6);
                 expect(vector.getCoordinate(0)).toEqual(2);
                 expect(vector.getCoordinate(2)).toEqual(6);
+            });
+            it("should return this", function() {
+                expect(vector.skewY(45 * Math.PI * 2 / 360)).toBe(vector);
             });
         });
         describe("rotateX", function() {
@@ -659,6 +798,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.y).toBeCloseTo(778.024, 3);
                 expect(vector.z).toBeCloseTo(868.722, 3);
             });
+            it("should return this", function() {
+                expect(vector.rotateX(.3)).toBe(vector);
+            });
         });
         describe("rotateY", function() {
             it("should return expected value", function() {
@@ -668,6 +810,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.x).toBeCloseTo(778.024, 3);
                 expect(vector.z).toBeCloseTo(868.722, 3);
             });
+            it("should return this", function() {
+                expect(vector.rotateY(-.3)).toBe(vector);
+            });
         });
         describe("rotateZ", function() {
             it("should return expected value", function() {
@@ -676,6 +821,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 vector.rotateZ(.3);
                 expect(vector.x).toBeCloseTo(778.024, 3);
                 expect(vector.y).toBeCloseTo(868.722, 3);
+            });
+            it("should return this", function() {
+                expect(vector.rotateZ(.3)).toBe(vector);
             });
         });
         describe("multiple rotations", function() {
@@ -699,6 +847,9 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.y).toBeCloseTo(820, 2);
                 expect(vector.z).toEqual(123);
             });
+            it("should return this", function() {
+                expect(vector.transformMatrix([.5, .2, .7, .8, 300, 140])).toBe(vector);
+            });
         });
         describe("transformMatrix3d", function() {
             it("should return expected value", function() {
@@ -720,6 +871,14 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.x).toBeCloseTo(2 * 2 + 4 * 3 + 6 * 4 + 5, 5);
                 expect(vector.y).toBeCloseTo(2 * 6 + 4 * 7 + 6 * 8 + 9, 5);
                 expect(vector.z).toBeCloseTo(10 * 2 + 4 * 11 + 6 * 12 + 13, 5);
+            });
+            it("should return this", function() {
+                expect(vector.transformMatrix3d([
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                ])).toBe(vector);
             });
         });
         describe("transformPerspectiveMatrix3d", function() {
@@ -743,6 +902,14 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.x).toBeCloseTo((2 * 2 + 4 * 3 + 6 * 4 + 5) / w, 5);
                 expect(vector.y).toBeCloseTo((2 * 6 + 4 * 7 + 6 * 8 + 9) / w, 5);
                 expect(vector.z).toBeCloseTo((10 * 2 + 4 * 11 + 6 * 12 + 13) / w, 5);
+            });
+            it("should return this", function() {
+                expect(vector.transformPerspectiveMatrix3d([
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                ])).toBe(vector);
             });
         });
     });
@@ -770,6 +937,21 @@ describe("pen-tool-math Vector3-spec", function() {
             vector2.setCoordinate(0, 5);
             expect(vector2.getCoordinate(0)).toEqual(5);
             expect(vector.getCoordinate(0)).toEqual(1);
+        });
+    });
+    describe("outOfPlaceLerp", function() {
+        var vector, vector2;
+
+        vector = Vector3.create().initWithCoordinates([1, 2, 3]);
+        vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
+        it("should return expected vector", function() {
+            expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25, 3.25]);
+        });
+        it("should be an instance of Vector3", function() {
+            expect(Object.getPrototypeOf(vector.outOfPlaceLerp(vector2, .25))).toBe(Vector3);
+        });
+        it("should not return this", function() {
+            expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
         });
     });
     describe("MapReducible functions", function() {
@@ -961,6 +1143,16 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1)._data).toEqual([3,5]);
             expect(bezierCurve.getControlPoint(2)._data).toEqual([4,6]);
         });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector.create().initWithCoordinates([1, 2]);
+            vector2 = Vector.create().initWithCoordinates([2, 3]);
+            vector3 = Vector.create().initWithCoordinates([3, 4]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.translate([1, 2])).toBe(bezierCurve);
+        });
     });
     describe("scale", function() {
         it("should produce expected result", function() {
@@ -975,6 +1167,16 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(0)._data).toEqual([2,6]);
             expect(bezierCurve.getControlPoint(1)._data).toEqual([4,9]);
             expect(bezierCurve.getControlPoint(2)._data).toEqual([6,12]);
+        });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector.create().initWithCoordinates([1, 2]);
+            vector2 = Vector.create().initWithCoordinates([2, 3]);
+            vector3 = Vector.create().initWithCoordinates([3, 4]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.scale([2, 3])).toBe(bezierCurve);
         });
     });
     describe("rotate", function() {
@@ -993,6 +1195,16 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).y).toBeCloseTo(2, 6);
             expect(bezierCurve.getControlPoint(2).x).toBeCloseTo(-4, 6);
             expect(bezierCurve.getControlPoint(2).y).toBeCloseTo(3, 6);
+        });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector2.create().initWithCoordinates([1, 2]);
+            vector2 = Vector2.create().initWithCoordinates([2, 3]);
+            vector3 = Vector2.create().initWithCoordinates([3, 4]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.rotate(Math.PI/2)).toBe(bezierCurve);
         });
     });
     describe("rotateX", function() {
@@ -1015,6 +1227,16 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2).y).toBeCloseTo(-5, 6);
             expect(bezierCurve.getControlPoint(2).z).toBeCloseTo(4, 6);
         });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
+            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.rotateX(Math.PI/2)).toBe(bezierCurve);
+        });
     });
     describe("rotateY", function() {
         it("should produce expected result", function() {
@@ -1035,6 +1257,16 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2).x).toBeCloseTo(5, 6);
             expect(bezierCurve.getControlPoint(2).y).toBeCloseTo(4, 6);
             expect(bezierCurve.getControlPoint(2).z).toBeCloseTo(-3, 6);
+        });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
+            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.rotateY(Math.PI/2)).toBe(bezierCurve);
         });
     });
     describe("rotateZ", function() {
@@ -1057,6 +1289,16 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2).y).toBeCloseTo(3, 6);
             expect(bezierCurve.getControlPoint(2).z).toBeCloseTo(5, 6);
         });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
+            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.rotateZ(Math.PI/2)).toBe(bezierCurve);
+        });
     });
     describe("transformMatrix", function() {
         it("should return expected value", function() {
@@ -1072,6 +1314,14 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).x).toBeCloseTo(2140, 2);
             expect(bezierCurve.getControlPoint(1).y).toBeCloseTo(1500, 2);
             expect(bezierCurve.getControlPoint(1).z).toEqual(246);
+        });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector3.create().initWithCoordinates([1000, 600, 123]);
+            vector2 = Vector3.create().initWithCoordinates([2000, 1200, 246]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            expect(bezierCurve.transformMatrix([.5, .2, .7, .8, 300, 140])).toBe(bezierCurve);
         });
     });
     describe("transformMatrix3d", function() {
@@ -1094,6 +1344,19 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).y).toBeCloseTo(1 * 6 + 2 * 7 + 3 * 8 + 9, 5);
             expect(bezierCurve.getControlPoint(1).z).toBeCloseTo(10 * 1 + 2 * 11 + 3 * 12 + 13, 5);
         });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector3.create().initWithCoordinates([2, 4, 6]);
+            vector2 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            expect(bezierCurve.transformMatrix3d([
+                2, 6, 10, 14,
+                3, 7, 11, 15,
+                4, 8, 12, 16,
+                5, 9, 13, 17
+            ])).toBe(bezierCurve);
+        });
     });
     describe("skewX", function() {
         it("should return expected value", function() {
@@ -1108,6 +1371,14 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).x).toBeCloseTo(3, 5);
             expect(bezierCurve.getControlPoint(1).y).toBeCloseTo(2, 5);
         });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector2.create().initWithCoordinates([2, 4]);
+            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            expect(bezierCurve.skewX(45 * Math.PI * 2 / 360)).toBe(bezierCurve);
+        });
     });
     describe("skewY", function() {
         it("should return expected value", function() {
@@ -1121,6 +1392,127 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(0).y).toBeCloseTo(6, 5);
             expect(bezierCurve.getControlPoint(1).x).toBeCloseTo(1, 5);
             expect(bezierCurve.getControlPoint(1).y).toBeCloseTo(3, 5);
+        });
+        it("should return this", function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector2.create().initWithCoordinates([2, 4]);
+            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            expect(bezierCurve.skewY(45 * Math.PI * 2 / 360)).toBe(bezierCurve);
+        });
+    });
+    describe("clone", function() {
+        var bezierCurve, bezierCurve2, vector1, vector2;
+
+        beforeEach(function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector2.create().initWithCoordinates([2, 4]);
+            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            bezierCurve2 = bezierCurve.clone();
+        });
+        it("should copy control points", function() {
+            expect(bezierCurve2.getControlPoint(0).x).toEqual(2);
+            expect(bezierCurve2.getControlPoint(0).y).toEqual(4);
+            expect(bezierCurve2.getControlPoint(1).x).toEqual(1);
+            expect(bezierCurve2.getControlPoint(1).y).toEqual(2);
+        });
+        it("after modifying coordinates of cloned bezierCurve control points, original bezierCurve should be intact", function() {
+            bezierCurve2.getControlPoint(0).x = 5;
+            expect(bezierCurve2.getControlPoint(0).x).toEqual(5);
+            expect(bezierCurve.getControlPoint(0).x).toEqual(2);
+        });
+    });
+    describe("split", function() {
+        var bezierCurve = BezierCurve.create().init(),
+            rightPart,
+            leftPart;
+
+        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
+        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2, 4]));
+        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([4, -4]));
+        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([6, 0]));
+        rightPart = bezierCurve.split(.25);
+        leftPart = bezierCurve;
+        it("left part control points should be the expected", function() {
+            expect(leftPart.getControlPoint(0).x).toBeCloseTo(0, 5);
+            expect(leftPart.getControlPoint(0).y).toBeCloseTo(0, 5);
+            expect(leftPart.getControlPoint(1).x).toBeCloseTo(.5, 5);
+            expect(leftPart.getControlPoint(1).y).toBeCloseTo(1, 5);
+            expect(leftPart.getControlPoint(2).x).toBeCloseTo(1, 5);
+            expect(leftPart.getControlPoint(2).y).toBeCloseTo(1.25, 5);
+            expect(leftPart.getControlPoint(3).x).toBeCloseTo(1.5, 5);
+            expect(leftPart.getControlPoint(3).y).toBeCloseTo(1.125, 5);
+        });
+        it("right part control points should be the expected", function() {
+            expect(rightPart.getControlPoint(0).x).toBeCloseTo(1.5, 5);
+            expect(rightPart.getControlPoint(0).y).toBeCloseTo(1.125, 5);
+            expect(rightPart.getControlPoint(1).x).toBeCloseTo(3, 5);
+            expect(rightPart.getControlPoint(1).y).toBeCloseTo(.75, 5);
+            expect(rightPart.getControlPoint(2).x).toBeCloseTo(4.5, 5);
+            expect(rightPart.getControlPoint(2).y).toBeCloseTo(-3, 5);
+            expect(rightPart.getControlPoint(3).x).toBeCloseTo(6, 5);
+            expect(rightPart.getControlPoint(3).y).toBeCloseTo(0, 5);
+        });
+        it("right part first control point should be a copy of right part last point", function() {
+            expect(rightPart.getControlPoint(0)).not.toBe(leftPart.getControlPoint(3));
+        });
+    });
+    describe("reverse", function() {
+        var bezierCurve = BezierCurve.create().init();
+
+        beforeEach(function() {
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([0]));
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([1]));
+        });
+        it("even number of control points should be reversed", function() {
+            bezierCurve.reverse();
+            expect(bezierCurve.getControlPoint(0).x).toEqual(1);
+            expect(bezierCurve.getControlPoint(1).x).toEqual(0);
+        });
+        it("odd number of control points should be reversed", function() {
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2]));
+            bezierCurve.reverse();
+            expect(bezierCurve.getControlPoint(0).x).toEqual(2);
+            expect(bezierCurve.getControlPoint(1).x).toEqual(1);
+            expect(bezierCurve.getControlPoint(2).x).toEqual(0);
+        });
+        it("should return this", function() {
+            expect(bezierCurve.reverse()).toBe(bezierCurve);
+        });
+    });
+    describe("softAxisAlignedBoundaries", function() {
+        var bezierCurve = BezierCurve.create().init();
+
+        beforeEach(function() {
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([0, 1]));
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2, 3]));
+        });
+        it("should return expected results", function() {
+            var boundaries = bezierCurve.softAxisAlignedBoundaries;
+            expect(boundaries[0].min).toEqual(0);
+            expect(boundaries[0].max).toEqual(2);
+            expect(boundaries[1].min).toEqual(1);
+            expect(boundaries[1].max).toEqual(3);
+        });
+    });
+    describe("hardAxisAlignedBoundaries", function() {
+        var bezierCurve = BezierCurve.create().init();
+
+        beforeEach(function() {
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([1, 0]));
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2, 3]));
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([7, 6]));
+            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([4, 5]));
+        });
+        it("should return expected results", function() {
+            var boundaries = bezierCurve.hardAxisAlignedBoundaries;
+            expect(boundaries[0].min).toBeCloseTo(1, 3);
+            expect(boundaries[0].max).toBeCloseTo(4.946, 3);
+            expect(boundaries[1].min).toBeCloseTo(0, 3);
+            expect(boundaries[1].max).toBeCloseTo(5.1957, 3);
         });
     });
     describe("MapReducible functions", function() {
@@ -1198,6 +1590,93 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
                 expect(result[1].getCoordinate(0)).toEqual(3);
                 expect(result[2].getCoordinate(0)).toEqual(4);
             });
+        });
+    });
+});
+
+/* Bézier Spline spec */
+
+describe("pen-tool-math Bezier-Spline-spec", function() {
+    var bezierSpline, bezierCurve1, bezierCurve2, vector1, vector2, vector3, vector4;
+
+    describe("initialization using init", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+        });
+        it("length should be defined", function() {
+            expect(bezierSpline.length).toBeDefined();
+        });
+        it("length should be equal to 0", function() {
+            expect(bezierSpline.length).toEqual(0);
+        });
+    });
+    describe("adding/removing/getting Bezier curves", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+            bezierCurve1 = BezierCurve.create().init();
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([1]));
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([2]));
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([3]));
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([4]));
+            bezierCurve2 = BezierCurve.create().init();
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([5]));
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([6]));
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([7]));
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([8]));
+            bezierSpline.pushBezierCurve(bezierCurve1);
+            bezierSpline.pushBezierCurve(bezierCurve2);
+        });
+        it("pushBezierCurve should work as expected", function() {
+            expect(bezierSpline.length).toEqual(2);
+        });
+        it("getBezierCurve should work as expected", function() {
+            expect(bezierSpline.getBezierCurve(0).getControlPoint(0).getCoordinate(0)).toEqual(1);
+            expect(bezierSpline.getBezierCurve(1).getControlPoint(1).getCoordinate(0)).toEqual(6);
+        });
+        it("pushBezierCurve is linking Bézier curves correctly", function() {
+            expect(bezierSpline.getBezierCurve(1).getControlPoint(0).getCoordinate(0)).toEqual(4);
+        });
+        it("popBezierCurve should work as expected", function() {
+            var curve = bezierSpline.popBezierCurve();
+
+            expect(bezierSpline.length).toEqual(1);
+            expect(bezierSpline.getBezierCurve(1)).not.toBeDefined();
+            expect(curve).toBe(bezierCurve2);
+            expect(curve.getControlPoint(0).x).toEqual(4);
+            expect(bezierSpline.getBezierCurve(0).getControlPoint(3).x).toEqual(4);
+            expect(bezierSpline.getBezierCurve(0).getControlPoint(3)).not.toBe(curve.getControlPoint(0));
+        });
+        it("removeBezierCurve(0) should work as expected", function() {
+            var rightSide = bezierSpline.removeBezierCurve(0);
+
+            expect(rightSide).toEqual(null);
+            expect(bezierSpline.length).toEqual(1);
+            expect(bezierSpline.getBezierCurve(0).getControlPoint(0).x).toEqual(4);
+            rightSide = bezierSpline.removeBezierCurve(0);
+            expect(rightSide).toEqual(null);
+            expect(bezierSpline.length).toEqual(0);
+        });
+        it("removeBezierCurve at last index should work as expected", function() {
+            var rightSide = bezierSpline.removeBezierCurve(1);
+
+            expect(rightSide).toEqual(null);
+            expect(bezierSpline.length).toEqual(1);
+            expect(bezierSpline.getBezierCurve(0).getControlPoint(0).x).toEqual(1);
+        });
+        it("removeBezierCurve at an index in the middle should work as expected", function() {
+            var bezierCurve = BezierCurve.create().init(),
+                rightSide;
+
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([9]));
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([10]));
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([11]));
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([12]));
+            bezierSpline.pushBezierCurve(bezierCurve);
+            rightSide = bezierSpline.removeBezierCurve(1);
+            expect(rightSide.length).toEqual(1);
+            expect(bezierSpline.length).toEqual(1);
+            expect(bezierSpline.getBezierCurve(0).getControlPoint(0).x).toEqual(1);
+            expect(rightSide.getBezierCurve(0).getControlPoint(0).x).toEqual(8);
         });
     });
 });

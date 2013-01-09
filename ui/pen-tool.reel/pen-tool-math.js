@@ -61,8 +61,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
 
     initWithCoordinates: {
         value: function (coordinatesArray) {
-            this.setCoordinates(coordinatesArray);
-            return this;
+            return this.setCoordinates(coordinatesArray);
         }
     },
 
@@ -82,6 +81,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     setCoordinates: {
         value: function (coordinatesArray) {
             this._data = coordinatesArray.slice(0);
+            return this;
         }
     },
 
@@ -91,6 +91,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     setCoordinate: {
         value: function (index, value) {
             this._data[index] = value;
+            return this;
         }
     },
 
@@ -166,7 +167,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     */
     normalize: {
         value: function () {
-            this.divide(this.magnitude);
+            return this.divide(this.magnitude);
         }
     },
 
@@ -182,6 +183,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             for (i = 0; i < dimensions; i++) {
                 this.setCoordinate(i, this.getCoordinate(i) + vector.getCoordinate(i));
             }
+            return this;
         }
     },
 
@@ -197,6 +199,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             for (i = 0; i < dimensions; i++) {
                 this.setCoordinate(i, this.getCoordinate(i) - vector.getCoordinate(i));
             }
+            return this;
         }
     },
 
@@ -211,6 +214,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             for (i = 0; i < dimensions; i++) {
                 this.setCoordinate(i, -this.getCoordinate(i));
             }
+            return this;
         }
     },
 
@@ -225,6 +229,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             for (i = 0; i < dimensions; i++) {
                 this.setCoordinate(i, this.getCoordinate(i) * scalar);
             }
+            return this;
         }
     },
 
@@ -239,6 +244,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             for (i = 0; i < dimensions; i++) {
                 this.setCoordinate(i, this.getCoordinate(i) / scalar);
             }
+            return this;
         }
     },
 
@@ -264,7 +270,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     */
     clone: {
         value: function () {
-            return Montage.create(Vector).initWithCoordinates(this._data);
+            return Montage.create(Object.getPrototypeOf(this)).initWithCoordinates(this._data);
         }
     },
 
@@ -280,6 +286,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             for (i = 0; i < dimensions; i++) {
                 this.setCoordinate(i, this.getCoordinate(i) + offsetsArray[i]);
             }
+            return this;
         }
     },
 
@@ -295,6 +302,26 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             for (i = 0; i < dimensions; i++) {
                 this.setCoordinate(i, this.getCoordinate(i) * factorsArray[i]);
             }
+            return this;
+        }
+    },
+
+    /**
+        Out-of-place linear interpolation of self vector and provided vector by provided interpolant.
+        Dimensions of self vector and provided vector are assumed to be the same
+    */
+    outOfPlaceLerp: {
+        value: function (vector, interpolant) {
+            var result = Montage.create(Object.getPrototypeOf(this)).init(),
+                dimensions = this.dimensions,
+                iCoordinate,
+                i;
+
+            for (i = 0; i < dimensions; i++) {
+                iCoordinate = this.getCoordinate(i);
+                result.setCoordinate(i, (vector.getCoordinate(i) - iCoordinate) * interpolant + iCoordinate);
+            }
+            return result;
         }
     }
 });
@@ -314,8 +341,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     initWithCoordinates: {
         value: function (coordinatesArray) {
             this._data = [];
-            this.setCoordinates(coordinatesArray);
-            return this;
+            return this.setCoordinates(coordinatesArray);
         }
     },
 
@@ -325,6 +351,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     */
     dimensions: {
         serializable: false,
+        writable: false,
         value: 2
     },
 
@@ -336,6 +363,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (coordinatesArray) {
             this._data[0] = coordinatesArray[0];
             this._data[1] = coordinatesArray[1];
+            return this;
         }
     },
 
@@ -385,6 +413,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (vector2) {
             this._data[0] += vector2._data[0];
             this._data[1] += vector2._data[1];
+            return this;
         }
     },
 
@@ -395,6 +424,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (vector2) {
             this._data[0] -= vector2._data[0];
             this._data[1] -= vector2._data[1];
+            return this;
         }
     },
 
@@ -405,6 +435,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function () {
             this._data[0] = -this._data[0];
             this._data[1] = -this._data[1];
+            return this;
         }
     },
 
@@ -415,6 +446,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (scalar) {
             this._data[0] *= scalar;
             this._data[1] *= scalar;
+            return this;
         }
     },
 
@@ -425,6 +457,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (scalar) {
             this._data[0] /= scalar;
             this._data[1] /= scalar;
+            return this;
         }
     },
 
@@ -452,6 +485,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
 
             this._data[0] = this._data[0] * cos - this._data[1] * sin;
             this._data[1] = this._data[1] * cos + tmp * sin;
+            return this;
         }
     },
 
@@ -471,6 +505,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
                 tmp * matrix[1] +
                 this._data[1] * matrix[3] +
                 matrix[5];
+            return this;
         }
     },
 
@@ -482,6 +517,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (offsetsArray) {
             this._data[0] += offsetsArray[0];
             this._data[1] += offsetsArray[1];
+            return this;
         }
     },
 
@@ -493,6 +529,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (factorsArray) {
             this._data[0] *= factorsArray[0];
             this._data[1] *= factorsArray[1];
+            return this;
         }
     },
 
@@ -502,6 +539,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     skewX: {
         value: function (angle) {
             this._data[0] += this._data[1] * Math.tan(angle);
+            return this;
         }
     },
 
@@ -511,6 +549,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     skewY: {
         value: function (angle) {
             this._data[1] += this._data[0] * Math.tan(angle);
+            return this;
         }
     }
 });
@@ -530,8 +569,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     initWithCoordinates: {
         value: function (coordinatesArray) {
             this._data = [];
-            this.setCoordinates(coordinatesArray);
-            return this;
+            return this.setCoordinates(coordinatesArray);
         }
     },
 
@@ -541,6 +579,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     dimensions: {
         serializable: false,
+        writable: false,
         value: 3
     },
 
@@ -553,6 +592,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] = coordinatesArray[0];
             this._data[1] = coordinatesArray[1];
             this._data[2] = coordinatesArray[2];
+            return this;
         }
     },
 
@@ -617,6 +657,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] += vector3._data[0];
             this._data[1] += vector3._data[1];
             this._data[2] += vector3._data[2];
+            return this;
         }
     },
 
@@ -628,6 +669,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] -= vector3._data[0];
             this._data[1] -= vector3._data[1];
             this._data[2] -= vector3._data[2];
+            return this;
         }
     },
 
@@ -639,6 +681,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] = -this._data[0];
             this._data[1] = -this._data[1];
             this._data[2] = -this._data[2];
+            return this;
         }
     },
 
@@ -650,6 +693,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] *= scalar;
             this._data[1] *= scalar;
             this._data[2] *= scalar;
+            return this;
         }
     },
 
@@ -661,6 +705,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] /= scalar;
             this._data[1] /= scalar;
             this._data[2] /= scalar;
+            return this;
         }
     },
 
@@ -681,6 +726,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[2] =
                 tmpX * vector3._data[1] -
                 tmpY * vector3._data[0];
+            return this;
         }
     },
 
@@ -710,6 +756,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
             this._data[1] = this._data[1] * cos - this._data[2] * sin;
             this._data[2] = this._data[2] * cos + tmp * sin;
+            return this;
         }
     },
 
@@ -725,6 +772,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
             this._data[0] = this._data[0] * cos + this._data[2] * sin;
             this._data[2] = this._data[2] * cos - tmp * sin;
+            return this;
         }
     },
 
@@ -740,6 +788,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
             this._data[0] = this._data[0] * cos - this._data[1] * sin;
             this._data[1] = this._data[1] * cos + tmp * sin;
+            return this;
         }
     },
 
@@ -760,6 +809,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
                 tmp * matrix[1] +
                 this._data[1] * matrix[3] +
                 matrix[5];
+            return this;
         }
     },
 
@@ -787,6 +837,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
                 tmpY * matrix[6] +
                 this._data[2] * matrix[10] +
                 matrix[14];
+            return this;
         }
     },
 
@@ -805,7 +856,6 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
                 this._data[1] * matrix[7] +
                 this._data[2] * matrix[11] +
                 matrix[15];
-
             this._data[0] =
                (this._data[0] * matrix[0] +
                 this._data[1] * matrix[4] +
@@ -821,6 +871,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
                 tmpY * matrix[6] +
                 this._data[2] * matrix[10] +
                 matrix[14]) / w;
+            return this;
         }
     },
 
@@ -833,6 +884,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] += offsetsArray[0];
             this._data[1] += offsetsArray[1];
             this._data[2] += offsetsArray[2];
+            return this;
         }
     },
 
@@ -845,6 +897,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] *= factorsArray[0];
             this._data[1] *= factorsArray[1];
             this._data[2] *= factorsArray[2];
+            return this;
         }
     },
 
@@ -854,6 +907,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     skewX: {
         value: function (angle) {
             this._data[0] += this._data[1] * Math.tan(angle);
+            return this;
         }
     },
 
@@ -863,6 +917,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     skewY: {
         value: function (angle) {
             this._data[1] += this._data[0] * Math.tan(angle);
+            return this;
         }
     }
 
@@ -879,6 +934,29 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     order: {
         get: function () {
             return this._data.length - 1;
+        }
+    },
+
+    /**
+        Number of inserted control points. During edition, like while drawing a curve,
+        the curve might be not complete and length - 1 might be lower than order
+    */
+    length: {
+        get: function () {
+            return this._data.length;
+        }
+    },
+
+    /**
+        Returns false if the number of control points is lower than 2 or if the number of
+        control points is lower than the expected for the curve's order
+    */
+    isComplete: {
+        get: function () {
+            if (this.length < 2) {
+                return false;
+            }
+            return this.length > this.order;
         }
     },
 
@@ -927,37 +1005,102 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     */
     value: {
         value: function (t) {
-            var order = this.order,
-                i, j, n, m,
-                k = 1 - t,
-                intermediateValues = [],
-                dimensions = this.getControlPoint(0).dimensions,
-                currentPoint, nextPoint = this.getControlPoint(0);
+            if (this.isComplete) {
+                var order = this.order,
+                    i, j, n, m,
+                    k = 1 - t,
+                    intermediateValues = [],
+                    dimensions = this.getControlPoint(0).dimensions,
+                    currentPoint, nextPoint = this.getControlPoint(0);
 
-            for (i = 1; i <= order; i++) {
-                currentPoint = nextPoint;
-                nextPoint = this.getControlPoint(i);
-                for (n = 0; n < dimensions; n++) {
-                    intermediateValues.push(
-                        currentPoint.getCoordinate(n) * k +
-                        nextPoint.getCoordinate(n) * t
-                    );
-                }
-            }
-            for (j = order - 1; j > 0; j--) {
-                m = 0;
-                for (i = 0; i < j; i++) {
+                for (i = 1; i <= order; i++) {
+                    currentPoint = nextPoint;
+                    nextPoint = this.getControlPoint(i);
                     for (n = 0; n < dimensions; n++) {
-                        intermediateValues[m] =
-                            intermediateValues[m] * k +
-                            intermediateValues[m + dimensions] * t;
-                        m++;
+                        intermediateValues.push(
+                            currentPoint.getCoordinate(n) * k +
+                            nextPoint.getCoordinate(n) * t
+                        );
                     }
                 }
+                for (j = order - 1; j > 0; j--) {
+                    m = 0;
+                    for (i = 0; i < j; i++) {
+                        for (n = 0; n < dimensions; n++) {
+                            intermediateValues[m] =
+                                intermediateValues[m] * k +
+                                intermediateValues[m + dimensions] * t;
+                            m++;
+                        }
+                    }
+                }
+                return Montage.create(Object.getPrototypeOf(this.getControlPoint(0))).initWithCoordinates(
+                    intermediateValues.slice(0, dimensions)
+                );
+            } else {
+                return null;
             }
-            return Montage.create(Vector).initWithCoordinates(
-                intermediateValues.slice(0, dimensions)
-            );
+        }
+    },
+
+    /**
+        In-place splitting of bezier curve at t with De Casteljau's algorithm.
+        Leaves interval [0, t] in-place, returns new bezier curve for the
+        interval [t, 1]
+    */
+    split: {
+        value: function (t) {
+            var order = this.order,
+                intermediateValues = [],
+                dimensions = this.getControlPoint(0).dimensions,
+                currentPoint,
+                nextPoint = this.getControlPoint(0),
+                rightSide = Montage.create(Object.getPrototypeOf(this)).init(),
+                i, j, n = 2;
+
+            if (order) {
+                rightSide.setControlPoint(order, this.getControlPoint(order));
+                for (i = 1; i <= order; i++) {
+                    currentPoint = nextPoint;
+                    nextPoint = this.getControlPoint(i);
+                    intermediateValues.push(
+                        currentPoint.outOfPlaceLerp(nextPoint, t)
+                    );
+                }
+                this.setControlPoint(1, intermediateValues[0]);
+                for (j = order - 1; j > 0; j--) {
+                    for (i = 0; i < j; i++) {
+                        intermediateValues[i] = intermediateValues[i].outOfPlaceLerp(intermediateValues[i + 1], t);
+                    }
+                    this.setControlPoint(n, intermediateValues[0]);
+                    n++;
+                }
+                rightSide.setControlPoint(0, intermediateValues[0].clone());
+                for (i = 1; i < order; i++) {
+                    rightSide.setControlPoint(i, intermediateValues[i]);
+                }
+                return rightSide;
+            } else {
+                return null;
+            }
+        }
+    },
+
+    /**
+        Reverses control points in place
+    */
+    reverse: {
+        value: function () {
+            var order = this.order,
+                length = order >> 1,
+                i;
+
+            for (i = 0; i <= length; i++) {
+                tmp = this.getControlPoint(i),
+                this.setControlPoint(i, this.getControlPoint(order - i));
+                this.setControlPoint(order - i, tmp);
+            }
+            return this;
         }
     },
 
@@ -973,6 +1116,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).translate(offsetsArray);
             }
+            return this;
         }
     },
 
@@ -988,6 +1132,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).scale(factorsArray);
             }
+            return this;
         }
     },
 
@@ -1002,6 +1147,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotate(angle);
             }
+            return this;
         }
     },
 
@@ -1017,6 +1163,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotateX(angle);
             }
+            return this;
         }
     },
 
@@ -1032,6 +1179,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotateY(angle);
             }
+            return this;
         }
     },
 
@@ -1047,6 +1195,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotateZ(angle);
             }
+            return this;
         }
     },
 
@@ -1063,6 +1212,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).transformMatrix(matrix);
             }
+            return this;
         }
     },
 
@@ -1078,6 +1228,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).transformMatrix3d(matrix);
             }
+            return this;
         }
     },
 
@@ -1092,6 +1243,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).skewX(angle);
             }
+            return this;
         }
     },
 
@@ -1106,6 +1258,454 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).skewY(angle);
             }
+            return this;
+        }
+    },
+
+    /**
+        Returns a copy of self bezierCurve with recursive copies of control points
+    */
+    clone: {
+        value: function () {
+            var clone = Montage.create(Object.getPrototypeOf(this)).init(),
+                length = this._data.length,
+                i;
+
+            for (i = 0; i < length; i++) {
+                clone._data[i] = this._data[i].clone();
+            }
+            return clone;
+        }
+    },
+
+    /**
+        Returns axis aligned boundaries of all control points
+    */
+    softAxisAlignedBoundaries: {
+        get: function () {
+            var boundaries = [],
+                order = this.order,
+                dimensions = this.getControlPoint(0).dimensions,
+                i, j, iControlPoint, jCoordinate;
+
+            for (i = 0; i < dimensions; i++) {
+                boundaries[i] = {
+                    min: Infinity,
+                    max: -Infinity
+                };
+            }
+            for (i = 0; i <= order; i++) {
+                iControlPoint = this.getControlPoint(i);
+                for (j = 0; j < dimensions; j++) {
+                    jCoordinate = iControlPoint.getCoordinate(j);
+                    if (jCoordinate < boundaries[j].min) {
+                        boundaries[j].min = jCoordinate;
+                    }
+                    if (jCoordinate > boundaries[j].max) {
+                        boundaries[j].max = jCoordinate;
+                    }
+                }
+            }
+            return boundaries;
+        }
+    },
+
+    /**
+        Returns axis aligned boundaries of bezier curve or null if the curve
+        doesn't have defined any control points
+    */
+    hardAxisAlignedBoundaries: {
+        get: function () {
+            var boundaries = [],
+                dimensions = this.getControlPoint(0).dimensions,
+                i;
+
+            if (this.isComplete) {
+                var curves,
+                    iBoundaries,
+                    rightSide,
+                    j, k;
+
+                for (i = 0; i < dimensions; i++) {
+                    boundaries[i] = {
+                        min: Infinity,
+                        max: -Infinity
+                    };
+                }
+                for (k = 0; k < dimensions; k++) {
+                    curves = [this.clone()];
+                    for (i = 0; i < curves.length; i++) {
+                        iBoundaries = curves[i].softAxisAlignedBoundaries;
+                        if (iBoundaries[k].min < boundaries[k].min -.001) {
+                            if (iBoundaries[k].max < boundaries[k].min -.001) {
+                                boundaries[k].min = iBoundaries[k].max;
+                            }
+                            if (rightSide = curves[i].split(.5)) {
+                                curves.push(rightSide);
+                            }
+                            i--;
+                        }
+                    }
+                    curves = [this.clone()];
+                    for (i = 0; i < curves.length; i++) {
+                        iBoundaries = curves[i].softAxisAlignedBoundaries;
+                        if (iBoundaries[k].max > boundaries[k].max +.001) {
+                            if (iBoundaries[k].min > boundaries[k].max +.001) {
+                                boundaries[k].max = iBoundaries[k].min;
+                            }
+                            if (rightSide = curves[i].split(.5)) {
+                                curves.push(rightSide)
+                            }
+                            i--;
+                        }
+                    }
+                }
+                return boundaries;
+            } else {
+                if (this.length === 1) {
+                    for (i = 0; i < dimensions; i++) {
+                        boundaries[i] = {
+                            min: this.getControlPoint(0).getCoordinate(i),
+                            max:  this.getControlPoint(0).getCoordinate(i)
+                        };
+                    }
+                    return boundaries;
+                } else {
+                    return null;
+                }
+            }
+        }
+    },
+
+    /**
+        Returns the closer point and distance in the curve to the given vector.
+        The length of the given array is expected to be equal to the dimensions
+        of the control points in the curve
+    */
+    getCloserPointTo: {
+        value: function (vector) {
+            var dimensions = this.getControlPoint(0).dimensions,
+                iPoint,
+                distanceVector,
+                distance,
+                minDistance = Infinity,
+                bestI = 0,
+                i;
+
+            // TODO: Enhance this naif algorithm
+
+            for (i = 0; i < 1; i += .001) {
+                iPoint = this.value(i);
+                if (iPoint !== null) {
+                    distanceVector = vector.clone();
+                    distanceVector.subtract(iPoint);
+                    distance = distanceVector.magnitude;
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        bestI = i;
+                    }
+                }
+            }
+            return {
+                distance: minDistance,
+                vector: this.value(bestI),
+                t: bestI
+            };
+        }
+    }
+});
+
+var CubicBezierCurve = exports.CubicBezierCurve = Montage.create(BezierCurve, {
+
+    /**
+        Number of control points - 1, 3 for cubic Béziers
+    */
+    order: {
+        serializable: false,
+        writable: false,
+        value: 3
+    },
+
+    /**
+        Returns true if the curve have enough control points defined to be a cubic Bézier
+    */
+    isComplete: {
+        get: function () {
+            return this.length > 3;
+        }
+    }
+});
+
+var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
+
+    /**
+        Returns the number of Bézier curves in the spline
+    */
+    length: {
+        get: function () {
+            return this._data.length;
+        }
+    },
+
+    /**
+        Inserts the provided Bézier curve at the end of the spline and if there is
+        a previous Bézier curve, it sets the first control point of the inserted
+        Bézier curve to be the last control point of the previous Bézier curve (if any)
+    */
+    pushBezierCurve: {
+        value: function (bezierCurve) {
+            var index = this._data.push(bezierCurve) - 1;
+
+            if (index > 0) {
+                this._data[index].setControlPoint(0,
+                    this._data[index - 1].getControlPoint(this._data[index - 1].order)
+                );
+            }
+        }
+    },
+
+    /**
+        Returns the Bézier curve in the spline at the given index
+    */
+    getBezierCurve: {
+        value: function (index) {
+            return this._data[index];
+        }
+    },
+
+    /**
+        Returns removed Bézier curve from the end of the spline and
+        unlinks previous Bézier curve last control point from the first
+        in the returned curve by cloning it
+    */
+    popBezierCurve: {
+        value: function () {
+            var bezierCurve = this._data.pop();
+
+            bezierCurve.setControlPoint(0, bezierCurve.getControlPoint(0).clone());
+            return bezierCurve;
+        }
+    },
+
+    /**
+        Removes Bézier curve at given index. If the curve is the first or last curve
+        of the Bézier, it removes in-place and returns null, if not, it splits the
+        spline in 2, leaving in-place the left side of the spline ([0 .. index - 1] range),
+        and returns the right side of the spline ([index + 1 .. spline.length]).
+        If the removed curve is the only one at the spline it will leave in-place
+        a 0 length spline
+    */
+    removeBezierCurve: {
+        value: function (index) {
+            var rightSide = BezierSpline.create().init(),
+                i;
+
+            if (index) {
+                for (i = index + 1; i < this.length; i++) {
+                    rightSide.pushBezierCurve(this._data[i]);
+                }
+                this._data = this._data.slice(0, index);
+                if (rightSide.length) {
+                    return rightSide;
+                } else {
+                    return null;
+                }
+            } else {
+                this._data = this._data.slice(1);
+                return null;
+            }
+        }
+    },
+
+    /**
+        Splits curve in the spline at the given index and at the given
+        position (t parameter) in-place
+    */
+    splitCurveAtPosition: {
+        value: function (index, t) {
+            var rightSideCurve = this.getBezierCurve(index).split(t),
+                length = this.length,
+                i;
+
+            for (i = length; i > index; i--) {
+                this._data[i] = this._data[i - 1];
+            }
+            this._data[index + 1] = rightSideCurve;
+            this._data[index + 1].setControlPoint(0,
+                this._data[index].getControlPoint(this._data[index].order)
+            );
+            if (index + 2 <= length) {
+                this._data[index + 2].setControlPoint(0,
+                    this._data[index + 1].getControlPoint(this._data[index + 1].order)
+                );
+            }
+            return this;
+        }
+    },
+
+    /**
+        In-place translation of the spline by the given offsets array
+    */
+    translate: {
+        value: function (offsetsArray) {
+            var length = this._data.length,
+                start,
+                curveLength,
+                i, j;
+
+            for (i = 0; i < length; i++) {
+                curveLength = this._data[i].length;
+                if (i) {
+                    start = 1;
+                } else {
+                    start = 0;
+                }
+                for (j = start; j < curveLength; j++) {
+                    this._data[i].getControlPoint(j).translate(offsetsArray);
+                }
+            }
+            return this;
+        }
+    },
+
+    /**
+        In-place scaling of the spline by the given factors array
+    */
+    scale: {
+        value: function (factorsArray) {
+            var length = this._data.length,
+                start,
+                curveLength,
+                i, j;
+
+            for (i = 0; i < length; i++) {
+                curveLength = this._data[i].length;
+                if (i) {
+                    start = 1;
+                } else {
+                    start = 0;
+                }
+                for (j = start; j < curveLength; j++) {
+                    this._data[i].getControlPoint(j).scale(factorsArray);
+                }
+            }
+            return this;
+        }
+    },
+
+    /**
+        In-place 2d rotation of the spline by the given angle. It is assumed
+        that the Bézier curves forming the spline are able to rotate
+    */
+    rotate: {
+        value: function (angle) {
+            var length = this._data.length,
+                start,
+                curveLength,
+                i, j;
+
+            for (i = 0; i < length; i++) {
+                curveLength = this._data[i].length;
+                if (i) {
+                    start = 1;
+                } else {
+                    start = 0;
+                }
+                for (j = start; j < curveLength; j++) {
+                    this._data[i].getControlPoint(j).rotate(angle);
+                }
+            }
+            return this;
+        }
+    },
+
+    /**
+        Returns array with length equal to the dimensions of the Vectors forming
+        the Bézier curves in the spline, with min and max properties for each
+        dimension defining the axis aligned boundaries of the spline
+    */
+    axisAlignedBoundaries: {
+        get: function () {
+            var dimensions = this._data[0].getControlPoint(0).dimensions,
+                length = this._data.length,
+                boundaries = [],
+                iBoundaries,
+                i, j;
+
+            for (i = 0; i < dimensions; i++) {
+                boundaries[i] = {
+                    min: Infinity,
+                    max: -Infinity
+                };
+            }
+            for (i = 0; i < length; i++) {
+                iBoundaries = this._data[i].hardAxisAlignedBoundaries;
+                if (iBoundaries) {
+                    for (j = 0; j < dimensions; j++) {
+                        if (iBoundaries[j].min < boundaries[j].min) {
+                            boundaries[j].min = iBoundaries[j].min;
+                        }
+                        if (iBoundaries[j].max > boundaries[j].max) {
+                            boundaries[j].max = iBoundaries[j].max;
+                        }
+                    }
+                    }
+            }
+            return boundaries;
+        }
+    },
+
+    getCloserPointTo: {
+        value: function (vector) {
+            var point,
+                minDistance = Infinity,
+                best,
+                bestIndex;
+
+            this.forEach(function (curve, index) {
+                point = curve.getCloserPointTo(vector);
+                if (point.distance < minDistance) {
+                    minDistance = point.distance;
+                    best = point;
+                    bestIndex = index;
+                }
+            });
+            return {
+                distance: minDistance,
+                vector: best.vector,
+                index: bestIndex,
+                t: best.t
+            }
+        }
+    }
+});
+
+var Shape = exports.Shape = Montage.create(BezierSpline, {
+
+    strokeColor: {
+        value: "black"
+    },
+
+    strokeWidth: {
+        value: 1
+    },
+
+    fillColor: {
+        value: "white"
+    }
+});
+
+var Scene = exports.Scene = Montage.create(MapReducible, {
+
+    length: {
+        get: function () {
+            return this._data.length;
+        }
+    },
+
+    pushShape: {
+        value: function (shape) {
+            this._data.push(shape);
         }
     }
 });
