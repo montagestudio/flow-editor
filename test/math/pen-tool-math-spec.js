@@ -212,6 +212,15 @@ describe("pen-tool-math Vector-spec", function() {
             expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
         });
     });
+    describe("distanceTo", function() {
+        var vector, vector2;
+
+        vector = Vector.create().initWithCoordinates([1, 2]);
+        vector2 = vector.create().initWithCoordinates([5, 5]);
+        it("should return expected vector", function() {
+            expect(vector.distanceTo(vector2)).toBeCloseTo(5, 6);
+        });
+    });
     describe("MapReducible functions", function() {
         var vector;
 

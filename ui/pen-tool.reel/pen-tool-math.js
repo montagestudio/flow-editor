@@ -323,6 +323,16 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
             }
             return result;
         }
+    },
+
+    /**
+        Returns euclidean distance between self and given vector. Both are expected to have
+        the same dimensions
+    */
+    distanceTo: {
+        value: function (vector) {
+            return (this.clone().subtract(vector).magnitude);
+        }
     }
 });
 
@@ -1386,7 +1396,6 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
         value: function (vector) {
             var dimensions = this.getControlPoint(0).dimensions,
                 iPoint,
-                distanceVector,
                 distance,
                 minDistance = Infinity,
                 bestI = 0,
@@ -1397,9 +1406,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i < 1; i += .001) {
                 iPoint = this.value(i);
                 if (iPoint !== null) {
-                    distanceVector = vector.clone();
-                    distanceVector.subtract(iPoint);
-                    distance = distanceVector.magnitude;
+                    distance = iPoint.distanceTo(vector);
                     if (distance < minDistance) {
                         minDistance = distance;
                         bestI = i;
