@@ -1082,6 +1082,57 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(0)).toBe(vector1);
         });
     });
+    describe("isComplete", function() {
+        beforeEach(function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector.create().initWithCoordinates([1]);
+            vector2 = Vector.create().initWithCoordinates([2]);
+            vector3 = Vector.create().initWithCoordinates([3]);
+        });
+        it("should return expected values", function() {
+            expect(bezierCurve.isComplete).toBeFalsy();
+            bezierCurve.pushControlPoint(vector1);
+            expect(bezierCurve.isComplete).toBeFalsy();
+            bezierCurve.pushControlPoint(vector2);
+            expect(bezierCurve.isComplete).toBeTruthy();
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.isComplete).toBeTruthy();
+        });
+    });
+    describe("length", function() {
+        beforeEach(function() {
+            bezierCurve = BezierCurve.create().init();
+            vector1 = Vector.create().initWithCoordinates([1]);
+            vector2 = Vector.create().initWithCoordinates([2]);
+            vector3 = Vector.create().initWithCoordinates([3]);
+        });
+        it("should return expected values", function() {
+            expect(bezierCurve.length).toEqual(0);
+            bezierCurve.pushControlPoint(vector1);
+            expect(bezierCurve.length).toEqual(1);
+            bezierCurve.pushControlPoint(vector2);
+            expect(bezierCurve.length).toEqual(2);
+            bezierCurve.pushControlPoint(vector3);
+            expect(bezierCurve.length).toEqual(3);
+        });
+    });
+    describe("getCloserPointTo", function() {
+        beforeEach(function() {
+            bezierCurve = BezierCurve.create().init();
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([0, 0]));
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([1, 0]));
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([2, 0]));
+            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([3, 0]));
+        });
+        it("should return expected values", function() {
+            var result = bezierCurve.getCloserPointTo(Vector.create().initWithCoordinates([1.5, 1]));
+
+            expect(result.distance).toBeCloseTo(1, 3);
+            expect(result.vector.x).toBeCloseTo(1.5, 3);
+            expect(result.vector.y).toBeCloseTo(0, 3);
+            expect(result.t).toBeCloseTo(.5, 3);
+        });
+    });
     describe("value", function() {
         describe("for linear Bézier Curve", function() {
             it("should return expected result", function() {
@@ -1686,6 +1737,180 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             expect(bezierSpline.length).toEqual(1);
             expect(bezierSpline.getBezierCurve(0).getControlPoint(0).x).toEqual(1);
             expect(rightSide.getBezierCurve(0).getControlPoint(0).x).toEqual(8);
+        });
+    });
+    describe("axisAlignedBoundaries", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+            bezierCurve1 = BezierCurve.create().init();
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([10, -50]));
+            bezierCurve2 = BezierCurve.create().init();
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([10, -50]));
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([-20, 50]));
+            bezierSpline.pushBezierCurve(bezierCurve1);
+            bezierSpline.pushBezierCurve(bezierCurve2);
+        });
+        it("should return expected value", function() {
+            var result = bezierSpline.axisAlignedBoundaries;
+
+            expect(result[0].min).toBeCloseTo(-20, 3);
+            expect(result[0].max).toBeCloseTo(10, 3);
+            expect(result[1].min).toBeCloseTo(-50, 3);
+            expect(result[1].max).toBeCloseTo(50, 3);
+        });
+        it("should return expected value when a curve is not complete", function() {
+            bezierCurve3 = BezierCurve.create().init();
+            bezierCurve3.pushControlPoint(Vector.create().initWithCoordinates([100, 100]));
+            bezierSpline.pushBezierCurve(bezierCurve3);
+
+            var result = bezierSpline.axisAlignedBoundaries;
+
+            expect(result[0].min).toBeCloseTo(-20, 3);
+            expect(result[0].max).toBeCloseTo(10, 3);
+            expect(result[1].min).toBeCloseTo(-50, 3);
+            expect(result[1].max).toBeCloseTo(50, 3);
+        });
+    });
+    describe("getCloserPointTo", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+            bezierCurve1 = BezierCurve.create().init();
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([10, 0]));
+            bezierCurve2 = BezierCurve.create().init();
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([10, 10]));
+            bezierSpline.pushBezierCurve(bezierCurve1);
+            bezierSpline.pushBezierCurve(bezierCurve2);
+        });
+        it("should return expected value", function() {
+            var result = bezierSpline.getCloserPointTo(Vector.create().initWithCoordinates([5, -1]));
+
+            expect(result.distance).toBeCloseTo(1, 3);
+            expect(result.vector.x).toBeCloseTo(5, 3);
+            expect(result.vector.y).toBeCloseTo(0, 3);
+            expect(result.t).toBeCloseTo(.5, 3);
+            expect(result.index).toEqual(0);
+            result = bezierSpline.getCloserPointTo(Vector.create().initWithCoordinates([11, 5]));
+            expect(result.distance).toBeCloseTo(1, 3);
+            expect(result.vector.x).toBeCloseTo(10, 3);
+            expect(result.vector.y).toBeCloseTo(5, 3);
+            expect(result.t).toBeCloseTo(.5, 3);
+            expect(result.index).toEqual(1);
+        });
+    });
+    describe("rotate", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+            bezierCurve1 = BezierCurve.create().init();
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2 = BezierCurve.create().init();
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline.pushBezierCurve(bezierCurve1);
+            bezierSpline.pushBezierCurve(bezierCurve2);
+        });
+        it("should return expected value", function() {
+            var result = bezierSpline.rotate(Math.PI / 2);
+
+            expect(result.getBezierCurve(0).getControlPoint(0).x).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(0).getControlPoint(0).y).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).x).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).y).toBeCloseTo(10, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).x).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).y).toBeCloseTo(10, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).x).toBeCloseTo(-10, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).y).toBeCloseTo(10, 5);
+        });
+    });
+    describe("scale", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+            bezierCurve1 = BezierCurve.create().init();
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2 = BezierCurve.create().init();
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline.pushBezierCurve(bezierCurve1);
+            bezierSpline.pushBezierCurve(bezierCurve2);
+        });
+        it("should return expected value", function() {
+            var result = bezierSpline.scale([2, 3]);
+
+            expect(result.getBezierCurve(0).getControlPoint(0).x).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(0).getControlPoint(0).y).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).x).toBeCloseTo(20, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).y).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).x).toBeCloseTo(20, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).y).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).x).toBeCloseTo(20, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).y).toBeCloseTo(30, 5);
+        });
+    });
+    describe("translate", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+            bezierCurve1 = BezierCurve.create().init();
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2 = BezierCurve.create().init();
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline.pushBezierCurve(bezierCurve1);
+            bezierSpline.pushBezierCurve(bezierCurve2);
+        });
+        it("should return expected value", function() {
+            var result = bezierSpline.translate([20, 30]);
+
+            expect(result.getBezierCurve(0).getControlPoint(0).x).toBeCloseTo(20, 5);
+            expect(result.getBezierCurve(0).getControlPoint(0).y).toBeCloseTo(30, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).x).toBeCloseTo(30, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).y).toBeCloseTo(30, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).x).toBeCloseTo(30, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).y).toBeCloseTo(30, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).x).toBeCloseTo(30, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).y).toBeCloseTo(40, 5);
+        });
+    });
+    describe("splitCurveAtPosition", function() {
+        beforeEach(function() {
+            bezierSpline = BezierSpline.create().init();
+            bezierCurve1 = BezierCurve.create().init();
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2 = BezierCurve.create().init();
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline.pushBezierCurve(bezierCurve1);
+            bezierSpline.pushBezierCurve(bezierCurve2);
+        });
+        it("should return expected value", function() {
+            var result = bezierSpline.splitCurveAtPosition(1, .5);
+            expect(result.getBezierCurve(0).getControlPoint(0).x).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(0).getControlPoint(0).y).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).x).toBeCloseTo(10, 5);
+            expect(result.getBezierCurve(0).getControlPoint(1).y).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).x).toBeCloseTo(10, 5);
+            expect(result.getBezierCurve(1).getControlPoint(0).y).toBeCloseTo(0, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).x).toBeCloseTo(10, 5);
+            expect(result.getBezierCurve(1).getControlPoint(1).y).toBeCloseTo(5, 5);
+            expect(result.getBezierCurve(2).getControlPoint(0).x).toBeCloseTo(10, 5);
+            expect(result.getBezierCurve(2).getControlPoint(0).y).toBeCloseTo(5, 5);
+            expect(result.getBezierCurve(2).getControlPoint(1).x).toBeCloseTo(10, 5);
+            expect(result.getBezierCurve(2).getControlPoint(1).y).toBeCloseTo(10, 5);
+        });
+    });
+    describe("clone", function() {
+        it("test is missing", function() {
+            expect(0).toBe(1);
+        });
+    });
+    describe("transformMatrix3d", function() {
+        it("test is missing", function() {
+            expect(0).toBe(1);
         });
     });
 });
