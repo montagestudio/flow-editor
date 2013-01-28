@@ -1389,7 +1389,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
 
     /**
         Returns the closer point and distance in the curve to the given vector.
-        The length of the given array is expected to be equal to the dimensions
+        The dimensions of the given vector are expected to be equal to the dimensions
         of the control points in the curve
     */
     getCloserPointTo: {
@@ -1662,6 +1662,11 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
         }
     },
 
+    /**
+        Returns the closer point and distance and curve index in the spline to the given vector.
+        The dimensions of the given vector are expected to be equal to the dimensions
+        of the control points defining the spline
+    */
     getCloserPointTo: {
         value: function (vector) {
             var point,
@@ -1683,6 +1688,37 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                 index: bestIndex,
                 t: best.t
             }
+        }
+    },
+
+    /**
+        Returns a copy of self bezierSpline with recursive copies of bezier curves
+    */
+    clone: {
+        value: function () {
+            var clone = Montage.create(Object.getPrototypeOf(this)).init(),
+                length = this._data.length,
+                i;
+
+            for (i = 0; i < length; i++) {
+                clone._data[i] = this._data[i].clone();
+            }
+            return clone;
+        }
+    },
+
+    /**
+        In-place transform matrix 3d of the bezierSpline
+    */
+    transformMatrix3d: {
+        value: function (matrix) {
+            var length = this._data.length,
+                i;
+
+            for (i = 0; i < length; i++) {
+                this.getBezierCurve(i).transformMatrix3d(matrix);
+            }
+            return this;
         }
     }
 });
@@ -1713,6 +1749,12 @@ var Scene = exports.Scene = Montage.create(MapReducible, {
     pushShape: {
         value: function (shape) {
             this._data.push(shape);
+        }
+    },
+
+    getShape: {
+        value: function (index) {
+            return this._data[index];
         }
     }
 });
