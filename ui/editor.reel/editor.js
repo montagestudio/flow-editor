@@ -443,31 +443,31 @@ exports.Editor = Montage.create(Component, {
             var bezier, shape, spline, i, k, j;
 
             this.viewport.scene = Scene.create().init();
-            for (j = 0; j < this.flow.splinePaths.length; j++) {
+            for (j = 0; j < this.flow.paths.length; j++) {
                 shape = Shape.create().init();
                 shape.fillColor = "rgba(0,0,0,0)";
-                spline = this.flow.splinePaths[j];
+                spline = this.flow.paths[j];
                 for (i = 0; i < this.spline.knots.length - 1; i++) {
                     bezier = BezierCurve.create().init();
                     bezier.pushControlPoint(Vector3.create().initWithCoordinates([
-                        spline._knots[i][0],
-                        spline._knots[i][1],
-                        spline._knots[i][2],
+                        spline.knots[i].knotPosition[0],
+                        spline.knots[i].knotPosition[1],
+                        spline.knots[i].knotPosition[2]
                     ]));
                     bezier.pushControlPoint(Vector3.create().initWithCoordinates([
-                        spline._nextHandlers[i][0],
-                        spline._nextHandlers[i][1],
-                        spline._nextHandlers[i][2],
+                        spline.knots[i].nextHandlerPosition[0],
+                        spline.knots[i].nextHandlerPosition[1],
+                        spline.knots[i].nextHandlerPosition[2]
                     ]));
                     bezier.pushControlPoint(Vector3.create().initWithCoordinates([
-                        spline._previousHandlers[i + 1][0],
-                        spline._previousHandlers[i + 1][1],
-                        spline._previousHandlers[i + 1][2],
+                        spline.knots[i + 1].previousHandlerPosition[0],
+                        spline.knots[i + 1].previousHandlerPosition[1],
+                        spline.knots[i + 1].previousHandlerPosition[2]
                     ]));
                     bezier.pushControlPoint(Vector3.create().initWithCoordinates([
-                        spline._knots[i + 1][0],
-                        spline._knots[i + 1][1],
-                        spline._knots[i + 1][2],
+                        spline.knots[i + 1].knotPosition[0],
+                        spline.knots[i + 1].knotPosition[1],
+                        spline.knots[i + 1].knotPosition[2]
                     ]));
                     shape.pushBezierCurve(bezier);
                 }
@@ -478,27 +478,29 @@ exports.Editor = Montage.create(Component, {
 
     convertShapeToFlow: {
         value: function () {
-            var shape, bezier, i, spline, j;
+            var shape, bezier, i, spline, j, paths = this.flow.paths;
 
+            this.flow.paths = [];
             for (j = 0; j < this.viewport.scene.length; j++) {
                 shape = this.viewport.scene.getShape(j);
-                spline = this.flow.splinePaths[j];
+                spline = paths[j];
                 for (i = 0; i < shape.length; i++) {
                     bezier = shape.getBezierCurve(i);
-                    spline._knots[i][0] = (bezier.getControlPoint(0).x);
-                    spline._knots[i][1] = (bezier.getControlPoint(0).y);
-                    spline._knots[i][2] = (bezier.getControlPoint(0).z);
-                    spline._nextHandlers[i][0] = (bezier.getControlPoint(1).x);
-                    spline._nextHandlers[i][1] = (bezier.getControlPoint(1).y);
-                    spline._nextHandlers[i][2] = (bezier.getControlPoint(1).z);
-                    spline._previousHandlers[i + 1][0] = (bezier.getControlPoint(2).x);
-                    spline._previousHandlers[i + 1][1] = (bezier.getControlPoint(2).y);
-                    spline._previousHandlers[i + 1][2] = (bezier.getControlPoint(2).z);
-                    spline._knots[i + 1][0] = (bezier.getControlPoint(3).x);
-                    spline._knots[i + 1][1] = (bezier.getControlPoint(3).y);
-                    spline._knots[i + 1][2] = (bezier.getControlPoint(3).z);
+                    spline.knots[i].knotPosition[0] = (bezier.getControlPoint(0).x);
+                    spline.knots[i].knotPosition[1] = (bezier.getControlPoint(0).y);
+                    spline.knots[i].knotPosition[2] = (bezier.getControlPoint(0).z);
+                    spline.knots[i].nextHandlerPosition[0] = (bezier.getControlPoint(1).x);
+                    spline.knots[i].nextHandlerPosition[1] = (bezier.getControlPoint(1).y);
+                    spline.knots[i].nextHandlerPosition[2] = (bezier.getControlPoint(1).z);
+                    spline.knots[i + 1].previousHandlerPosition[0] = (bezier.getControlPoint(2).x);
+                    spline.knots[i + 1].previousHandlerPosition[1] = (bezier.getControlPoint(2).y);
+                    spline.knots[i + 1].previousHandlerPosition[2] = (bezier.getControlPoint(2).z);
+                    spline.knots[i + 1].knotPosition[0] = (bezier.getControlPoint(3).x);
+                    spline.knots[i + 1].knotPosition[1] = (bezier.getControlPoint(3).y);
+                    spline.knots[i + 1].knotPosition[2] = (bezier.getControlPoint(3).z);
                 }
             }
+            this.flow.paths = paths;
             this.flow.needsDraw = true;
         }
     },
