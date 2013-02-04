@@ -1,90 +1,55 @@
 <!DOCTYPE html>
-<!-- <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
 <html>
 <head>
-    <title></title>
     <link rel="stylesheet" type="text/css" href="editor.css">
     <script type="text/montage-serialization">
     {
         "owner": {
             "properties": {
                 "element": {"#": "editor"},
-                "topView": {"@": "topView"},
-                "frontView": {"@": "frontView"},
-                "toolbar": {"@": "toolbar"},
-                "parametersEditor": {"#": "parameters-editor"}
+                "viewport": {"@": "viewport"}
+            }
+        },
+        "viewport": {
+            "prototype": "ui/flow-viewport.reel",
+            "properties": {
+                "element": {"#": "viewport"},
+                "matrix": [
+                    0.1, 0, 0, 0,
+                    0, 0.1, 0, 0,
+                    0, 0, 1, 0,
+                    250, 150, 0, 1
+                ]
             },
             "bindings": {
                 "selectedTool": {"<-": "@toolbar.selectedTool"}
             }
         },
-        "topView": {
-            "prototype": "ui/viewport.reel",
+        "viewport2": {
+            "prototype": "ui/flow-viewport.reel",
             "properties": {
-                "element": {"#": "top-view"},
-                "_transformMatrix": [
-                    1, 0, 0, 0,
+                "element": {"#": "viewport2"},
+                "matrix": [
+                    0.1, 0, 0, 0,
                     0, 0, 1, 0,
-                    0, 1, 0, 0,
-                    0, 0, 0, 1
+                    0, 0.1, 0, 0,
+                    250, 250, 0, 1
                 ]
             },
             "bindings": {
-                "centralX": {"<->": "@owner.centralX"},
-                "centralY": {"<->": "@owner.centralZ"},
-                "scale": {"<->": "@owner.scale"},
-                "spline": {"<->": "@owner.spline"},
-                "cameraPosition": {"<->": "@owner.cameraPosition"},
-                "cameraTargetPoint": {"<->": "@owner.cameraTargetPoint"},
-                "cameraFov": {"<->": "@owner.cameraFov"},
-                "cameraRoll": {"<->": "@flow.cameraRoll"},
-                "closerKnot": {"<->": "@frontView.closerKnot"},
-                "closerHandler": {"<->": "@frontView.closerHandler"},
-                "_closerHandlerType": {"<->": "@frontView._closerHandlerType"}
+                "selectedTool": {"<-": "@toolbar.selectedTool"},
+                "selection": {"<->": "@viewport.selection"},
+                "scene": {"<-": "@viewport.scene"}
             }
         },
-        "frontView": {
-            "prototype": "ui/viewport.reel",
+        "inspector": {
+            "prototype": "ui/flow-inspector.reel",
             "properties": {
-                "element": {"#": "front-view"}
+                "element": {"#": "inspector"}
             },
             "bindings": {
-                "centralX": {"<->": "@owner.centralX"},
-                "centralY": {"<->": "@owner.centralY"},
-                "scale": {"<->": "@owner.scale"},
-                "spline": {"<->": "@owner.spline"},
-                "cameraPosition": {"<->": "@owner.cameraPosition"},
-                "cameraTargetPoint": {"<->": "@owner.cameraTargetPoint"},
-                "cameraFov": {"<->": "@owner.cameraFov"}
+                "scene": {"<->": "@viewport.scene"},
+                "selection": {"<->": "@viewport.selection"}
             }
         },
         "toolbar": {
@@ -98,10 +63,14 @@ POSSIBILITY OF SUCH DAMAGE.
 </head>
 <body>
     <div data-montage-id="editor" class="flow-Editor">
-        <div data-montage-id="top-view" class="flow-Editor-TopView"></div>
-        <div data-montage-id="front-view"></div>
-        <div data-montage-id="toolbar"></div>
-        <textarea data-montage-id="parameters-editor" class="flow-Editor-parametersEditor"></textarea>
+        <div data-montage-id="toolbar" class="toolbar">
+        </div>
+        <div data-montage-id="viewport" class="viewport">
+        </div>
+        <div data-montage-id="viewport2" class="viewport">
+        </div>
+        <div data-montage-id="inspector" class="inspector">
+        </div>
     </div>
 </body>
 </html>

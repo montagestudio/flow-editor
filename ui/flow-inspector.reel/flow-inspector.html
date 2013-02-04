@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="flow-inspector.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "flow-inspector"}
+            }
+        },
+        "label": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "label"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.labelText"}
+            }
+        },
+        "x": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "x"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.x"}
+            }
+        },
+        "y": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "y"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.y"}
+            }
+        },
+        "z": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "z"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.z"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="flow-inspector" class="FlowInspector">
+        <div data-montage-id="label" class="label"></div>
+        <div data-montage-id="x" class="position"></div>
+        <div data-montage-id="y" class="position"></div>
+        <div data-montage-id="z" class="position"></div>
+    </div>
+</body>
+</html>

@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
     bottom: 0;
     left: 0;
     right: 0;
-    height: 33px;
+    height: 44px;
     border-top: 1px solid #1D1D1D;
     border-bottom: 1px solid #1D1D1D;
     background: -webkit-gradient(linear, left top, left bottom, from(#323232), to(#212121));
@@ -42,9 +42,9 @@ POSSIBILITY OF SUCH DAMAGE.
     display: block;
     box-sizing: content-box;
     float: left;
-    width: 19px;
-    height: 19px;
-    padding: 7px;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
     border-left: 1px solid #363636;
     border-right: 1px solid #1D1D1D;
     cursor: pointer;
@@ -59,16 +59,18 @@ POSSIBILITY OF SUCH DAMAGE.
     display: block;
     content: "";
     position: absolute;
-    background: url(toolbar-icons.png) no-repeat;
-    width: 19px;
-    height: 19px;
+    background: url(pen-icons.png) no-repeat;
+    background-size: 320px 32px;
+    background-position: -224px 0;
+    width: 32px;
+    height: 32px;
     opacity: .35;
 }
 .flow-Editor-Toolbar-Button--selected:after {
     opacity: .85;
 }
-.flow-Editor-Toolbar-Button-Remove:after {
-    background-position: -20px 0;
+.flow-Editor-Toolbar-Button-Convert:after {
+    background-position: -288px 0;
 }
 .flow-Editor-Toolbar-Button-MoveKnot:after {
     background-position: -40px 0;
@@ -89,6 +91,8 @@ POSSIBILITY OF SUCH DAMAGE.
     background-position: -100px 0;
 }
 .flow-Editor-Toolbar-Button-Close:after {
+    background: url(toolbar-icons.png) no-repeat;
+    background-size: auto;
     background-position: -220px 0;
 }
 

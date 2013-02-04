@@ -1,55 +1,25 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
-/**
-    @module "ui/editor.reel"
-    @requires montage
-    @requires montage/ui/component
-*/
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    FlowBezierSpline = require("montage/ui/flow-bezier-spline").FlowBezierSpline;
+    FlowBezierSpline = require("montage/ui/flow-bezier-spline").FlowBezierSpline,
+    PenToolMath = require("ui/pen-tool-math.js"),
+    Vector3 = PenToolMath.Vector3,
+    BezierCurve = PenToolMath.BezierCurve,
+    Shape = PenToolMath.Shape,
+    Scene = PenToolMath.Scene;
 
-/**
-    Description TODO
-    @class module:"ui/editor.reel".Editor
-    @extends module:montage/ui/component.Component
-*/
-exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Editor# */ {
+exports.Editor = Montage.create(Component, {
 
     object: {
         get: function () {
             return this.flow;
         },
         set: function (value) {
-            this.flow = value;
+            if (value._stageObject) {
+                console.log(value);
+                this.flow = value.stageObject;
+            } else {
+                this.flow = value;
+            }
         }
     },
 
@@ -70,83 +40,11 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         }
     },
 
-    topView: {
-        value: null
-    },
-
-    frontView: {
-        value: null
-    },
-
-    toolbar: {
-        value: null
-    },
-
-    parametersEditor: {
-        value: null
-    },
-
-    _cameraPosition: {
-        value: null
-    },
-
-    _cameraTargetPoint: {
-        value: null
-    },
-
-    _cameraFov: {
-        value: null
-    },
-
-    _cameraRoll: {
-        value: null
-    },
-
-    cameraPosition: {
-        get: function () {
-            return this._cameraPosition;
-        },
-        set: function (value) {
-            this._cameraPosition = value;
-            this.flow.cameraPosition = value;
-        }
-    },
-
-    cameraTargetPoint: {
-        get: function () {
-            return this._cameraTargetPoint;
-        },
-        set: function (value) {
-            this._cameraTargetPoint = value;
-            this.flow.cameraTargetPoint = value;
-        }
-    },
-
-    cameraFov: {
-        get: function () {
-            return this._cameraFov;
-        },
-        set: function (value) {
-            this._cameraFov = value;
-            this.flow.cameraFov = value;
-        }
-    },
-
-    cameraRoll: {
-        get: function () {
-            return this._cameraRoll;
-        },
-        set: function (value) {
-            this._cameraRoll = value;
-            this.flow.cameraRoll = value;
-        }
-    },
-
     hasSplineUpdated: {
         value: true
     },
 
-    _selectedTool: {
+/*    _selectedTool: {
         enumerable: false,
         value: "add"
     },
@@ -462,13 +360,13 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
             this.frontView.element.style.display =
             this.topView.element.style.display = "none";
         }
-    },
+    },*/
 
     spline: {
         value: null
     },
 
-    _centralX: {
+/*    _centralX: {
         enumerable: false,
         value: 0
     },
@@ -538,12 +436,120 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
         value: function () {
             this.needsDraw = true;
         }
+    },*/
+
+    convertFlowToShape: {
+        value: function () {
+            var bezier, shape, spline, i, k, j;
+
+            this.viewport.scene = Scene.create().init();
+            for (j = 0; j < this.flow.splinePaths.length; j++) {
+                shape = Shape.create().init();
+                shape.fillColor = "rgba(0,0,0,0)";
+                spline = this.flow.splinePaths[j];
+                for (i = 0; i < this.spline.knots.length - 1; i++) {
+                    bezier = BezierCurve.create().init();
+                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                        spline._knots[i][0],
+                        spline._knots[i][1],
+                        spline._knots[i][2],
+                    ]));
+                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                        spline._nextHandlers[i][0],
+                        spline._nextHandlers[i][1],
+                        spline._nextHandlers[i][2],
+                    ]));
+                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                        spline._previousHandlers[i + 1][0],
+                        spline._previousHandlers[i + 1][1],
+                        spline._previousHandlers[i + 1][2],
+                    ]));
+                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                        spline._knots[i + 1][0],
+                        spline._knots[i + 1][1],
+                        spline._knots[i + 1][2],
+                    ]));
+                    shape.pushBezierCurve(bezier);
+                }
+                this.viewport.scene.pushShape(shape);
+            }
+        }
+    },
+
+    convertShapeToFlow: {
+        value: function () {
+            var shape, bezier, i, spline, j;
+
+            for (j = 0; j < this.viewport.scene.length; j++) {
+                shape = this.viewport.scene.getShape(j);
+                spline = this.flow.splinePaths[j];
+                for (i = 0; i < shape.length; i++) {
+                    bezier = shape.getBezierCurve(i);
+                    spline._knots[i][0] = (bezier.getControlPoint(0).x);
+                    spline._knots[i][1] = (bezier.getControlPoint(0).y);
+                    spline._knots[i][2] = (bezier.getControlPoint(0).z);
+                    spline._nextHandlers[i][0] = (bezier.getControlPoint(1).x);
+                    spline._nextHandlers[i][1] = (bezier.getControlPoint(1).y);
+                    spline._nextHandlers[i][2] = (bezier.getControlPoint(1).z);
+                    spline._previousHandlers[i + 1][0] = (bezier.getControlPoint(2).x);
+                    spline._previousHandlers[i + 1][1] = (bezier.getControlPoint(2).y);
+                    spline._previousHandlers[i + 1][2] = (bezier.getControlPoint(2).z);
+                    spline._knots[i + 1][0] = (bezier.getControlPoint(3).x);
+                    spline._knots[i + 1][1] = (bezier.getControlPoint(3).y);
+                    spline._knots[i + 1][2] = (bezier.getControlPoint(3).z);
+                }
+            }
+            this.flow.needsDraw = true;
+        }
+    },
+
+    handleSceneUpdated: {
+        value: function () {
+            this.convertShapeToFlow();
+        }
     },
 
     prepareForDraw: {
         enumerable: false,
         value: function () {
-            var self = this;
+            var i, j;
+
+            for (j = 0; j < this.flow.splinePaths.length; j++) {
+                this.spline = this.flow.splinePaths[j];
+                if (!this.spline.previousDensities) {
+                    this.spline.previousDensities = [];
+                }
+                if (!this.spline.nextDensities) {
+                    this.spline.nextDensities = [];
+                }
+                for (i = 0; i < this.spline.knots.length; i++) {
+                    if (typeof this.spline.previousHandlers[i] === "undefined") {
+                        this.spline.previousHandlers[i] = [
+                            2 * this.spline.knots[i][0] - this.spline.nextHandlers[i][0],
+                            2 * this.spline.knots[i][1] - this.spline.nextHandlers[i][1],
+                            2 * this.spline.knots[i][2] - this.spline.nextHandlers[i][2]
+                        ];
+                    }
+                    if (typeof this.spline.nextHandlers[i] === "undefined") {
+                        this.spline.nextHandlers[i] = [
+                            2 * this.spline.knots[i][0] - this.spline.previousHandlers[i][0],
+                            2 * this.spline.knots[i][1] - this.spline.previousHandlers[i][1],
+                            2 * this.spline.knots[i][2] - this.spline.previousHandlers[i][2]
+                        ];
+                    }
+                    if (typeof this.spline.previousDensities[i] === "undefined") {
+                        this.spline.previousDensities[i] = 3;
+                    }
+                    if (typeof this.spline.nextDensities[i] === "undefined") {
+                        this.spline.nextDensities[i] = 3;
+                    }
+                }
+            }
+            this.convertFlowToShape();
+            this.viewport.scene.addEventListener("sceneUpdated", this, false);
+
+
+            /*var self = this;
 
             if (this.flow.splinePaths[0]) {
                 var i;
@@ -586,32 +592,32 @@ exports.Editor = Montage.create(Component, /** @lends module:"ui/editor.reel".Ed
                 });
                 this.flow.splinePaths.push(this.spline);
             }
-            window.addEventListener("resize", this, false);
-            this.parametersEditor.textContent = JSON.stringify(this.spline.parameters);
+            window.addEventListener("resize", this, false);*/
+            /*this.parametersEditor.textContent = JSON.stringify(this.spline.parameters);
             this.parametersEditor.addEventListener("keyup", function () {
                 try {
                     self.spline.parameters = JSON.parse(self.parametersEditor.value);
                 } catch (e) {
                 }
                 self.flow.needsDraw = true;
-            }, false);
+            }, false);*/
         }
     },
 
     willDraw: {
         enumerable: false,
         value: function () {
-            this.frontView.width = this._element.offsetWidth;
+            /*this.frontView.width = this._element.offsetWidth;
             this.frontView.height = (this._element.offsetHeight - this.toolbar.element.offsetHeight - 1) >> 1;
             this.topView.width = this._element.offsetWidth;
-            this.topView.height = this._element.offsetHeight - this.toolbar.element.offsetHeight - this.frontView.height - 1;
+            this.topView.height = this._element.offsetHeight - this.toolbar.element.offsetHeight - this.frontView.height - 1;*/
         }
     },
 
     draw: {
         enumerable: false,
         value: function () {
-            this.frontView.element.style.top = (this.topView.height + 1) + "px";
+            //this.frontView.element.style.top = (this.topView.height + 1) + "px";
             /*this.removeClass(this._addButton, "selected");
             this.removeClass(this._moveButton, "selected");
             this.removeClass(this._weightButton, "selected");
