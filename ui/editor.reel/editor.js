@@ -14,12 +14,7 @@ exports.Editor = Montage.create(Component, {
             return this.flow;
         },
         set: function (value) {
-            if (value._stageObject) {
-                console.log(value);
-                this.flow = value.stageObject;
-            } else {
-                this.flow = value;
-            }
+            this.flow = value;
         }
     },
 
@@ -440,14 +435,15 @@ exports.Editor = Montage.create(Component, {
 
     convertFlowToShape: {
         value: function () {
-            var bezier, shape, spline, i, k, j;
+            var bezier, shape, spline, i, k, j,
+                paths = this.object.getObjectProperty("paths");
 
             this.viewport.scene = Scene.create().init();
-            for (j = 0; j < this.flow.paths.length; j++) {
+            for (j = 0; j < paths.length; j++) {
                 shape = Shape.create().init();
                 shape.fillColor = "rgba(0,0,0,0)";
-                spline = this.flow.paths[j];
-                for (i = 0; i < this.spline.knots.length - 1; i++) {
+                spline = paths[j];
+                for (i = 0; i < spline.knots.length - 1; i++) {
                     bezier = BezierCurve.create().init();
                     bezier.pushControlPoint(Vector3.create().initWithCoordinates([
                         spline.knots[i].knotPosition[0],
@@ -478,9 +474,10 @@ exports.Editor = Montage.create(Component, {
 
     convertShapeToFlow: {
         value: function () {
-            var shape, bezier, i, spline, j, paths = this.flow.paths;
+            var shape, bezier, i, spline, j,
+                paths = this.object.getObjectProperty("paths");
 
-            this.flow.paths = [];
+            this.object.setObjectProperty("paths", []);
             for (j = 0; j < this.viewport.scene.length; j++) {
                 shape = this.viewport.scene.getShape(j);
                 spline = paths[j];
@@ -500,8 +497,9 @@ exports.Editor = Montage.create(Component, {
                     spline.knots[i + 1].knotPosition[2] = (bezier.getControlPoint(3).z);
                 }
             }
-            this.flow.paths = paths;
-            this.flow.needsDraw = true;
+            this.object.setObjectProperty("paths", paths);
+            console.log(this.object.getObjectProperty("paths"));
+            console.log(this.object.stageObject._paths);
         }
     },
 
@@ -514,7 +512,7 @@ exports.Editor = Montage.create(Component, {
     prepareForDraw: {
         enumerable: false,
         value: function () {
-            var i, j;
+            /*var i, j;
 
             for (j = 0; j < this.flow.splinePaths.length; j++) {
                 this.spline = this.flow.splinePaths[j];
@@ -546,7 +544,7 @@ exports.Editor = Montage.create(Component, {
                         this.spline.nextDensities[i] = 3;
                     }
                 }
-            }
+            }*/
             this.convertFlowToShape();
             this.viewport.scene.addEventListener("sceneUpdated", this, false);
 

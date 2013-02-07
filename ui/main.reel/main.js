@@ -12,4 +12,20 @@ var Montage = require("montage").Montage,
     @extends module:montage/ui/component.Component
 */
 exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# */ {
+    templateDidLoad: {
+        value: function () {
+            var self = this;
+
+            this.editor.object = {
+                _stageObject: this.flow,
+                stageObject: this.flow,
+                getObjectProperty: function (property) {
+                    return self.flow[property];
+                },
+                setObjectProperty: function (property, value) {
+                    self.flow[property] = value;
+                },
+            };
+        }
+    }
 });
