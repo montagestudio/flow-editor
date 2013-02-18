@@ -83,10 +83,12 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
     showPosition: {
         value: function () {
             if (this._selection && this._selection[0]) {
-                var bb = this._selection[0].axisAlignedBoundaries;
-                this.x = (bb[0].min * 10 | 0) / 10;
-                this.y = (bb[1].min * 10 | 0) / 10;
-                this.z = (bb[2].min * 10 | 0) / 10;
+                if (this._selection[0].type === "FlowSpline") {
+                    var bb = this._selection[0].axisAlignedBoundaries;
+                    this.x = (bb[0].min * 10 | 0) / 10;
+                    this.y = (bb[1].min * 10 | 0) / 10;
+                    this.z = (bb[2].min * 10 | 0) / 10;
+                }
             } else {
                 this.x = "";
                 this.y = "";

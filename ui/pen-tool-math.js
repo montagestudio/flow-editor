@@ -59,6 +59,11 @@ var MapReducible = exports.MapReducible = Montage.create(Montage, {
 
 var Vector = exports.Vector = Montage.create(MapReducible, {
 
+    type: {
+        serializable: false,
+        value: "Vector"
+    },
+
     initWithCoordinates: {
         value: function (coordinatesArray) {
             return this.setCoordinates(coordinatesArray);
@@ -338,6 +343,11 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
 
 var Vector2 = exports.Vector2 = Montage.create(Vector, {
 
+    type: {
+        serializable: false,
+        value: "Vector2"
+    },
+
     init: {
         value: function () {
             this._data = [0, 0];
@@ -565,6 +575,11 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
 });
 
 var Vector3 = exports.Vector3 = Montage.create(Vector, {
+
+    type: {
+        serializable: false,
+        value: "Vector3"
+    },
 
     init: {
         value: function () {
@@ -935,6 +950,11 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 });
 
 var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
+
+    type: {
+        serializable: false,
+        value: "BezierCurve"
+    },
 
     /**
         Number of control points not including starting point.
@@ -1424,6 +1444,11 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
 
 var CubicBezierCurve = exports.CubicBezierCurve = Montage.create(BezierCurve, {
 
+    type: {
+        serializable: false,
+        value: "CubicBezierCurve"
+    },
+
     /**
         Number of control points - 1, 3 for cubic Béziers
     */
@@ -1444,6 +1469,11 @@ var CubicBezierCurve = exports.CubicBezierCurve = Montage.create(BezierCurve, {
 });
 
 var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
+
+    type: {
+        serializable: false,
+        value: "BezierSpline"
+    },
 
     /**
         Returns the number of Bézier curves in the spline
@@ -1720,21 +1750,6 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
             }
             return this;
         }
-    }
-});
-
-var Shape = exports.Shape = Montage.create(BezierSpline, {
-
-    strokeColor: {
-        value: "black"
-    },
-
-    strokeWidth: {
-        value: 1
-    },
-
-    fillColor: {
-        value: "white"
     }
 });
 

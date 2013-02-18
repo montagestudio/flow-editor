@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
     CanvasCross = require("ui/cross").CanvasCross,
     Camera = require("ui/camera").Camera,
     CanvasCamera = require("ui/camera").CanvasCamera,
-    CanvasFlowSpline = require("ui/canvas-flow-spline").CanvasFlowSpline;
+    CanvasFlowSpline = require("ui/flow-spline.js").CanvasFlowSpline;
 
 exports.FlowViewport = Montage.create(Viewport, {
 
@@ -23,6 +23,9 @@ exports.FlowViewport = Montage.create(Viewport, {
                     return shape;
                 }
             }
+            if (this.canvasCamera.pointOnShape(x, y, this.matrix)) {
+                return this.canvasCamera.data;
+            }
             return null;
         }
     },
@@ -31,7 +34,7 @@ exports.FlowViewport = Montage.create(Viewport, {
         value: function (x, y) {
             var result = null;
 
-            if (this.selection && this.selection[0]) {
+            if (this.selection && this.selection[0] && this.selection[0].type === "FlowSpline") {
                 var shape = this.selection[0].clone().transformMatrix3d(this.matrix),
                     self = this;
 
@@ -88,7 +91,7 @@ exports.FlowViewport = Montage.create(Viewport, {
         value: function () {
             var self = this;
 
-            if (this.selection && this.selection[0]) {
+            if (this.selection && this.selection[0] && this.selection[0].type === "FlowSpline") {
                 var shape = this.selection[0].clone().transformMatrix3d(this.matrix);
 
                 shape.forEach(function (bezier) {
@@ -242,34 +245,35 @@ exports.FlowViewport = Montage.create(Viewport, {
     drawShapeSelectionBoundingRectangle: {
         value: function () {
             if (this.selection && this.selection[0]) {
-                var s = shape = this.selection[0].clone().transformMatrix3d(this.matrix),
-                    boundaries = this.selectedShapeAxisAlignedBoundaries = s.axisAlignedBoundaries,
-                    i, k = 9 - (Date.now() / 100 | 0) % 10, e = k, self = this;
+                if (this.selection[0].getTransformedAxisAlignedBoundaries) {
+                    var boundaries = this.selectedShapeAxisAlignedBoundaries = this.selection[0].getTransformedAxisAlignedBoundaries(this.matrix),
+                        i, k = 9 - (Date.now() / 100 | 0) % 10, e = k, self = this;
 
-                for (i = boundaries[0].min|0; i < boundaries[0].max|0; i++) {
-                    this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                    this._context.fillRect(i, boundaries[1].min|0, 1, 1);
-                    e++;
+                    for (i = boundaries[0].min|0; i < boundaries[0].max|0; i++) {
+                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
+                        this._context.fillRect(i, boundaries[1].min|0, 1, 1);
+                        e++;
+                    }
+                    for (i = boundaries[1].min|0; i < boundaries[1].max|0; i++) {
+                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
+                        this._context.fillRect(boundaries[0].max|0, i, 1, 1);
+                        e++;
+                    }
+                    e = k;
+                    for (i = boundaries[1].min|0; i < boundaries[1].max|0; i++) {
+                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
+                        this._context.fillRect(boundaries[0].min|0, i, 1, 1);
+                        e++;
+                    }
+                    for (i = boundaries[0].min|0; i < boundaries[0].max|0; i++) {
+                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
+                        this._context.fillRect(i, boundaries[1].max|0, 1, 1);
+                        e++;
+                    }
+                    window.setTimeout(function () {
+                        self.needsDraw = true;
+                    }, 100);
                 }
-                for (i = boundaries[1].min|0; i < boundaries[1].max|0; i++) {
-                    this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                    this._context.fillRect(boundaries[0].max|0, i, 1, 1);
-                    e++;
-                }
-                e = k;
-                for (i = boundaries[1].min|0; i < boundaries[1].max|0; i++) {
-                    this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                    this._context.fillRect(boundaries[0].min|0, i, 1, 1);
-                    e++;
-                }
-                for (i = boundaries[0].min|0; i < boundaries[0].max|0; i++) {
-                    this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                    this._context.fillRect(i, boundaries[1].max|0, 1, 1);
-                    e++;
-                }
-                window.setTimeout(function () {
-                    self.needsDraw = true;
-                }, 100);
             }
         }
     },
@@ -298,8 +302,10 @@ exports.FlowViewport = Montage.create(Viewport, {
             this._element.height = this._height;
             this.canvasGrid.draw(this.matrix);
             for (i = 0; i < length; i++) {
-                this.canvasFlowSpline.data = this.scene._data[i];
-                this.canvasFlowSpline.draw(this.matrix);
+                if (this.scene._data[i].type === "FlowSpline") {
+                    this.canvasFlowSpline.data = this.scene._data[i];
+                    this.canvasFlowSpline.draw(this.matrix);
+                }
             }
             if (this.isShowingControlPoints) {
                 this.drawShapeSelectionHandlers();

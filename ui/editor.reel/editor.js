@@ -4,8 +4,8 @@ var Montage = require("montage").Montage,
     PenToolMath = require("ui/pen-tool-math.js"),
     Vector3 = PenToolMath.Vector3,
     BezierCurve = PenToolMath.BezierCurve,
-    Shape = PenToolMath.Shape,
-    Scene = PenToolMath.Scene;
+    Scene = PenToolMath.Scene,
+    FlowSpline = require("ui/flow-spline.js").FlowSpline;
 
 exports.Editor = Montage.create(Component, {
 
@@ -440,7 +440,7 @@ exports.Editor = Montage.create(Component, {
 
             this.viewport.scene = Scene.create().init();
             for (j = 0; j < paths.length; j++) {
-                shape = Shape.create().init();
+                shape = FlowSpline.create().init();
                 shape.fillColor = "rgba(0,0,0,0)";
                 spline = paths[j];
                 for (i = 0; i < spline.knots.length - 1; i++) {
@@ -469,9 +469,8 @@ exports.Editor = Montage.create(Component, {
                 }
                 this.viewport.scene.pushShape(shape);
                 this.viewport.camera.cameraPosition = this.object.getObjectProperty("cameraPosition");
-                this.viewport.camera.cameraTargetPosition = this.object.getObjectProperty("cameraTargetPosition");
+                this.viewport.camera.cameraTargetPoint = this.object.getObjectProperty("cameraTargetPoint");
                 this.viewport.camera.cameraFov = this.object.getObjectProperty("cameraFov");
-                console.log(this.viewport.camera);
             }
         }
     },
@@ -503,7 +502,7 @@ exports.Editor = Montage.create(Component, {
             }
             this.object.setObjectProperty("paths", paths);
             this.object.setObjectProperty("cameraPosition", this.viewport.camera.cameraPosition);
-            this.object.setObjectProperty("cameraTargetPosition", this.viewport.camera.cameraTargetPosition);
+            this.object.setObjectProperty("cameraTargetPoint", this.viewport.camera.cameraTargetPoint);
             this.object.setObjectProperty("cameraFov", this.viewport.camera.cameraFov);
         }
     },

@@ -17,6 +17,21 @@ var Camera = exports.Camera = Montage.create(Montage, {
 
     color: {
         value: "black"
+    },
+
+    translate: {
+        value: function (offsetsArray) {
+            this.cameraPosition = [
+                this.cameraPosition[0] + offsetsArray[0],
+                this.cameraPosition[1] + offsetsArray[1],
+                this.cameraPosition[2] + offsetsArray[2]
+            ];
+            this.cameraTargetPoint = [
+                this.cameraTargetPoint[0] + offsetsArray[0],
+                this.cameraTargetPoint[1] + offsetsArray[1],
+                this.cameraTargetPoint[2] + offsetsArray[2]
+            ]
+        }
     }
 
 });
@@ -149,7 +164,6 @@ exports.CanvasCamera = Montage.create(Montage, {
     draw: {
         value: function (transformMatrix) {
             if (this.cameraPosition) {
-                console.log(this.cameraPosition);
                 var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
                     tFocus = Vector3.create().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix),
                     angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
@@ -199,46 +213,20 @@ exports.CanvasCamera = Montage.create(Montage, {
                 this._canvasContext.restore();
             }
         }
-    }
+    },
 
-    /*draw: {
-        value: function (transformMatrix) {
-            var offsetX = transformMatrix[12],
-                offsetY = transformMatrix[13],
-                x,
-                xStart,
-                sEnd,
-                y,
-                yStart,
-                yEnd,
-                scale = .2,
-                indices = [0, 1, 2, 4, 5, 6, 8, 9, 10],
-                i = 0;
+    pointOnShape: {
+        value: function (x, y, transformMatrix) {
+            var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
+                tFocus = Vector3.create().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix);
 
-            while (!transformMatrix[indices[i]]) {
-                i++;
-            }
-            scale = transformMatrix[indices[i]];
-            this._canvasContext.save();
-            this._canvasContext.fillRect(0, 0, 100, 100);
-            /*if (scale >= .02) {
-                this._canvasContext.fillStyle = this.gridlineColor;
-                xStart = ((-offsetX / (scale * 5)) >> 1) * 100;
-                xEnd = (((500 - offsetX) / (scale * 5)) >> 1) * 100;
-                for (x = xStart; x <= xEnd; x += 100) {
-                    this._canvasContext.fillRect(Math.floor(offsetX + x * scale), 0, 1, 9999);
-                }
-                yStart = ((-offsetY / (scale * 5)) >> 1) * 100;
-                yEnd = (((500 - offsetY) / (scale * 5)) >> 1) * 100;
-                for (y = yStart; y <= yEnd; y += 100) {
-                    this._canvasContext.fillRect(0, Math.floor(offsetY + y * scale), 9999, 1);
+            if ((x >= tPos.x - 5) && (x <= tPos.x + 5)) {
+                if ((y >= tPos.y - 5) && (y <= tPos.y + 5)) {
+                    return true;
                 }
             }
-            this._canvasContext.fillStyle = "#2e2e2e";
-            this._canvasContext.fillRect(0, Math.floor(offsetY), this._width, 1);
-            this._canvasContext.fillRect(Math.floor(offsetX), 0, 1,  this._height);
-            this._canvasContext.restore();
+            return false;
         }
-    }*/
+    }
 
 });
