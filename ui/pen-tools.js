@@ -53,6 +53,9 @@ exports.ArrowTool = Montage.create(Montage, {
                     )._data
                 );
                 viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            } else {
+                viewport.translateX += dX;
+                viewport.translateY += dY;
             }
             this._pointerX = event.pageX,
             this._pointerY = event.pageY;
@@ -137,6 +140,9 @@ exports.ConvertTool = Montage.create(Montage, {
                             transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                         )._data
                     );
+                } else {
+                    viewport.translateX += dX;
+                    viewport.translateY += dY;
                 }
             }
             viewport.scene.dispatchEventNamed("sceneUpdated", true, true);

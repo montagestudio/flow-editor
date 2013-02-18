@@ -1,32 +1,28 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Viewport = require("ui/viewport").Viewport;
+    Viewport = require("ui/viewport").Viewport,
+    Grid = require("ui/grid").Grid,
+    CanvasGrid = require("ui/grid").CanvasGrid,
+    Cross = require("ui/cross").Cross,
+    CanvasCross = require("ui/cross").CanvasCross,
+    Camera = require("ui/camera").Camera,
+    CanvasCamera = require("ui/camera").CanvasCamera,
+    CanvasFlowSpline = require("ui/canvas-flow-spline").CanvasFlowSpline;
 
 exports.FlowViewport = Montage.create(Viewport, {
 
     findSelectedShape: {
         value: function (x, y) {
             var length = this.scene._data.length,
-                imageData,
-                shape,
                 i;
 
-            this._element.width = this._width;
-            this._element.height = this._height;
             for (i = length - 1; i >= 0; i--) {
                 shape = this.scene._data[i];
-                this._context.beginPath();
-                this.drawShape(shape);
-                this._context.fill();
-                this._context.lineWidth = 16;
-                this._context.stroke();
-                imageData = this._context.getImageData(x, y, 1, 1);
-                if (imageData.data[3] > 0) {
-                    this.draw();
+                this.canvasFlowSpline.data = shape;
+                if (this.canvasFlowSpline.pointOnShape(x, y, this.matrix)) {
                     return shape;
                 }
             }
-            this.draw();
             return null;
         }
     },
@@ -70,52 +66,21 @@ exports.FlowViewport = Montage.create(Viewport, {
             this._height = this._element.offsetHeight;
             this._context = this._element.getContext("2d");
             this._element.addEventListener("mousedown", this, true);
-        }
-    },
 
-    drawShape: {
-        value: function (shape) {
-            var s = shape.clone().transformMatrix3d(this.matrix),
-                self = this,
-                needsFill = false;
+            this.canvasGrid = CanvasGrid.create();
+            this.canvasGrid.data = Grid.create();
+            this.canvasGrid.canvasContext = this._context;
 
-            this._context.fillStyle = shape.fillColor;
-            this._context.strokeStyle = shape.strokeColor;
-            this._context.lineWidth = shape.strokeWidth;
-            this._context.beginPath();
-            s.forEach(function (bezier, index) {
-                if (bezier.isComplete) {
-                    if (!index) {
-                        self._context.moveTo(
-                            bezier.getControlPoint(0).x,
-                            bezier.getControlPoint(0).y
-                        );
-                    }
-                    self._context.bezierCurveTo(
-                        bezier.getControlPoint(1).x,
-                        bezier.getControlPoint(1).y,
-                        bezier.getControlPoint(2).x,
-                        bezier.getControlPoint(2).y,
-                        bezier.getControlPoint(3).x,
-                        bezier.getControlPoint(3).y
-                    );
-                    needsFill = true;
-                }
-            });
-            if (needsFill) {
-                this._context.fill();
-                this._context.stroke();
-            }
-        }
-    },
+            this.canvasCross = CanvasCross.create();
+            this.canvasCross.data = Cross.create();
+            this.canvasCross.canvasContext = this._context;
 
-    drawScene: {
-        value: function (scene) {
-            var self = this;
+            this.canvasFlowSpline = CanvasFlowSpline.create();
+            this.canvasFlowSpline.canvasContext = this._context;
 
-            scene.forEach(function (shape) {
-                self.drawShape(shape);
-            });
+            this.canvasCamera = CanvasCamera.create();
+            this.canvasCamera.data = this.camera;
+            this.canvasCamera.canvasContext = this._context;
         }
     },
 
@@ -326,17 +291,24 @@ exports.FlowViewport = Montage.create(Viewport, {
 
     draw: {
         value: function () {
+            var length = this.scene.length,
+                i;
+
             this._element.width = this._width;
             this._element.height = this._height;
-            this.drawScene(this.scene);
-            this.drawShapeSelection();
+            this.canvasGrid.draw(this.matrix);
+            for (i = 0; i < length; i++) {
+                this.canvasFlowSpline.data = this.scene._data[i];
+                this.canvasFlowSpline.draw(this.matrix);
+            }
             if (this.isShowingControlPoints) {
                 this.drawShapeSelectionHandlers();
             }
             if (this.isShowingSelection) {
                 this.drawShapeSelectionBoundingRectangle();
             }
-            //this.drawShapeSelectionScale();
+            this.canvasCross.draw(this.matrix);
+            this.canvasCamera.draw(this.matrix);
         }
     }
 });

@@ -104,9 +104,53 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
+    translateX: {
+        get: function () {
+            return this.matrix[12];
+        },
+        set: function (value) {
+            this.matrix[12] = value;
+            this.needsDraw = true;
+        }
+    },
+
+    translateY: {
+        get: function () {
+            return this.matrix[13];
+        },
+        set: function (value) {
+            this.matrix[13] = value;
+            this.needsDraw = true;
+        }
+    },
+
+    scale: {
+        get: function () {
+            var indices = [0, 1, 2, 4, 5, 6, 8, 9, 10],
+                i = 0;
+
+            while (!this.matrix[indices[i]]) {
+                i++;
+            }
+            return this.matrix[indices[i]];
+        },
+        set: function (value) {
+            var indices = [0, 1, 2, 4, 5, 6, 8, 9, 10],
+                i;
+
+            for (i = 0; i < indices.length; i++) {
+                if (this.matrix[indices[i]]) {
+                    this.matrix[indices[i]] = value;
+                }
+            }
+            this.needsDraw = true;
+        }
+    },
+
     prepareForActivationEvents: {
         value: function () {
             this._element.addEventListener("mousedown", this, false);
+            this._element.addEventListener("mousewheel", this, false);
         }
     },
 
@@ -156,6 +200,13 @@ exports.Viewport = Montage.create(Component, {
             }
             document.removeEventListener("mousemove", this, false);
             document.removeEventListener("mouseup", this, false);
+        }
+    },
+
+    handleMousewheel: {
+        value: function (event) {
+            this.scale *= 1 + event.wheelDelta/10000;
+            event.preventDefault();
         }
     },
 

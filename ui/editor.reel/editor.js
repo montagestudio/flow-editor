@@ -468,6 +468,10 @@ exports.Editor = Montage.create(Component, {
                     shape.pushBezierCurve(bezier);
                 }
                 this.viewport.scene.pushShape(shape);
+                this.viewport.camera.cameraPosition = this.object.getObjectProperty("cameraPosition");
+                this.viewport.camera.cameraTargetPosition = this.object.getObjectProperty("cameraTargetPosition");
+                this.viewport.camera.cameraFov = this.object.getObjectProperty("cameraFov");
+                console.log(this.viewport.camera);
             }
         }
     },
@@ -498,8 +502,9 @@ exports.Editor = Montage.create(Component, {
                 }
             }
             this.object.setObjectProperty("paths", paths);
-            console.log(this.object.getObjectProperty("paths"));
-            console.log(this.object.stageObject._paths);
+            this.object.setObjectProperty("cameraPosition", this.viewport.camera.cameraPosition);
+            this.object.setObjectProperty("cameraTargetPosition", this.viewport.camera.cameraTargetPosition);
+            this.object.setObjectProperty("cameraFov", this.viewport.camera.cameraFov);
         }
     },
 
