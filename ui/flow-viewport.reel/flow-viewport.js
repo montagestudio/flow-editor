@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
     CanvasCross = require("ui/cross").CanvasCross,
     Camera = require("ui/camera").Camera,
     CanvasCamera = require("ui/camera").CanvasCamera,
-    CanvasFlowSpline = require("ui/flow-spline.js").CanvasFlowSpline;
+    CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline;
 
 exports.FlowViewport = Montage.create(Viewport, {
 

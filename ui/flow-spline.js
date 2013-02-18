@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
-    Vector3 = require("ui/pen-tool-math.js").Vector3,
-    BezierSpline = require("ui/pen-tool-math.js").BezierSpline;
+    Vector3 = require("ui/pen-tool-math").Vector3,
+    BezierSpline = require("ui/pen-tool-math").BezierSpline;
 
 exports.FlowSpline = Montage.create(BezierSpline, {
 

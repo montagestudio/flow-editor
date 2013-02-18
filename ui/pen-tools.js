@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    PenToolMath = require("ui/pen-tool-math.js"),
+    PenToolMath = require("ui/pen-tool-math"),
     Vector3 = PenToolMath.Vector3;
 
 exports.ArrowTool = Montage.create(Montage, {

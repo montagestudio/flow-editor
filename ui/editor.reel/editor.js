@@ -1,11 +1,11 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     FlowBezierSpline = require("montage/ui/flow-bezier-spline").FlowBezierSpline,
-    PenToolMath = require("ui/pen-tool-math.js"),
+    PenToolMath = require("ui/pen-tool-math"),
     Vector3 = PenToolMath.Vector3,
     BezierCurve = PenToolMath.BezierCurve,
     Scene = PenToolMath.Scene,
-    FlowSpline = require("ui/flow-spline.js").FlowSpline;
+    FlowSpline = require("ui/flow-spline").FlowSpline;
 
 exports.Editor = Montage.create(Component, {
 

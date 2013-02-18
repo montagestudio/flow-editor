@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    Vector3 = require("ui/pen-tool-math.js").Vector3;
+    Vector3 = require("ui/pen-tool-math").Vector3;
 
 var Cross = exports.Cross = Montage.create(Montage, {
 
