@@ -1,6 +1,8 @@
 var Montage = require("montage").Montage,
+    CanvasShape = require("ui/canvas-shape").CanvasShape,
     Vector3 = require("ui/pen-tool-math").Vector3,
-    BezierSpline = require("ui/pen-tool-math").BezierSpline;
+    BezierSpline = require("ui/pen-tool-math").BezierSpline,
+    CanvasVector3 = require("ui/canvas-vector3").CanvasVector3;
 
 exports.FlowSpline = Montage.create(BezierSpline, {
 
@@ -16,31 +18,34 @@ exports.FlowSpline = Montage.create(BezierSpline, {
 
 });
 
-exports.CanvasFlowSpline = Montage.create(Montage, {
+exports.CanvasFlowSpline = Montage.create(CanvasShape, {
 
-    _data: {
-        value: null
-    },
-
-    data: {
+    children: {
         get: function () {
-            return this._data;
-        },
-        set: function (value) {
-            this._data = value;
-        }
-    },
+            var children = [],
+                self = this;
 
-    _canvasContext: {
-        value: null
-    },
+            if (this.isSelected) {
+                this.data.forEach(function (bezier, index) {
+                    var vector;
 
-    canvasContext: {
-        get: function () {
-            return this._canvasContext;
-        },
-        set: function (value) {
-            this._canvasContext = value;
+                    if (!index) {
+                        if (bezier.getControlPoint(0)) {
+                            vector = CanvasVector3.create().initWithData(bezier.getControlPoint(0));
+                            vector.canvas = self.canvas;
+                            vector.color = self._selectedColor;
+                            children.push(vector);
+                        }
+                    }
+                    if (bezier.getControlPoint(3)) {
+                        vector = CanvasVector3.create().initWithData(bezier.getControlPoint(3));
+                        vector.canvas = self.canvas;
+                        vector.color = self._selectedColor;
+                        children.push(vector);
+                    }
+                });
+            }
+            return children;
         }
     },
 
@@ -50,18 +55,19 @@ exports.CanvasFlowSpline = Montage.create(Montage, {
                 self = this,
                 needsStroke = false;
 
-            this._canvasContext.strokeStyle = s.strokeColor;
-            this._canvasContext.lineWidth = s.strokeWidth;
-            this._canvasContext.beginPath();
+            this._context.save();
+            this._context.strokeStyle = this._color;
+            this._context.lineWidth = 3;
+            this._context.beginPath();
             s.forEach(function (bezier, index) {
                 if (bezier.isComplete) {
                     if (!index) {
-                        self._canvasContext.moveTo(
+                        self._context.moveTo(
                             bezier.getControlPoint(0).x,
                             bezier.getControlPoint(0).y
                         );
                     }
-                    self._canvasContext.bezierCurveTo(
+                    self._context.bezierCurveTo(
                         bezier.getControlPoint(1).x,
                         bezier.getControlPoint(1).y,
                         bezier.getControlPoint(2).x,
@@ -73,8 +79,48 @@ exports.CanvasFlowSpline = Montage.create(Montage, {
                 }
             });
             if (needsStroke) {
-                this._canvasContext.stroke();
+                this._context.stroke();
             }
+            this._context.restore();
+            if (this.isSelected) {
+                this.drawSelected(transformMatrix);
+            }
+        }
+    },
+
+    drawSelected: {
+        value: function (transformMatrix) {
+            var s = this._data.clone().transformMatrix3d(transformMatrix),
+                self = this,
+                needsStroke = false;
+
+            this._context.save();
+            this._context.strokeStyle = this._selectedColor;
+            this._context.lineWidth = 1;
+            this._context.beginPath();
+            s.forEach(function (bezier, index) {
+                if (bezier.isComplete) {
+                    if (!index) {
+                        self._context.moveTo(
+                            bezier.getControlPoint(0).x,
+                            bezier.getControlPoint(0).y
+                        );
+                    }
+                    self._context.bezierCurveTo(
+                        bezier.getControlPoint(1).x,
+                        bezier.getControlPoint(1).y,
+                        bezier.getControlPoint(2).x,
+                        bezier.getControlPoint(2).y,
+                        bezier.getControlPoint(3).x,
+                        bezier.getControlPoint(3).y
+                    );
+                    needsStroke = true;
+                }
+            });
+            if (needsStroke) {
+                this._context.stroke();
+            }
+            this._context.restore();
         }
     },
 

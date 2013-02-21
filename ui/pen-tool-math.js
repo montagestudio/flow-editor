@@ -610,7 +610,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
     /**
         Copy the provided array into the internal _data array
-        Provided array expected to be of length 2
+        Provided array expected to be of length 3
     */
     setCoordinates: {
         value: function (coordinatesArray) {

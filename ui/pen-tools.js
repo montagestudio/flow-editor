@@ -26,9 +26,12 @@ exports.ArrowTool = Montage.create(Montage, {
 
     handleMousedown: {
         value: function (event, viewport) {
-            viewport.selection = [
-                viewport.findSelectedShape(event.layerX, event.layerY)
-            ];
+            var selected = viewport.findSelectedShape(event.layerX, event.layerY);
+
+            if (selected) {
+                selected.isSelected = true;
+                viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            }
             this._pointerX = event.pageX,
             this._pointerY = event.pageY;
         }
@@ -39,7 +42,7 @@ exports.ArrowTool = Montage.create(Montage, {
             var dX = event.pageX - this._pointerX,
                 dY = event.pageY - this._pointerY;
 
-            if (viewport.selection[0]) {
+            if (viewport.selection && viewport.selection[0]) {
                 viewport.selection[0].translate(
                     Vector3.
                     create().

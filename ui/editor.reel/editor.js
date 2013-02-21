@@ -5,7 +5,14 @@ var Montage = require("montage").Montage,
     Vector3 = PenToolMath.Vector3,
     BezierCurve = PenToolMath.BezierCurve,
     Scene = PenToolMath.Scene,
-    FlowSpline = require("ui/flow-spline").FlowSpline;
+    FlowSpline = require("ui/flow-spline").FlowSpline,
+    CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
+    Grid = require("ui/grid").Grid,
+    CanvasGrid = require("ui/grid").CanvasGrid,
+    Camera = require("ui/camera").Camera,
+    CanvasCamera = require("ui/camera").CanvasCamera,
+    Cross = require("ui/cross").Cross,
+    CanvasCross = require("ui/cross").CanvasCross;
 
 exports.Editor = Montage.create(Component, {
 
@@ -436,11 +443,21 @@ exports.Editor = Montage.create(Component, {
     convertFlowToShape: {
         value: function () {
             var bezier, shape, spline, i, k, j,
-                paths = this.object.getObjectProperty("paths");
+                paths = this.object.getObjectProperty("paths"),
+                canvasShape,
+                grid = CanvasGrid.create().initWithData(Grid.create()),
+                cross = CanvasCross.create().initWithData(Cross.create());
 
+            cross.zIndex = 2;
+            this.camera = CanvasCamera.create().initWithData(Camera.create());
             this.viewport.scene = Scene.create().init();
+            this.viewport.scene.pushShape(cross);
+            this.viewport.scene.pushShape(grid);
+            this.viewport.scene.pushShape(this.camera);
             for (j = 0; j < paths.length; j++) {
+                canvasShape = CanvasFlowSpline.create();
                 shape = FlowSpline.create().init();
+                canvasShape.data = shape;
                 shape.fillColor = "rgba(0,0,0,0)";
                 spline = paths[j];
                 for (i = 0; i < spline.knots.length - 1; i++) {
@@ -467,43 +484,46 @@ exports.Editor = Montage.create(Component, {
                     ]));
                     shape.pushBezierCurve(bezier);
                 }
-                this.viewport.scene.pushShape(shape);
-                this.viewport.camera.cameraPosition = this.object.getObjectProperty("cameraPosition");
-                this.viewport.camera.cameraTargetPoint = this.object.getObjectProperty("cameraTargetPoint");
-                this.viewport.camera.cameraFov = this.object.getObjectProperty("cameraFov");
+                this.viewport.scene.pushShape(canvasShape);
+                this.camera.data.cameraPosition = this.object.getObjectProperty("cameraPosition");
+                this.camera.data.cameraTargetPoint = this.object.getObjectProperty("cameraTargetPoint");
+                this.camera.data.cameraFov = this.object.getObjectProperty("cameraFov");
             }
         }
     },
 
     convertShapeToFlow: {
         value: function () {
-            var shape, bezier, i, spline, j,
+            var shape, bezier, i, spline, j, k = 0,
                 paths = this.object.getObjectProperty("paths");
 
             this.object.setObjectProperty("paths", []);
             for (j = 0; j < this.viewport.scene.length; j++) {
-                shape = this.viewport.scene.getShape(j);
-                spline = paths[j];
-                for (i = 0; i < shape.length; i++) {
-                    bezier = shape.getBezierCurve(i);
-                    spline.knots[i].knotPosition[0] = (bezier.getControlPoint(0).x);
-                    spline.knots[i].knotPosition[1] = (bezier.getControlPoint(0).y);
-                    spline.knots[i].knotPosition[2] = (bezier.getControlPoint(0).z);
-                    spline.knots[i].nextHandlerPosition[0] = (bezier.getControlPoint(1).x);
-                    spline.knots[i].nextHandlerPosition[1] = (bezier.getControlPoint(1).y);
-                    spline.knots[i].nextHandlerPosition[2] = (bezier.getControlPoint(1).z);
-                    spline.knots[i + 1].previousHandlerPosition[0] = (bezier.getControlPoint(2).x);
-                    spline.knots[i + 1].previousHandlerPosition[1] = (bezier.getControlPoint(2).y);
-                    spline.knots[i + 1].previousHandlerPosition[2] = (bezier.getControlPoint(2).z);
-                    spline.knots[i + 1].knotPosition[0] = (bezier.getControlPoint(3).x);
-                    spline.knots[i + 1].knotPosition[1] = (bezier.getControlPoint(3).y);
-                    spline.knots[i + 1].knotPosition[2] = (bezier.getControlPoint(3).z);
+                shape = this.viewport.scene.getShape(j).data;
+                if (shape.type === "FlowSpline") {
+                    spline = paths[k];
+                    for (i = 0; i < shape.length; i++) {
+                        bezier = shape.getBezierCurve(i);
+                        spline.knots[i].knotPosition[0] = (bezier.getControlPoint(0).x);
+                        spline.knots[i].knotPosition[1] = (bezier.getControlPoint(0).y);
+                        spline.knots[i].knotPosition[2] = (bezier.getControlPoint(0).z);
+                        spline.knots[i].nextHandlerPosition[0] = (bezier.getControlPoint(1).x);
+                        spline.knots[i].nextHandlerPosition[1] = (bezier.getControlPoint(1).y);
+                        spline.knots[i].nextHandlerPosition[2] = (bezier.getControlPoint(1).z);
+                        spline.knots[i + 1].previousHandlerPosition[0] = (bezier.getControlPoint(2).x);
+                        spline.knots[i + 1].previousHandlerPosition[1] = (bezier.getControlPoint(2).y);
+                        spline.knots[i + 1].previousHandlerPosition[2] = (bezier.getControlPoint(2).z);
+                        spline.knots[i + 1].knotPosition[0] = (bezier.getControlPoint(3).x);
+                        spline.knots[i + 1].knotPosition[1] = (bezier.getControlPoint(3).y);
+                        spline.knots[i + 1].knotPosition[2] = (bezier.getControlPoint(3).z);
+                    }
+                    k++;
                 }
             }
             this.object.setObjectProperty("paths", paths);
-            this.object.setObjectProperty("cameraPosition", this.viewport.camera.cameraPosition);
-            this.object.setObjectProperty("cameraTargetPoint", this.viewport.camera.cameraTargetPoint);
-            this.object.setObjectProperty("cameraFov", this.viewport.camera.cameraFov);
+            this.object.setObjectProperty("cameraPosition", this.camera.data.cameraPosition);
+            this.object.setObjectProperty("cameraTargetPoint", this.camera.data.cameraTargetPoint);
+            this.object.setObjectProperty("cameraFov", this.camera.data.cameraFov);
         }
     },
 

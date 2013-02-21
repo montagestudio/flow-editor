@@ -1,4 +1,5 @@
 var Montage = require("montage").Montage,
+    CanvasShape = require("ui/canvas-shape").CanvasShape,
     Vector3 = require("ui/pen-tool-math").Vector3;
 
 var Cross = exports.Cross = Montage.create(Montage, {
@@ -17,32 +18,15 @@ var Cross = exports.Cross = Montage.create(Montage, {
 
 });
 
-exports.CanvasCross = Montage.create(Montage, {
+exports.CanvasCross = Montage.create(CanvasShape, {
 
-    _data: {
-        value: null
-    },
+    bindings: {
+        value: [
+            "xColor",
+            "yColor",
+            "zColor",
 
-    data: {
-        get: function () {
-            return this._data;
-        },
-        set: function (value) {
-            this._data = value;
-            Object.defineBinding(this, "xColor", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "xColor"
-            });
-            Object.defineBinding(this, "yColor", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "yColor"
-            });
-            Object.defineBinding(this, "zColor", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "zColor"
-            });
-            this.needsDraw = true;
-        }
+        ]
     },
 
     _xColor: {
@@ -87,56 +71,42 @@ exports.CanvasCross = Montage.create(Montage, {
         }
     },
 
-    _canvasContext: {
-        value: null
-    },
-
-    canvasContext: {
-        get: function () {
-            return this._canvasContext;
-        },
-        set: function (value) {
-            this._canvasContext = value;
-            this.needsDraw = true;
-        }
-    },
-
     draw: {
         value: function (transformMatrix) {
             var vector = Vector3.create(),
                 matrix = transformMatrix.clone();
 
             matrix[12] = matrix[13] = matrix[14] = 0;
-            this._canvasContext.save();
-            this._canvasContext.font = "8px Arial";
+            this._context.save();
+            this._context.font = "8px Arial";
 
             vector.initWithCoordinates([1, 0, 0]).transformMatrix3d(matrix).normalize().multiply(20);
-            this._canvasContext.beginPath();
-            this._canvasContext.strokeStyle =
-            this._canvasContext.fillStyle = this.xColor;
-            this._canvasContext.moveTo(26 + vector.x * .2, 26 + vector.y * .2);
-            this._canvasContext.lineTo(26 + vector.x * .8, 26 + vector.y * .8);
-            this._canvasContext.stroke();
-            this._canvasContext.fillText("X", 23 + vector.x, 29 + vector.y);
+            this._context.beginPath();
+            this._context.strokeStyle =
+            this._context.fillStyle = this.xColor;
+            this._context.moveTo(26 + vector.x * .2, 26 + vector.y * .2);
+            this._context.lineTo(26 + vector.x * .8, 26 + vector.y * .8);
+            this._context.stroke();
+            this._context.fillText("X", 23 + vector.x, 29 + vector.y);
 
             vector.initWithCoordinates([0, 1, 0]).transformMatrix3d(matrix).normalize().multiply(20);
-            this._canvasContext.beginPath();
-            this._canvasContext.strokeStyle =
-            this._canvasContext.fillStyle = this.yColor;
-            this._canvasContext.moveTo(26 + vector.x * .2, 26 + vector.y * .2);
-            this._canvasContext.lineTo(26 + vector.x * .8, 26 + vector.y * .8);
-            this._canvasContext.stroke();
-            this._canvasContext.fillText("Y", 23 + vector.x, 29 + vector.y);
+            this._context.beginPath();
+            this._context.strokeStyle =
+            this._context.fillStyle = this.yColor;
+            this._context.moveTo(26 + vector.x * .2, 26 + vector.y * .2);
+            this._context.lineTo(26 + vector.x * .8, 26 + vector.y * .8);
+            this._context.stroke();
+            this._context.fillText("Y", 23 + vector.x, 29 + vector.y);
 
             vector.initWithCoordinates([0, 0, 1]).transformMatrix3d(matrix).normalize().multiply(20);
-            this._canvasContext.beginPath();
-            this._canvasContext.strokeStyle =
-            this._canvasContext.fillStyle = this.zColor;
-            this._canvasContext.moveTo(26 + vector.x * .2, 26 + vector.y * .2);
-            this._canvasContext.lineTo(26 + vector.x * .8, 26 + vector.y * .8);
-            this._canvasContext.stroke();
-            this._canvasContext.fillText("Z", 23 + vector.x, 29 + vector.y);
-            this._canvasContext.restore();
+            this._context.beginPath();
+            this._context.strokeStyle =
+            this._context.fillStyle = this.zColor;
+            this._context.moveTo(26 + vector.x * .2, 26 + vector.y * .2);
+            this._context.lineTo(26 + vector.x * .8, 26 + vector.y * .8);
+            this._context.stroke();
+            this._context.fillText("Z", 23 + vector.x, 29 + vector.y);
+            this._context.restore();
         }
     }
 

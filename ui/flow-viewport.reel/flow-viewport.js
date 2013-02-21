@@ -1,15 +1,32 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Viewport = require("ui/viewport").Viewport,
-    Grid = require("ui/grid").Grid,
-    CanvasGrid = require("ui/grid").CanvasGrid,
-    Cross = require("ui/cross").Cross,
-    CanvasCross = require("ui/cross").CanvasCross,
-    Camera = require("ui/camera").Camera,
-    CanvasCamera = require("ui/camera").CanvasCamera,
-    CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline;
+    Viewport = require("ui/viewport").Viewport;
 
 exports.FlowViewport = Montage.create(Viewport, {
+
+    selection: {
+        get: function () {
+            var length = this.scene.length,
+                i;
+
+            this._element.width = this._width;
+            this._element.height = this._height;
+            this.scene._data.sort(function (a, b) {
+                return a.zIndex - b.zIndex;
+            });
+            for (i = 0; i < length; i++) {
+                this.scene._data[i].canvas = this._element;
+                this.scene._data[i].draw(this.matrix);
+                if (this.scene._data[i].children.length) {
+                    var j;
+
+                    for (j = 0; j < this.scene._data[i].children.length; j++) {
+                        this.scene._data[i].children[j].draw(this.matrix);
+                    }
+                }
+            }
+        }
+    },
 
     findSelectedShape: {
         value: function (x, y) {
@@ -18,13 +35,12 @@ exports.FlowViewport = Montage.create(Viewport, {
 
             for (i = length - 1; i >= 0; i--) {
                 shape = this.scene._data[i];
-                this.canvasFlowSpline.data = shape;
-                if (this.canvasFlowSpline.pointOnShape(x, y, this.matrix)) {
-                    return shape;
+                if (shape.pointOnShape) {
+                    if (shape.pointOnShape(x, y, this.matrix)) { console.log(shape);
+                        return shape;
+
+                    }
                 }
-            }
-            if (this.canvasCamera.pointOnShape(x, y, this.matrix)) {
-                return this.canvasCamera.data;
             }
             return null;
         }
@@ -69,25 +85,10 @@ exports.FlowViewport = Montage.create(Viewport, {
             this._height = this._element.offsetHeight;
             this._context = this._element.getContext("2d");
             this._element.addEventListener("mousedown", this, true);
-
-            this.canvasGrid = CanvasGrid.create();
-            this.canvasGrid.data = Grid.create();
-            this.canvasGrid.canvasContext = this._context;
-
-            this.canvasCross = CanvasCross.create();
-            this.canvasCross.data = Cross.create();
-            this.canvasCross.canvasContext = this._context;
-
-            this.canvasFlowSpline = CanvasFlowSpline.create();
-            this.canvasFlowSpline.canvasContext = this._context;
-
-            this.canvasCamera = CanvasCamera.create();
-            this.canvasCamera.data = this.camera;
-            this.canvasCamera.canvasContext = this._context;
         }
     },
 
-    drawShapeSelectionHandlers: {
+    /*drawShapeSelectionHandlers: {
         value: function () {
             var self = this;
 
@@ -196,7 +197,7 @@ exports.FlowViewport = Montage.create(Viewport, {
                 });
             }
         }
-    },
+    },*/
 
     drawShapeSelection: {
         value: function () {
@@ -242,7 +243,7 @@ exports.FlowViewport = Montage.create(Viewport, {
         value: null
     },
 
-    drawShapeSelectionBoundingRectangle: {
+    /*drawShapeSelectionBoundingRectangle: {
         value: function () {
             if (this.selection && this.selection[0]) {
                 if (this.selection[0].getTransformedAxisAlignedBoundaries) {
@@ -276,7 +277,7 @@ exports.FlowViewport = Montage.create(Viewport, {
                 }
             }
         }
-    },
+    },*/
 
     drawShapeSelectionScale: {
         value: function () {
@@ -300,21 +301,28 @@ exports.FlowViewport = Montage.create(Viewport, {
 
             this._element.width = this._width;
             this._element.height = this._height;
-            this.canvasGrid.draw(this.matrix);
+            this.scene._data.sort(function (a, b) {
+                return a.zIndex - b.zIndex;
+            });
             for (i = 0; i < length; i++) {
-                if (this.scene._data[i].type === "FlowSpline") {
-                    this.canvasFlowSpline.data = this.scene._data[i];
-                    this.canvasFlowSpline.draw(this.matrix);
+                this.scene._data[i].canvas = this._element;
+                this.scene._data[i].draw(this.matrix);
+                if (this.scene._data[i].children.length) {
+                    var j;
+
+                    for (j = 0; j < this.scene._data[i].children.length; j++) {
+                        this.scene._data[i].children[j].draw(this.matrix);
+                    }
                 }
             }
-            if (this.isShowingControlPoints) {
+            /*if (this.isShowingControlPoints) {
                 this.drawShapeSelectionHandlers();
             }
             if (this.isShowingSelection) {
                 this.drawShapeSelectionBoundingRectangle();
-            }
-            this.canvasCross.draw(this.matrix);
-            this.canvasCamera.draw(this.matrix);
+            }*/
+            /*this.canvasCross.draw(this.matrix);
+            this.canvasCamera.draw(this.matrix);*/
         }
     }
 });

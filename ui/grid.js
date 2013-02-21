@@ -1,4 +1,5 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    CanvasShape = require("ui/canvas-shape").CanvasShape;
 
 var Grid = exports.Grid = Montage.create(Montage, {
 
@@ -20,36 +21,15 @@ var Grid = exports.Grid = Montage.create(Montage, {
 
 });
 
-exports.CanvasGrid = Montage.create(Montage, {
+exports.CanvasGrid = Montage.create(CanvasShape, {
 
-    _data: {
-        value: null
-    },
-
-    data: {
-        get: function () {
-            return this._data;
-        },
-        set: function (value) {
-            this._data = value;
-            Object.defineBinding(this, "gridlineEach", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "gridlineEach"
-            });
-            Object.defineBinding(this, "subdivisions", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "subdivisions"
-            });
-            Object.defineBinding(this, "gridlineColor", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "gridlineColor"
-            });
-            Object.defineBinding(this, "subdivisionColor", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "subdivisionColor"
-            });
-            this.needsDraw = true;
-        }
+    bindings: {
+        value: [
+            "gridlineEach",
+            "subdivisions",
+            "gridlineColor",
+            "subdivisionColor"
+        ]
     },
 
     _gridlineEach: {
@@ -108,20 +88,6 @@ exports.CanvasGrid = Montage.create(Montage, {
         }
     },
 
-    _canvasContext: {
-        value: null
-    },
-
-    canvasContext: {
-        get: function () {
-            return this._canvasContext;
-        },
-        set: function (value) {
-            this._canvasContext = value;
-            this.needsDraw = true;
-        }
-    },
-
     draw: {
         value: function (transformMatrix) {
             var offsetX = transformMatrix[12],
@@ -140,24 +106,24 @@ exports.CanvasGrid = Montage.create(Montage, {
                 i++;
             }
             scale = transformMatrix[indices[i]];
-            this._canvasContext.save();
+            this._context.save();
             if (scale >= .02) {
-                this._canvasContext.fillStyle = this.gridlineColor;
+                this._context.fillStyle = this.gridlineColor;
                 xStart = ((-offsetX / (scale * 5)) >> 1) * 100;
                 xEnd = (((500 - offsetX) / (scale * 5)) >> 1) * 100;
                 for (x = xStart; x <= xEnd; x += 100) {
-                    this._canvasContext.fillRect(Math.floor(offsetX + x * scale), 0, 1, 9999);
+                    this._context.fillRect(Math.floor(offsetX + x * scale), 0, 1, 9999);
                 }
                 yStart = ((-offsetY / (scale * 5)) >> 1) * 100;
                 yEnd = (((500 - offsetY) / (scale * 5)) >> 1) * 100;
                 for (y = yStart; y <= yEnd; y += 100) {
-                    this._canvasContext.fillRect(0, Math.floor(offsetY + y * scale), 9999, 1);
+                    this._context.fillRect(0, Math.floor(offsetY + y * scale), 9999, 1);
                 }
             }
             /*this._canvasContext.fillStyle = "#2e2e2e";
             this._canvasContext.fillRect(0, Math.floor(offsetY), this._width, 1);
             this._canvasContext.fillRect(Math.floor(offsetX), 0, 1,  this._height);*/
-            this._canvasContext.restore();
+            this._context.restore();
         }
     }
 

@@ -1,4 +1,5 @@
 var Montage = require("montage").Montage,
+    CanvasShape = require("ui/canvas-shape").CanvasShape,
     Vector3 = require("ui/pen-tool-math").Vector3;
 
 var Camera = exports.Camera = Montage.create(Montage, {
@@ -36,50 +37,15 @@ var Camera = exports.Camera = Montage.create(Montage, {
 
 });
 
-exports.CanvasCamera = Montage.create(Montage, {
+exports.CanvasCamera = Montage.create(CanvasShape, {
 
-    _data: {
-        value: null
-    },
-
-    data: {
-        get: function () {
-            return this._data;
-        },
-        set: function (value) {
-            this._data = value;
-            Object.defineBinding(this, "cameraPosition", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "cameraPosition"
-            });
-            Object.defineBinding(this, "cameraTargetPoint", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "cameraTargetPoint"
-            });
-            Object.defineBinding(this, "cameraFov", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "cameraFov"
-            });
-            Object.defineBinding(this, "color", {
-                boundObject: this._data,
-                boundObjectPropertyPath: "color"
-            });
-            this.needsDraw = true;
-        }
-    },
-
-    _canvasContext: {
-        value: null
-    },
-
-    canvasContext: {
-        get: function () {
-            return this._canvasContext;
-        },
-        set: function (value) {
-            this._canvasContext = value;
-            this.needsDraw = true;
-        }
+    bindings: {
+        value: [
+            "cameraPosition",
+            "cameraTargetPoint",
+            "cameraFov",
+            "color"
+        ]
     },
 
     _color: {
@@ -186,31 +152,31 @@ exports.CanvasCamera = Montage.create(Montage, {
                     line[i] = [this.cameraPosition[0] + tmp[0], this.cameraPosition[1] + tmp[1], this.cameraPosition[2] + tmp[2]];
                     line[i + 4] = [this.cameraPosition[0] + tmp[0] * 100000, this.cameraPosition[1] + tmp[1] * 100000, this.cameraPosition[2] + tmp[2] * 100000];
                 }
-                this._canvasContext.save();
-                this._canvasContext.strokeStyle = this.color;
-                this._canvasContext.fillStyle = this.color;
-                this._canvasContext.fillRect((tPos.x >> 0) - 3, (tPos.y >> 0) - 3, 7, 7);
-                this._canvasContext.fillRect((tFocus.x >> 0) - 2, (tFocus.y >> 0) - 2, 5, 5);
-                this._canvasContext.beginPath();
-                this._canvasContext.lineWidth = .5;
+                this._context.save();
+                this._context.strokeStyle = this.color;
+                this._context.fillStyle = this.color;
+                this._context.fillRect((tPos.x >> 0) - 3, (tPos.y >> 0) - 3, 7, 7);
+                this._context.fillRect((tFocus.x >> 0) - 2, (tFocus.y >> 0) - 2, 5, 5);
+                this._context.beginPath();
+                this._context.lineWidth = .5;
                 for (i = 0; i < 8; i++) {
                     line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
-                    this._canvasContext.moveTo(tPos.x + .5, tPos.y + .5);
-                    this._canvasContext.lineTo(line[i].x + .5, line[i].y + .5);
+                    this._context.moveTo(tPos.x + .5, tPos.y + .5);
+                    this._context.lineTo(line[i].x + .5, line[i].y + .5);
                 }
-                this._canvasContext.stroke();
+                this._context.stroke();
 
-                this._canvasContext.beginPath();
-                this._canvasContext.lineWidth = 1;
-                this._canvasContext.moveTo(tPos.x + .5, tPos.y + .5);
-                this._canvasContext.lineTo(tFocus.x + .5, tFocus.y + .5);
+                this._context.beginPath();
+                this._context.lineWidth = 1;
+                this._context.moveTo(tPos.x + .5, tPos.y + .5);
+                this._context.lineTo(tFocus.x + .5, tFocus.y + .5);
                 for (i = 0; i < 4; i++) {
-                    this._canvasContext.moveTo(tPos.x + .5, tPos.y + .5);
-                    this._canvasContext.lineTo(line[i].x + .5, line[i].y + .5);
-                    this._canvasContext.lineTo(line[(i + 1) % 4].x + .5, line[(i + 1) % 4].y + .5);
+                    this._context.moveTo(tPos.x + .5, tPos.y + .5);
+                    this._context.lineTo(line[i].x + .5, line[i].y + .5);
+                    this._context.lineTo(line[(i + 1) % 4].x + .5, line[(i + 1) % 4].y + .5);
                 }
-                this._canvasContext.stroke();
-                this._canvasContext.restore();
+                this._context.stroke();
+                this._context.restore();
             }
         }
     },
@@ -222,6 +188,11 @@ exports.CanvasCamera = Montage.create(Montage, {
 
             if ((x >= tPos.x - 5) && (x <= tPos.x + 5)) {
                 if ((y >= tPos.y - 5) && (y <= tPos.y + 5)) {
+                    return true;
+                }
+            }
+            if ((x >= tFocus.x - 5) && (x <= tFocus.x + 5)) {
+                if ((y >= tFocus.y - 5) && (y <= tFocus.y + 5)) {
                     return true;
                 }
             }
