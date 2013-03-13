@@ -1,6 +1,7 @@
 var Montage = require("montage").Montage,
     CanvasShape = require("ui/canvas-shape").CanvasShape,
-    Vector3 = require("ui/pen-tool-math").Vector3;
+    Vector3 = require("ui/pen-tool-math").Vector3,
+    CanvasVector3 = require("ui/canvas-vector3").CanvasVector3;
 
 var Camera = exports.Camera = Montage.create(Montage, {
 
@@ -14,10 +15,6 @@ var Camera = exports.Camera = Montage.create(Montage, {
 
     cameraFov: {
         value: 50
-    },
-
-    color: {
-        value: "black"
     },
 
     translate: {
@@ -43,22 +40,19 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
         value: [
             "cameraPosition",
             "cameraTargetPoint",
-            "cameraFov",
-            "color"
+            "cameraFov"
         ]
     },
 
-    _color: {
-        value: null
-    },
-
-    color: {
+    children: {
         get: function () {
-            return this._color;
-        },
-        set: function (value) {
-            this._color = value;
-            this.needsDraw = true;
+            var children = [];
+
+            if (this.isSelected) {
+                children.push(this._cameraPosition);
+                children.push(this._cameraTargetPoint);
+            }
+            return children;
         }
     },
 
@@ -68,10 +62,18 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
 
     cameraPosition: {
         get: function () {
-            return this._cameraPosition;
+            if (this._cameraPosition) {
+                return this._cameraPosition._data._data;
+            } else {
+                return null;
+            }
         },
         set: function (value) {
-            this._cameraPosition = value;
+            var vector = Vector3.create();
+
+            vector._data = value;
+            this._cameraPosition = CanvasVector3.create().initWithData(vector);
+            this._cameraPosition.color = this.selectedColor;
             this.needsDraw = true;
         }
     },
@@ -82,10 +84,18 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
 
     cameraTargetPoint: {
         get: function () {
-            return this._cameraTargetPoint;
+            if (this._cameraTargetPoint) {
+                return this._cameraTargetPoint._data._data;
+            } else {
+                return null;
+            }
         },
         set: function (value) {
-            this._cameraTargetPoint = value;
+            var vector = Vector3.create();
+
+            vector._data = value;
+            this._cameraTargetPoint = CanvasVector3.create().initWithData(vector);
+            this._cameraTargetPoint.color = this.selectedColor;
             this.needsDraw = true;
         }
     },
@@ -127,7 +137,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
         }
     },
 
-    draw: {
+    drawSelf: {
         value: function (transformMatrix) {
             if (this.cameraPosition) {
                 var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
@@ -153,23 +163,30 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
                     line[i + 4] = [this.cameraPosition[0] + tmp[0] * 100000, this.cameraPosition[1] + tmp[1] * 100000, this.cameraPosition[2] + tmp[2] * 100000];
                 }
                 this._context.save();
-                this._context.strokeStyle = this.color;
-                this._context.fillStyle = this.color;
-                this._context.fillRect((tPos.x >> 0) - 3, (tPos.y >> 0) - 3, 7, 7);
-                this._context.fillRect((tFocus.x >> 0) - 2, (tFocus.y >> 0) - 2, 5, 5);
+                this._context.strokeStyle = this.isSelected ? this.selectedColor : this.color;
+                this._context.fillStyle = this.isSelected ? this.selectedColor : this.color;
                 this._context.beginPath();
                 this._context.lineWidth = .5;
-                for (i = 0; i < 8; i++) {
+                for (i = 0; i < 4; i++) {
                     line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
                     this._context.moveTo(tPos.x + .5, tPos.y + .5);
                     this._context.lineTo(line[i].x + .5, line[i].y + .5);
                 }
                 this._context.stroke();
-
+                this._context.globalAlpha = .4;
+                for (i = 4; i < 8; i++) {
+                    line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
+                    this._context.moveTo(tPos.x + .5, tPos.y + .5);
+                    this._context.lineTo(line[i].x + .5, line[i].y + .5);
+                }
+                this._context.stroke();
+                this._context.globalAlpha = 1;
                 this._context.beginPath();
                 this._context.lineWidth = 1;
-                this._context.moveTo(tPos.x + .5, tPos.y + .5);
-                this._context.lineTo(tFocus.x + .5, tFocus.y + .5);
+                if (this.isSelected) {
+                    this._context.moveTo(tPos.x + .5, tPos.y + .5);
+                    this._context.lineTo(tFocus.x + .5, tFocus.y + .5);
+                }
                 for (i = 0; i < 4; i++) {
                     this._context.moveTo(tPos.x + .5, tPos.y + .5);
                     this._context.lineTo(line[i].x + .5, line[i].y + .5);
@@ -183,16 +200,10 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
 
     pointOnShape: {
         value: function (x, y, transformMatrix) {
-            var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
-                tFocus = Vector3.create().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix);
+            var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix);
 
             if ((x >= tPos.x - 5) && (x <= tPos.x + 5)) {
                 if ((y >= tPos.y - 5) && (y <= tPos.y + 5)) {
-                    return true;
-                }
-            }
-            if ((x >= tFocus.x - 5) && (x <= tFocus.x + 5)) {
-                if ((y >= tFocus.y - 5) && (y <= tFocus.y + 5)) {
                     return true;
                 }
             }
