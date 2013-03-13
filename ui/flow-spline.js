@@ -2,7 +2,10 @@ var Montage = require("montage").Montage,
     CanvasShape = require("ui/canvas-shape").CanvasShape,
     Vector3 = require("ui/pen-tool-math").Vector3,
     BezierSpline = require("ui/pen-tool-math").BezierSpline,
-    CanvasVector3 = require("ui/canvas-vector3").CanvasVector3;
+    CanvasVector3 = require("ui/canvas-vector3").CanvasVector3,
+    CanvasFlowBezier = require("ui/flow-bezier").CanvasFlowBezier,
+    FlowSplineHandlers = require("ui/flow-spline-handlers").FlowSplineHandlers
+    CanvasFlowSplineHandlers = require("ui/flow-spline-handlers").CanvasFlowSplineHandlers;
 
 exports.FlowSpline = Montage.create(BezierSpline, {
 
@@ -22,34 +25,59 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
 
     children: {
         get: function () {
-            var children = [],
-                self = this;
+            var self = this,
+                children = [],
+                bezier,
+                handlers,
+                i;
 
             if (this.isSelected) {
-                this.data.forEach(function (bezier, index) {
-                    var vector;
-
-                    if (!index) {
-                        if (bezier.getControlPoint(0)) {
-                            vector = CanvasVector3.create().initWithData(bezier.getControlPoint(0));
-                            vector.canvas = self.canvas;
-                            vector.color = self._selectedColor;
-                            children.push(vector);
+                for (i = 0; i < this.data.length; i++) {
+                    bezier = this.data.getBezierCurve(i);
+                    handlers = CanvasFlowSplineHandlers.create();
+                    if (i) {
+                        if (this.data.getBezierCurve(i - 1) && this.data.getBezierCurve(i - 1).getControlPoint(2)) {
+                            handlers.previousHandler = this.data.getBezierCurve(i - 1).getControlPoint(2);
                         }
                     }
-                    if (bezier.getControlPoint(3)) {
-                        vector = CanvasVector3.create().initWithData(bezier.getControlPoint(3));
-                        vector.canvas = self.canvas;
-                        vector.color = self._selectedColor;
-                        children.push(vector);
+                    if (bezier.getControlPoint(0)) {
+                        handlers.initWithData(bezier.getControlPoint(0));
                     }
-                });
+                    if (bezier.getControlPoint(1)) {
+                        handlers.nextHandler = bezier.getControlPoint(1);
+                    }
+                    handlers.canvas = self.canvas;
+                    handlers.color = self._selectedColor;
+                    children.push(handlers);
+                }
+                if (this.data.length) {
+                    if (this.data.getBezierCurve(this.data.length - 1)) {
+                        bezier = this.data.getBezierCurve(this.data.length - 1);
+                    }
+                    handlers = CanvasFlowSplineHandlers.create();
+                    if (bezier.getControlPoint(3)) {
+                        handlers.initWithData(bezier.getControlPoint(3));
+                        if (bezier.getControlPoint(2)) {
+                            handlers.previousHandler = bezier.getControlPoint(2);
+                        }
+                        handlers.canvas = self.canvas;
+                        handlers.color = self._selectedColor;
+                        children.push(handlers);
+                    }
+                }
             }
             return children;
+            /*var self = this,
+                children = [];
+
+            if (this.isSelected) {
+
+            }
+            return children;*/
         }
     },
 
-    draw: {
+    drawSelf: {
         value: function (transformMatrix) {
             var s = this._data.clone().transformMatrix3d(transformMatrix),
                 self = this,
@@ -60,7 +88,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
             this._context.lineWidth = 3;
             this._context.beginPath();
             s.forEach(function (bezier, index) {
-                if (bezier.isComplete) {
+                if (bezier.length === 4) {
                     if (!index) {
                         self._context.moveTo(
                             bezier.getControlPoint(0).x,
@@ -96,10 +124,10 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
 
             this._context.save();
             this._context.strokeStyle = this._selectedColor;
-            this._context.lineWidth = 1;
+            this._context.lineWidth = 1.5;
             this._context.beginPath();
             s.forEach(function (bezier, index) {
-                if (bezier.isComplete) {
+                if (bezier.length === 4) {
                     if (!index) {
                         self._context.moveTo(
                             bezier.getControlPoint(0).x,

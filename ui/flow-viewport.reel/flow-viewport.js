@@ -6,76 +6,35 @@ exports.FlowViewport = Montage.create(Viewport, {
 
     selection: {
         get: function () {
-            var length = this.scene.length,
-                i;
-
-            this._element.width = this._width;
-            this._element.height = this._height;
-            this.scene._data.sort(function (a, b) {
-                return a.zIndex - b.zIndex;
-            });
-            for (i = 0; i < length; i++) {
-                this.scene._data[i].canvas = this._element;
-                this.scene._data[i].draw(this.matrix);
-                if (this.scene._data[i].children.length) {
-                    var j;
-
-                    for (j = 0; j < this.scene._data[i].children.length; j++) {
-                        this.scene._data[i].children[j].draw(this.matrix);
-                    }
-                }
+            if (this.scene) {
+                return this.scene.getSelection();
+            } else {
+                return null;
             }
+        }
+    },
+
+    unselect: {
+        value: function () {
+            this.scene.unselect();
         }
     },
 
     findSelectedShape: {
         value: function (x, y) {
-            var length = this.scene._data.length,
-                i;
-
-            for (i = length - 1; i >= 0; i--) {
-                shape = this.scene._data[i];
-                if (shape.pointOnShape) {
-                    if (shape.pointOnShape(x, y, this.matrix)) { console.log(shape);
-                        return shape;
-
-                    }
-                }
-            }
-            return null;
+            return this.scene.findSelectedShape(x, y, this.matrix);
         }
     },
 
-    findControlPoint: {
+    findPathToNode: {
+        value: function (node) {
+            return this.scene.findPathToNode(node);
+        }
+    },
+
+    findSelectedChild: {
         value: function (x, y) {
-            var result = null;
-
-            if (this.selection && this.selection[0] && this.selection[0].type === "FlowSpline") {
-                var shape = this.selection[0].clone().transformMatrix3d(this.matrix),
-                    self = this;
-
-                shape.forEach(function (bezier, index) {
-                    var i;
-
-                    for (i = 0; i < 4; i++) {
-                        if (bezier.getControlPoint(i)) {
-                            if ((bezier.getControlPoint(i).x - 5 <= x) &&
-                                (bezier.getControlPoint(i).x + 5 >= x) &&
-                                (bezier.getControlPoint(i).y - 5 <= y) &&
-                                (bezier.getControlPoint(i).y + 5 >= y)) {
-
-                                result = {
-                                    shape: shape,
-                                    controlPoint: self.selection[0].getBezierCurve(index).getControlPoint(i),
-                                    bezierIndex: index,
-                                    controlPointIndex: i
-                                };
-                            }
-                        }
-                    }
-                });
-            }
-            return result;
+            return this.scene.findSelectedLeaf(x, y, this.matrix);
         }
     },
 
@@ -301,7 +260,9 @@ exports.FlowViewport = Montage.create(Viewport, {
 
             this._element.width = this._width;
             this._element.height = this._height;
-            this.scene._data.sort(function (a, b) {
+            this.scene.canvas = this._element;
+            this.scene.draw(this.matrix);
+            /*this.scene._data.sort(function (a, b) {
                 return a.zIndex - b.zIndex;
             });
             for (i = 0; i < length; i++) {
@@ -314,7 +275,7 @@ exports.FlowViewport = Montage.create(Viewport, {
                         this.scene._data[i].children[j].draw(this.matrix);
                     }
                 }
-            }
+            }*/
             /*if (this.isShowingControlPoints) {
                 this.drawShapeSelectionHandlers();
             }

@@ -72,6 +72,9 @@ POSSIBILITY OF SUCH DAMAGE.
 .flow-Editor-Toolbar-Button-Convert:after {
     background-position: -288px 0;
 }
+.flow-Editor-Toolbar-Button-Pen:after {
+    background-position: 0 0;
+}
 .flow-Editor-Toolbar-Button-MoveKnot:after {
     background-position: -40px 0;
 }

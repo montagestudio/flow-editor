@@ -1,6 +1,9 @@
 var Montage = require("montage").Montage,
     PenToolMath = require("ui/pen-tool-math"),
-    Vector3 = PenToolMath.Vector3;
+    Vector3 = PenToolMath.Vector3,
+    FlowSpline = require("ui/flow-spline").FlowSpline,
+    CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
+    BezierCurve = PenToolMath.BezierCurve;
 
 exports.ArrowTool = Montage.create(Montage, {
 
@@ -28,10 +31,11 @@ exports.ArrowTool = Montage.create(Montage, {
         value: function (event, viewport) {
             var selected = viewport.findSelectedShape(event.layerX, event.layerY);
 
+            viewport.unselect();
             if (selected) {
                 selected.isSelected = true;
-                viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
+            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             this._pointerX = event.pageX,
             this._pointerY = event.pageY;
         }
@@ -60,7 +64,7 @@ exports.ArrowTool = Montage.create(Montage, {
                 viewport.translateX += dX;
                 viewport.translateY += dY;
             }
-            this._pointerX = event.pageX,
+            this._pointerX = event.pageX;
             this._pointerY = event.pageY;
         }
     },
@@ -96,7 +100,7 @@ exports.ConvertTool = Montage.create(Montage, {
 
     handleMousedown: {
         value: function (event, viewport) {
-            var result = viewport.findControlPoint(event.layerX, event.layerY);
+            /*var result = viewport.findControlPoint(event.layerX, event.layerY);
 
             if (result) {
                 this._selectedControlPoint = result;
@@ -107,6 +111,31 @@ exports.ConvertTool = Montage.create(Montage, {
                 this._selectedControlPoint = null;
             }
             this._pointerX = event.pageX,
+            this._pointerY = event.pageY;*/
+            var path,
+                i;
+
+            this._selectedChild = viewport.findSelectedChild(event.layerX, event.layerY);
+            if (this._selectedChild) {
+                path = viewport.findPathToNode(this._selectedChild);
+                viewport.unselect();
+                for (i = 0; i < path.length; i++) {
+                    path[i].isSelected = true;
+                }
+                /*if (previousSelectedChild && !previousSelectedChild.hasChild(this._selectedChild)) {
+                    previousSelectedChild.isSelected = false;
+                }
+                this._selectedChild.isSelected = true;*/
+            } else {
+                viewport.unselect();
+            }
+            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            /*viewport.unselect();
+            if (selected) {
+                selected.isSelected = true;
+            }
+            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);*/
+            this._pointerX = event.pageX;
             this._pointerY = event.pageY;
         }
     },
@@ -116,8 +145,8 @@ exports.ConvertTool = Montage.create(Montage, {
             var dX = event.pageX - this._pointerX,
                 dY = event.pageY - this._pointerY;
 
-            if (this._selectedControlPoint) {
-                this._selectedControlPoint.controlPoint.translate(
+            if (this._selectedChild) {
+                this._selectedChild.translate(
                     Vector3.
                     create().
                     initWithCoordinates([dX, dY, 0]).
@@ -130,26 +159,155 @@ exports.ConvertTool = Montage.create(Montage, {
                     )._data
                 );
             } else {
-                if (viewport.selection[0]) {
-                    viewport.selection[0].translate(
-                        Vector3.
-                        create().
-                        initWithCoordinates([dX, dY, 0]).
-                        transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix)).
-                        subtract(
-                            Vector3.
-                            create().
-                            initWithCoordinates([0, 0, 0]).
-                            transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
-                        )._data
-                    );
-                } else {
-                    viewport.translateX += dX;
-                    viewport.translateY += dY;
-                }
+                viewport.translateX += dX;
+                viewport.translateY += dY;
             }
             viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
-            this._pointerX = event.pageX,
+            this._pointerX = event.pageX;
+            this._pointerY = event.pageY;
+        }
+    },
+
+    handleMouseup: {
+        value: function (event, viewport) {
+        }
+    }
+
+});
+
+exports.PenTool = Montage.create(Montage, {
+
+    start: {
+        value: function (viewport) {
+            this._editingSpline = null;
+        }
+    },
+
+    stop: {
+        value: function (viewport) {
+        }
+    },
+
+    _pointerX: {
+        value: null
+    },
+
+    _pointerY: {
+        value: null
+    },
+
+    _editingSpline: {
+        value: null
+    },
+
+    handleMousedown: {
+        value: function (event, viewport) {
+            var canvasShape,
+                shape,
+                spline,
+                bezier,
+                previousBezier,
+                knot;
+
+            if (this._editingSpline) {
+                console.log(this._editingSpline);
+                bezier = this._editingSpline._data[this._editingSpline.length - 1];
+                if (bezier._data.length === 4) {
+                    previousBezier = bezier;
+                    bezier = BezierCurve.create().init();
+                    this._editingSpline.pushBezierCurve(bezier);
+                    bezier.pushControlPoint(knot = Vector3.
+                        create().
+                        initWithCoordinates([
+                            bezier.getControlPoint(0).x * 2 - previousBezier.getControlPoint(2).x,
+                            bezier.getControlPoint(0).y * 2 - previousBezier.getControlPoint(2).y,
+                            bezier.getControlPoint(0).z * 2 - previousBezier.getControlPoint(2).z])
+                    );
+                }
+                bezier.pushControlPoint(Vector3.
+                    create().
+                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
+                );
+                bezier.pushControlPoint(knot = Vector3.
+                    create().
+                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
+                );
+                console.log(bezier);
+                bezier._isSelected = true;
+                knot._isSelected = true;
+            } else {
+                canvasShape = CanvasFlowSpline.create();
+                this._editingSpline = shape = FlowSpline.create().init();
+                canvasShape.initWithData(shape);
+                bezier = BezierCurve.create().init();
+                bezier.pushControlPoint(knot = Vector3.
+                    create().
+                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
+                );
+                bezier._isSelected = true;
+                knot._isSelected = true;
+                bezier.pushControlPoint(Vector3.
+                    create().
+                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
+                );
+                shape.pushBezierCurve(bezier);
+                canvasShape.isSelected = true;
+                viewport.scene.children.push(canvasShape);
+            }
+            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            this._pointerX = event.pageX;
+            this._pointerY = event.pageY;
+        }
+    },
+
+    handleMousemove: {
+        value: function (event, viewport) {
+            var dX = event.pageX - this._pointerX,
+                dY = event.pageY - this._pointerY,
+                vector = this._editingSpline._data[this._editingSpline.length - 1]._data[2];
+
+            if (!vector) {
+                vector = this._editingSpline._data[this._editingSpline.length - 1]._data[1];
+            }
+            vector.translate(
+                    Vector3.
+                    create().
+                    initWithCoordinates([dX, dY, 0]).
+                    transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix)).
+                    subtract(
+                        Vector3.
+                        create().
+                        initWithCoordinates([0, 0, 0]).
+                        transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
+                    )._data
+                );
+            /*var dX = event.pageX - this._pointerX,
+                dY = event.pageY - this._pointerY;
+
+            if (this._selectedChild) {
+                this._selectedChild.translate(
+                    Vector3.
+                    create().
+                    initWithCoordinates([dX, dY, 0]).
+                    transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix)).
+                    subtract(
+                        Vector3.
+                        create().
+                        initWithCoordinates([0, 0, 0]).
+                        transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
+                    )._data
+                );
+            } else {
+                viewport.translateX += dX;
+                viewport.translateY += dY;
+            }
+            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);*/
+            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            this._pointerX = event.pageX;
             this._pointerY = event.pageY;
         }
     },

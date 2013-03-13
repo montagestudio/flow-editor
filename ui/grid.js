@@ -88,7 +88,7 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
         }
     },
 
-    draw: {
+    drawSelf: {
         value: function (transformMatrix) {
             var offsetX = transformMatrix[12],
                 offsetY = transformMatrix[13],
