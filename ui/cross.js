@@ -71,7 +71,7 @@ exports.CanvasCross = Montage.create(CanvasShape, {
         }
     },
 
-    draw: {
+    drawSelf: {
         value: function (transformMatrix) {
             var vector = Vector3.create(),
                 matrix = transformMatrix.clone();
