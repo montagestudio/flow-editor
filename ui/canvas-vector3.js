@@ -17,14 +17,31 @@ exports.CanvasVector3 = Montage.create(CanvasShape, {
         }
     },
 
-    draw: {
+    drawSelf: {
         value: function (transformMatrix) {
             var vector = this._data.clone().transformMatrix3d(transformMatrix);
 
             this._context.save();
             this._context.fillStyle = this.color;
-            this._context.fillRect(vector.x - 2, vector.y - 2, 5, 5);
+            this._context.fillRect(vector.x - 3, vector.y - 3, 7, 7);
+            if (!this.isSelected) {
+                this._context.fillStyle = "white";
+                this._context.fillRect(vector.x - 2, vector.y - 2, 5, 5);
+            }
             this._context.restore();
+        }
+    },
+
+    pointOnShape: {
+        value: function (x, y, transformMatrix) {
+            var vector = this._data.clone().transformMatrix3d(transformMatrix);
+
+            if ((x >= vector.x - 3) && (x <= vector.x + 5)) {
+                if ((y >= vector.y - 3) && (y <= vector.y + 5)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
