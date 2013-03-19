@@ -3,6 +3,7 @@
     "version": "0.2.0",
     "main": "core/controller",
     "dependencies": {
-        "montage": "0.12.x"
+        "montage": "0.13.0-alpha",
+        "matte": "0.1.1-alpha"
     }
  }

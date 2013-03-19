@@ -47,6 +47,13 @@ exports.FlowViewport = Montage.create(Viewport, {
         }
     },
 
+    willDraw: {
+        value: function () {
+            this._width = this._element.offsetWidth;
+            this._height = this._element.offsetHeight;
+        }
+    },
+
     /*drawShapeSelectionHandlers: {
         value: function () {
             var self = this;

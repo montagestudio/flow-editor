@@ -43,9 +43,9 @@ exports.CanvasShape = Montage.create(Montage, {
             this._data = value;
             if (this.bindings) {
                 for (i = 0; i < this.bindings.length; i++) {
-                    Object.defineBinding(this, this.bindings[i], {
-                        boundObject: this._data,
-                        boundObjectPropertyPath: this.bindings[i]
+                    this.defineBinding(this.bindings[i], {
+                        "<->": this.bindings[i],
+                        source: this._data
                     });
                 }
             }
