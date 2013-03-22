@@ -569,6 +569,7 @@ exports.Editor = Montage.create(Component, {
     handleSceneUpdated: {
         value: function () {
             this.convertShapeToFlow();
+            this.selection = "foo";
         }
     },
 

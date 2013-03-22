@@ -210,20 +210,8 @@ exports.PenTool = Montage.create(Montage, {
                 knot;
 
             if (this._editingSpline) {
-                console.log(this._editingSpline);
+                if (this.previousKnot) this.previousKnot._isSelected = false;
                 bezier = this._editingSpline._data[this._editingSpline.length - 1];
-                if (bezier._data.length === 4) {
-                    previousBezier = bezier;
-                    bezier = BezierCurve.create().init();
-                    this._editingSpline.pushBezierCurve(bezier);
-                    bezier.pushControlPoint(knot = Vector3.
-                        create().
-                        initWithCoordinates([
-                            bezier.getControlPoint(0).x * 2 - previousBezier.getControlPoint(2).x,
-                            bezier.getControlPoint(0).y * 2 - previousBezier.getControlPoint(2).y,
-                            bezier.getControlPoint(0).z * 2 - previousBezier.getControlPoint(2).z])
-                    );
-                }
                 bezier.pushControlPoint(Vector3.
                     create().
                     initWithCoordinates([event.layerX, event.layerY, 0]).
@@ -234,9 +222,28 @@ exports.PenTool = Montage.create(Montage, {
                     initWithCoordinates([event.layerX, event.layerY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
-                console.log(bezier);
+                //if (bezier._data.length === 4) {
+                    //previousBezier = bezier;
+knot._isSelected = true;
+this.previousKnot = knot;
+                    bezier = BezierCurve.create().init();
+                    this._editingSpline.pushBezierCurve(bezier);
+                    /*bezier.pushControlPoint(knot = Vector3.
+                        create().
+                        initWithCoordinates([
+                            bezier.getControlPoint(0).x * 2 - previousBezier.getControlPoint(2).x,
+                            bezier.getControlPoint(0).y * 2 - previousBezier.getControlPoint(2).y,
+                            bezier.getControlPoint(0).z * 2 - previousBezier.getControlPoint(2).z])
+                    );*/
+                //}
+                bezier.pushControlPoint(knot=Vector3.
+                    create().
+                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
+                );
                 bezier._isSelected = true;
                 knot._isSelected = true;
+
             } else {
                 canvasShape = CanvasFlowSpline.create();
                 this._editingSpline = shape = FlowSpline.create().init();
@@ -257,6 +264,7 @@ exports.PenTool = Montage.create(Montage, {
                 shape.pushBezierCurve(bezier);
                 canvasShape.isSelected = true;
                 viewport.scene.children.push(canvasShape);
+                this.previousKnot = knot;
             }
             viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             this._pointerX = event.pageX;
@@ -268,11 +276,9 @@ exports.PenTool = Montage.create(Montage, {
         value: function (event, viewport) {
             var dX = event.pageX - this._pointerX,
                 dY = event.pageY - this._pointerY,
-                vector = this._editingSpline._data[this._editingSpline.length - 1]._data[2];
+                vector = this._editingSpline._data[this._editingSpline.length - 1]._data[1],
+                vector2;
 
-            if (!vector) {
-                vector = this._editingSpline._data[this._editingSpline.length - 1]._data[1];
-            }
             vector.translate(
                     Vector3.
                     create().
@@ -285,6 +291,14 @@ exports.PenTool = Montage.create(Montage, {
                         transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                     )._data
                 );
+
+            if (this._editingSpline._data[this._editingSpline.length - 2] && (vector2 = this._editingSpline._data[this._editingSpline.length - 2]._data[2])) {
+                    vector2._data = [
+                        this._editingSpline._data[this._editingSpline.length - 1].getControlPoint(0).x * 2 - vector.x,
+                        this._editingSpline._data[this._editingSpline.length - 1].getControlPoint(0).y * 2 - vector.y,
+                        this._editingSpline._data[this._editingSpline.length - 1].getControlPoint(0).z * 2 - vector.z
+                    ];
+            }
             /*var dX = event.pageX - this._pointerX,
                 dY = event.pageY - this._pointerY;
 

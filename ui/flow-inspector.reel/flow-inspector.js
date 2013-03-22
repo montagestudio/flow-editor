@@ -65,6 +65,7 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
         },
         set: function (value) {
             this._selection = value;
+            console.log(value);
             if (this.scene && value[0]) {
                 var length = this.scene.length,
                     i = 0;
