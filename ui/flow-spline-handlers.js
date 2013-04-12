@@ -3,13 +3,103 @@ var Montage = require("montage").Montage,
     Vector3 = require("ui/pen-tool-math").Vector3,
     CanvasVector3 = require("ui/canvas-vector3").CanvasVector3;
 
+exports.FlowKnot = Montage.create(Vector3, {
+
+    type: {
+        value: "FlowKnot"
+    },
+
+    rotateX: {
+        value: 0
+    },
+
+    rotateY: {
+        value: 0
+    },
+
+    rotateZ: {
+        value: 0
+    },
+
+    opacity: {
+        value: 1
+    }
+
+});
+
 exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
+
+
+    _almostEqual: {
+        value: function (floatA, floatB) {
+            var max, min,
+                relativeDifference;
+
+            if (Math.abs(floatA) > Math.abs(floatB)) {
+                max = floatA;
+                min = floatB;
+            } else {
+                max = floatB;
+                min = floatA;
+            }
+            relativeDifference = max / min;
+            if (isNaN(relativeDifference)) {
+                return true;
+            }
+            if (relativeDifference < 0) {
+                return false;
+            } else {
+                relativeDifference -= 1;
+                return (relativeDifference < .00001);
+            }
+        }
+    },
 
     /*
         Types: corner, smooth, symmetric
     */
+
+    _type: {
+        value: null
+    },
+
     type: {
-        value: "symmetric"
+        get: function () {
+            if (!this._type) {
+                if (this._previousHandler && this._nextHandler) {
+                    var expectedX = this.data.x * 2 - this._previousHandler.x,
+                        expectedY = this.data.y * 2 - this._previousHandler.y,
+                        expectedZ = this.data.z * 2 - this._previousHandler.z;
+
+                    if (this._almostEqual(this._nextHandler.x, expectedX) &&
+                        this._almostEqual(this._nextHandler.y, expectedY) &&
+                        this._almostEqual(this._nextHandler.z, expectedZ)) {
+                        this._type = "symmetric";
+                    } else {
+                        this._type = "corner";
+                    }
+                } else {
+                    this._type = "symmetric";
+                }
+            }
+            return this._type;
+        },
+        set: function (value) {
+            this._type = value;
+            switch (value) {
+                case "symmetric":
+                    if (this._previousHandler && this._nextHandler) {
+                        this._nextHandler._data = [
+                            this.data.x * 2 - this._previousHandler.x,
+                            this.data.y * 2 - this._previousHandler.y,
+                            this.data.z * 2 - this._previousHandler.z
+                        ];
+                    }
+                break;
+                case "smooth":
+                break;
+            }
+        }
     },
 
     _previousHandler: {
@@ -83,23 +173,28 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
                 children = [];
 
             if (this.isSelected) {
-                if (this.previousHandler) {
-                    vector = CanvasVector3.create().initWithData(this.previousHandler);
-                    vector.canvas = self.canvas;
-                    vector.color = self._selectedColor;
-                    vector.translate = function (vector) {
-                        self.translatePreviousHandler(vector);
-                    };
-                    children.push(vector);
-                }
-                if (this.nextHandler) {
-                    vector = CanvasVector3.create().initWithData(this.nextHandler);
-                    vector.canvas = self.canvas;
-                    vector.color = self._selectedColor;
-                    vector.translate = function (vector) {
-                        self.translateNextHandler(vector);
-                    };
-                    children.push(vector);
+                if (!this._children) {
+                    if (this.previousHandler) {
+                        vector = CanvasVector3.create().initWithData(this.previousHandler);
+                        vector.canvas = self.canvas;
+                        vector.color = self._selectedColor;
+                        vector.translate = function (vector) {
+                            self.translatePreviousHandler(vector);
+                        };
+                        children.push(vector);
+                    }
+                    if (this.nextHandler) {
+                        vector = CanvasVector3.create().initWithData(this.nextHandler);
+                        vector.canvas = self.canvas;
+                        vector.color = self._selectedColor;
+                        vector.translate = function (vector) {
+                            self.translateNextHandler(vector);
+                        };
+                        children.push(vector);
+                    }
+                    this._children = children;
+                } else {
+                    children = this._children;
                 }
             }
             return children;
@@ -133,7 +228,7 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
             s = this._data.clone().transformMatrix3d(transformMatrix);
             this._context.fillStyle = this.color;
             switch (this.type) {
-                case "smooth":
+                case "corner":
                     this._context.fillRect(s.x - 3, s.y - 3, 7, 7);
                     if (!this.isSelected) {
                         this._context.fillStyle = "white";

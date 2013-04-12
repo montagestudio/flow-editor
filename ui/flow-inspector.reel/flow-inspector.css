@@ -1,24 +1,130 @@
 .FlowInspector {
-    width: 470px;
-    height: 40px;
-    padding: 4px 15px;
+    width: 250px;
     color: #fff;
     font-family: Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 38px;
+    font-size: 13px;
+    z-index: 9999;
+    background: rgba(40,40,40,.9);
+    border: 1px solid #000;
+    border-radius: 4px;
 }
-.label {
-    width: 70px;
-    height: 34px;
-    float: left;
+
+.FlowInspector li {
+    padding: 0 6px;
+    border-top: 1px solid rgba(255, 255, 255, .15);
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+    height: 29px;
 }
-.position {
-    width: 54px;
-    height: 34px;
-    line-height: 34px;
+
+.FlowInspector span {
+    display: block;
     float: left;
-    margin-left: 4px;
-    padding: 0 8px;
-    border: 1px solid #666;
+    padding-right: 6px;
+    line-height: 29px;
+}
+
+.FlowInspector .label {
+    background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#000));
+    line-height: 25px;
+    height: 25px;
+    padding: 0 6px;
+    -webkit-user-select: none;
+}
+
+.FlowInspector .flow-number-input {
+    display: block;
+    float: left;
+    width: 60px;
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    border-right: 1px solid rgba(255, 255, 255, .15);
+    border-left: 1px solid rgba(0, 0, 0, .5);
+    border-top: 1px solid rgba(0, 0, 0, .5);
+    background: transparent;
+    outline: none;
+    color: white;
+    margin-top: 4px;
+    height: 19px;
+    overflow: hidden;
     text-align: right;
+    font-family: inherit;
+}
+
+.FlowInspector select {
+    width: auto;
+    margin-top: 4px;
+    height: 19px;
+}
+
+.FlowInspector .FlowNumberInput span {
+    display: block;
+    float: left;
+    height: 19px;
+    width: 19px;
+    line-height: 19px;
+    font-size: 13px;
+    padding: 0;
+    overflow: hidden;
+    color: rgba(255, 255, 255, .4);
+    text-shadow: 1px 0 rgba(0, 0, 0, .7);
+    margin-left: 1px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, .15);
+    border-left: 1px solid rgba(255, 255, 255, .15);
+    border-right: 1px solid rgba(0, 0, 0, .5);
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+    text-align: center;
+    cursor: ew-resize;
+}
+
+.FlowInspector .FlowNumberInput.pressed span {
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    border-right: 1px solid rgba(255, 255, 255, .15);
+    border-left: 1px solid rgba(0, 0, 0, .5);
+    border-top: 1px solid rgba(0, 0, 0, .5);
+}
+
+.FlowInspector .FlowNumberInput.pressed input {
+    background-color: rgba(0, 119, 255, .15);
+}
+
+.FlowKnotInspector {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.FlowKnotInspector .property {
+    display: inline-block;
+    width: 60px;
+    text-align: right;
+}
+
+.FlowInspector .close {
+    box-sizing: content-box;
+    min-width: 0;
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    margin: 0;
+    padding: 0;
+    height: 16px;
+    width: 16px !important;
+    border: none;
+    background: -webkit-gradient(linear, left top, left bottom, from(#888), to(#333));
+    border-radius: 2px;
+    overflow: hidden;
+    display: block;
+    font-size: 12px;
+    line-height: 15px;
+    text-align: center;
+    color: rgba(255, 255, 255, .65);
+    -webkit-user-select: none;
+}
+
+.FlowInspector .close:hover {
+    background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#222));
+    color: rgba(255, 255, 255, 1);
 }

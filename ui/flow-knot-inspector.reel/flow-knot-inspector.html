@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="flow-knot-inspector.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "flow-knot-inspector"}
+            },
+            "bindings": {
+                "x": {"<->": "@owner.knot._data._data.0"},
+                "y": {"<->": "@owner.knot._data._data.1"},
+                "z": {"<->": "@owner.knot._data._data.2"},
+                "type": {"<->": "@owner.knot.type"},
+                "rotateX": {"<->": "@owner.knot._data.rotateX"},
+                "rotateY": {"<->": "@owner.knot._data.rotateY"},
+                "rotateZ": {"<->": "@owner.knot._data.rotateZ"},
+                "opacity": {"<->": "@owner.knot._data.opacity"}
+            }
+        },
+        "xInput": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "x"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.x"}
+            }
+        },
+        "yInput": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "y"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.y"}
+            }
+        },
+        "zInput": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "z"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.z"}
+            }
+        },
+        "junctionSymmetric": {
+            "prototype": "matte/ui/input-radio.reel",
+            "properties": {
+                "element": {"#": "junctionSymmetric"}
+            },
+            "bindings": {
+                "checked": {"<->": "@owner.type == 'symmetric'"}
+            }
+        },
+        "junctionCorner": {
+            "prototype": "matte/ui/input-radio.reel",
+            "properties": {
+                "element": {"#": "junctionCorner"}
+            },
+            "bindings": {
+                "checked": {"<->": "@owner.type == 'corner'"}
+            }
+        },
+        "rotateX": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "rotateX"},
+                "step": 0.01
+            },
+            "bindings": {
+                "value": {"<->": "@owner.rotateX"}
+            }
+        },
+        "rotateY": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "rotateY"},
+                "step": 0.01
+            },
+            "bindings": {
+                "value": {"<->": "@owner.rotateY"}
+            }
+        },
+        "rotateZ": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "rotateZ"},
+                "step": 0.01
+            },
+            "bindings": {
+                "value": {"<->": "@owner.rotateZ"}
+            }
+        },
+        "opacity": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "opacity"},
+                "step": 0.01
+            },
+            "bindings": {
+                "value": {"<->": "@owner.opacity"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <ul data-montage-id="flow-knot-inspector" class="FlowKnotInspector">
+        <li>
+            <span class="property">x</span><div data-montage-id="x" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">y</span><div data-montage-id="y" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">z</span><div data-montage-id="z" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">junction</span>
+            <span data-montage-id="junctions">
+                <input type="radio" data-montage-id="junctionSymmetric" name="junctions"> symmetric
+                <input type="radio" data-montage-id="junctionCorner" name="junctions"> corner
+            </span>
+        </li>
+        <li>
+            <span class="property">rotateX</span><div data-montage-id="rotateX" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">rotateY</span><div data-montage-id="rotateY" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">rotateZ</span><div data-montage-id="rotateZ" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">opacity</span><div data-montage-id="opacity" class="inspector-input"></div>
+        </li>
+    </ul>
+</body>
+</html>

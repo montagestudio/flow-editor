@@ -4,7 +4,11 @@
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Vector3 = require("ui/pen-tool-math").Vector3,
+    inspectors = {
+        FlowKnot: require("ui/flow-knot-inspector.reel").FlowKnotInspector
+    };
 
 /**
     Description TODO
@@ -17,45 +21,11 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
         value: ""
     },
 
-    x: {
-        value: ""
-    },
-
-    y: {
-        value: ""
-    },
-
-    z: {
-        value: ""
-    },
-
-    _scene: {
+    _selection: {
         value: null
     },
 
-    scene: {
-        get: function () {
-            return this._scene;
-        },
-        set: function (value) {
-            if (this._scene) {
-                this._scene.removeEventListener("sceneUpdated", this, false);
-            }
-            this._scene = value;
-            if (this._scene) {
-                this._scene.addEventListener("sceneUpdated", this, false);
-            }
-            this.needsDraw = true;
-        }
-    },
-
-    handleSceneUpdated: {
-        value: function () {
-            this.showPosition();
-        }
-    },
-
-    _selection: {
+    _showing: {
         value: null
     },
 
@@ -65,36 +35,92 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
         },
         set: function (value) {
             this._selection = value;
-            console.log(value);
-            if (this.scene && value[0]) {
-                var length = this.scene.length,
-                    i = 0;
 
-                while (i < length && this.scene._data[i] !== value[0]) {
-                    i++;
-                }
-                this.labelText = "Path " + i;
-            } else {
-                this.labelText = "";
-            }
-            this.showPosition();
         }
     },
 
-    showPosition: {
+    handleCloseAction: {
         value: function () {
-            if (this._selection && this._selection[0]) {
-                if (this._selection[0].type === "FlowSpline") {
-                    var bb = this._selection[0].axisAlignedBoundaries;
-                    this.x = (bb[0].min * 10 | 0) / 10;
-                    this.y = (bb[1].min * 10 | 0) / 10;
-                    this.z = (bb[2].min * 10 | 0) / 10;
-                }
-            } else {
-                this.x = "";
-                this.y = "";
-                this.z = "";
+            this._visible = false;
+            this.needsDraw = true;
+        }
+    },
+
+    _visible: {
+        value: false
+    },
+
+    visible: {
+        get: function () {
+            return this._visible;
+        },
+        set: function (value) {
+            this._visible = value;
+            this.needsDraw = true;
+        }
+    },
+
+    _pointerX: {
+        value: null
+    },
+
+    _pointerY: {
+        value: null
+    },
+
+    _windowPositionX: {
+        value: 510
+    },
+
+    _windowPositionY: {
+        value: 10
+    },
+
+    handleMousemove: {
+        value: function (event) {
+            var dX = event.pageX - this._pointerX,
+                dY = event.pageY - this._pointerY;
+
+            this._windowPositionX += dX;
+            this._windowPositionY += dY;
+            this._pointerX = event.pageX;
+            this._pointerY = event.pageY;
+            this.needsDraw = true;
+            document.addEventListener("mousemove", this, false);
+            document.addEventListener("mouseup", this, false);
+        }
+    },
+
+    handleMouseup: {
+        value: function (event) {
+            document.removeEventListener("mousemove", this, false);
+            document.removeEventListener("mouseup", this, false);
+        }
+    },
+
+    handleMousedown: {
+        value: function (event) {
+            this._pointerX = event.pageX;
+            this._pointerY = event.pageY;
+            document.addEventListener("mousemove", this, false);
+            document.addEventListener("mouseup", this, false);
+            event.preventDefault();
+        }
+    },
+
+    enterDocument: {
+        value: function (firstTime) {
+            if (firstTime) {
+                this.title.addEventListener("mousedown", this, false);
             }
+        }
+    },
+
+    draw: {
+        value: function () {
+            //this.element.style.display = this._visible ? "block" : "none";
+            this.element.style.left = this._windowPositionX + "px";
+            this.element.style.top = this._windowPositionY + "px";
         }
     }
 

@@ -14,19 +14,34 @@ var Cross = exports.Cross = Montage.create(Montage, {
 
     zColor: {
         value: "blue"
+    },
+
+    type: {
+        value: "FlowCross"
     }
 
 });
 
 exports.CanvasCross = Montage.create(CanvasShape, {
 
-    bindings: {
-        value: [
-            "xColor",
-            "yColor",
-            "zColor",
-
-        ]
+    didCreate: {
+        value: function () {
+            CanvasShape.didCreate.call(this);
+            this.defineBindings({
+                "xColor": {
+                    "<->": "data.xColor",
+                    source: this
+                },
+                "yColor": {
+                    "<->": "data.yColor",
+                    source: this
+                },
+                "zColor": {
+                    "<->": "data.zColor",
+                    source: this
+                }
+            });
+        }
     },
 
     _xColor: {

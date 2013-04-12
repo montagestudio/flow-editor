@@ -34,13 +34,15 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
         }
     },
 
-    prepareForDraw: {
-        value: function () {
-            this._tools = {
-                "arrow": PenTools.ArrowTool,
-                "convert": PenTools.ConvertTool,
-                "pen": PenTools.PenTool
-            };
+    enterDocument: {
+        value: function (firstTime) {
+            if (firstTime) {
+                this._tools = {
+                    "arrow": PenTools.ArrowTool,
+                    "convert": PenTools.ConvertTool,
+                    "pen": PenTools.PenTool
+                };
+            }
         }
     },
 

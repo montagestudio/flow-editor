@@ -5,6 +5,10 @@ var Montage = require("montage").Montage,
 
 var Camera = exports.Camera = Montage.create(Montage, {
 
+    type: {
+        value: "FlowCamera"
+    },
+
     cameraPosition: {
         value: [0, 0, 800]
     },
@@ -36,12 +40,24 @@ var Camera = exports.Camera = Montage.create(Montage, {
 
 exports.CanvasCamera = Montage.create(CanvasShape, {
 
-    bindings: {
-        value: [
-            "cameraPosition",
-            "cameraTargetPoint",
-            "cameraFov"
-        ]
+    didCreate: {
+        value: function () {
+            CanvasShape.didCreate.call(this);
+            this.defineBindings({
+                "cameraPosition": {
+                    "<->": "data.cameraPosition",
+                    source: this
+                },
+                "cameraTargetPoint": {
+                    "<->": "data.cameraTargetPoint",
+                    source: this
+                },
+                "cameraFov": {
+                    "<->": "data.cameraFov",
+                    source: this
+                }
+            });
+        }
     },
 
     children: {

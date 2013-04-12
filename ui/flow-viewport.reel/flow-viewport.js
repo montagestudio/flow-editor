@@ -38,12 +38,14 @@ exports.FlowViewport = Montage.create(Viewport, {
         }
     },
 
-    prepareForDraw: {
-        value: function () {
+    enterDocument: {
+        value: function (firstTime) {
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
-            this._context = this._element.getContext("2d");
-            this._element.addEventListener("mousedown", this, true);
+            if (firstTime) {
+                this._context = this._element.getContext("2d");
+                this._element.addEventListener("mousedown", this, true);
+            }
         }
     },
 

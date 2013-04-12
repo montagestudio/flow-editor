@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
     PenToolMath = require("ui/pen-tool-math"),
+    FlowKnot = require("ui/flow-spline-handlers").FlowKnot,
     Vector3 = PenToolMath.Vector3,
     FlowSpline = require("ui/flow-spline").FlowSpline,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
@@ -217,17 +218,17 @@ exports.PenTool = Montage.create(Montage, {
                     initWithCoordinates([event.layerX, event.layerY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
-                bezier.pushControlPoint(knot = Vector3.
+                bezier.pushControlPoint(knot = FlowKnot.
                     create().
                     initWithCoordinates([event.layerX, event.layerY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
                 //if (bezier._data.length === 4) {
                     //previousBezier = bezier;
-knot._isSelected = true;
-this.previousKnot = knot;
-                    bezier = BezierCurve.create().init();
-                    this._editingSpline.pushBezierCurve(bezier);
+                knot._isSelected = true;
+                this.previousKnot = knot;
+                bezier = BezierCurve.create().init();
+                this._editingSpline.pushBezierCurve(bezier);
                     /*bezier.pushControlPoint(knot = Vector3.
                         create().
                         initWithCoordinates([
@@ -236,7 +237,7 @@ this.previousKnot = knot;
                             bezier.getControlPoint(0).z * 2 - previousBezier.getControlPoint(2).z])
                     );*/
                 //}
-                bezier.pushControlPoint(knot=Vector3.
+                bezier.pushControlPoint(knot = FlowKnot.
                     create().
                     initWithCoordinates([event.layerX, event.layerY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
@@ -249,7 +250,7 @@ this.previousKnot = knot;
                 this._editingSpline = shape = FlowSpline.create().init();
                 canvasShape.initWithData(shape);
                 bezier = BezierCurve.create().init();
-                bezier.pushControlPoint(knot = Vector3.
+                bezier.pushControlPoint(knot = FlowKnot.
                     create().
                     initWithCoordinates([event.layerX, event.layerY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))

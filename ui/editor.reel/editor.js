@@ -3,6 +3,7 @@ var Montage = require("montage").Montage,
     Flow = require("matte/ui/flow.reel").Flow,
     FlowBezierSpline = require("matte/core/flow-bezier-spline").FlowBezierSpline,
     PenToolMath = require("ui/pen-tool-math"),
+    FlowKnot = require("ui/flow-spline-handlers").FlowKnot,
     Vector3 = PenToolMath.Vector3,
     BezierCurve = PenToolMath.BezierCurve,
     Scene = PenToolMath.Scene,
@@ -443,7 +444,7 @@ exports.Editor = Montage.create(Component, {
 
     convertFlowToShape: {
         value: function () {
-            var bezier, shape, spline, i, k, j,
+            var bezier, shape, spline, i, k, j, knot,
                 paths = this.object.getObjectProperty("paths"),
                 canvasShape,
                 grid = CanvasGrid.create().initWithData(Grid.create()),
@@ -463,11 +464,16 @@ exports.Editor = Montage.create(Component, {
                 spline = paths[j];
                 for (i = 0; i < spline.knots.length - 1; i++) {
                     bezier = BezierCurve.create().init();
-                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                    bezier.pushControlPoint(knot = FlowKnot.create().initWithCoordinates([
                         spline.knots[i].knotPosition[0],
                         spline.knots[i].knotPosition[1],
                         spline.knots[i].knotPosition[2]
                     ]));
+                    for (k in spline.units) {
+                        if (typeof spline.knots[i][k] !== "undefined") {
+                            knot[k] = spline.knots[i][k];
+                        }
+                    }
                     bezier.pushControlPoint(Vector3.create().initWithCoordinates([
                         spline.knots[i].nextHandlerPosition[0],
                         spline.knots[i].nextHandlerPosition[1],
@@ -478,11 +484,16 @@ exports.Editor = Montage.create(Component, {
                         spline.knots[i + 1].previousHandlerPosition[1],
                         spline.knots[i + 1].previousHandlerPosition[2]
                     ]));
-                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                    bezier.pushControlPoint(knot = FlowKnot.create().initWithCoordinates([
                         spline.knots[i + 1].knotPosition[0],
                         spline.knots[i + 1].knotPosition[1],
                         spline.knots[i + 1].knotPosition[2]
                     ]));
+                    for (k in spline.units) {
+                        if (typeof spline.knots[i + 1][k] !== "undefined") {
+                            knot[k] = spline.knots[i + 1][k];
+                        }
+                    }
                     shape.pushBezierCurve(bezier);
                 }
                 grid.children.push(canvasShape);
@@ -521,6 +532,13 @@ exports.Editor = Montage.create(Component, {
                         });
                         spline = paths[k];
                     }
+                    if (!spline.units) {
+                        spline.units = {};
+                    }
+                    spline.units.rotateX = "";
+                    spline.units.rotateY = "";
+                    spline.units.rotateZ = "";
+                    spline.units.opacity = "";
                     for (i = 0; i < shape.length; i++) {
                         bezier = shape.getBezierCurve(i);
                         if (bezier.length === 4) {
@@ -539,6 +557,10 @@ exports.Editor = Montage.create(Component, {
                             spline.knots[i].nextHandlerPosition[0] = (bezier.getControlPoint(1).x);
                             spline.knots[i].nextHandlerPosition[1] = (bezier.getControlPoint(1).y);
                             spline.knots[i].nextHandlerPosition[2] = (bezier.getControlPoint(1).z);
+                            spline.knots[i].rotateX = bezier.getControlPoint(0).rotateX;
+                            spline.knots[i].rotateY = bezier.getControlPoint(0).rotateY;
+                            spline.knots[i].rotateZ = bezier.getControlPoint(0).rotateZ;
+                            spline.knots[i].opacity = bezier.getControlPoint(0).opacity;
                             if (!spline.knots[i + 1]) {
                                 spline.knots[i + 1] = {
                                     knotPosition: [],
@@ -554,6 +576,10 @@ exports.Editor = Montage.create(Component, {
                             spline.knots[i + 1].knotPosition[0] = (bezier.getControlPoint(3).x);
                             spline.knots[i + 1].knotPosition[1] = (bezier.getControlPoint(3).y);
                             spline.knots[i + 1].knotPosition[2] = (bezier.getControlPoint(3).z);
+                            spline.knots[i + 1].rotateX = bezier.getControlPoint(3).rotateX;
+                            spline.knots[i + 1].rotateY = bezier.getControlPoint(3).rotateY;
+                            spline.knots[i + 1].rotateZ = bezier.getControlPoint(3).rotateZ;
+                            spline.knots[i + 1].opacity = bezier.getControlPoint(3).opacity;
                         }
                     }
                     k++;
@@ -569,102 +595,17 @@ exports.Editor = Montage.create(Component, {
     handleSceneUpdated: {
         value: function () {
             this.convertShapeToFlow();
-            this.selection = "foo";
+            this.selection = this.viewport.scene.getSelection()[0];
         }
     },
 
-    prepareForDraw: {
+    enterDocument: {
         enumerable: false,
-        value: function () {
-            /*var i, j;
-
-            for (j = 0; j < this.flow.splinePaths.length; j++) {
-                this.spline = this.flow.splinePaths[j];
-                if (!this.spline.previousDensities) {
-                    this.spline.previousDensities = [];
-                }
-                if (!this.spline.nextDensities) {
-                    this.spline.nextDensities = [];
-                }
-                for (i = 0; i < this.spline.knots.length; i++) {
-                    if (typeof this.spline.previousHandlers[i] === "undefined") {
-                        this.spline.previousHandlers[i] = [
-                            2 * this.spline.knots[i][0] - this.spline.nextHandlers[i][0],
-                            2 * this.spline.knots[i][1] - this.spline.nextHandlers[i][1],
-                            2 * this.spline.knots[i][2] - this.spline.nextHandlers[i][2]
-                        ];
-                    }
-                    if (typeof this.spline.nextHandlers[i] === "undefined") {
-                        this.spline.nextHandlers[i] = [
-                            2 * this.spline.knots[i][0] - this.spline.previousHandlers[i][0],
-                            2 * this.spline.knots[i][1] - this.spline.previousHandlers[i][1],
-                            2 * this.spline.knots[i][2] - this.spline.previousHandlers[i][2]
-                        ];
-                    }
-                    if (typeof this.spline.previousDensities[i] === "undefined") {
-                        this.spline.previousDensities[i] = 3;
-                    }
-                    if (typeof this.spline.nextDensities[i] === "undefined") {
-                        this.spline.nextDensities[i] = 3;
-                    }
-                }
-            }*/
-            this.convertFlowToShape();
-            this.viewport.scene.addEventListener("sceneUpdated", this, false);
-
-
-            /*var self = this;
-
-            if (this.flow.splinePaths[0]) {
-                var i;
-
-                this.spline = this.flow.splinePaths[0];
-                if (!this.spline.previousDensities) {
-                    this.spline.previousDensities = [];
-                }
-                if (!this.spline.nextDensities) {
-                    this.spline.nextDensities = [];
-                }
-                for (i = 0; i < this.spline.knots.length; i++) {
-                    if (typeof this.spline.previousHandlers[i] === "undefined") {
-                        this.spline.previousHandlers[i] = [
-                            2 * this.spline.knots[i][0] - this.spline.nextHandlers[i][0],
-                            2 * this.spline.knots[i][1] - this.spline.nextHandlers[i][1],
-                            2 * this.spline.knots[i][2] - this.spline.nextHandlers[i][2]
-                        ];
-                    }
-                    if (typeof this.spline.nextHandlers[i] === "undefined") {
-                        this.spline.nextHandlers[i] = [
-                            2 * this.spline.knots[i][0] - this.spline.previousHandlers[i][0],
-                            2 * this.spline.knots[i][1] - this.spline.previousHandlers[i][1],
-                            2 * this.spline.knots[i][2] - this.spline.previousHandlers[i][2]
-                        ];
-                    }
-                    if (typeof this.spline.previousDensities[i] === "undefined") {
-                        this.spline.previousDensities[i] = 3;
-                    }
-                    if (typeof this.spline.nextDensities[i] === "undefined") {
-                        this.spline.nextDensities[i] = 3;
-                    }
-                }
-            } else {
-                this.spline = Montage.create(FlowBezierSpline);
-                this.flow._paths = [];
-                this.flow._paths.push({
-                    headOffset: 0,
-                    tailOffset: 0
-                });
-                this.flow.splinePaths.push(this.spline);
+        value: function (firstTime) {
+            if (firstTime) {
+                this.convertFlowToShape();
+                this.viewport.scene.addEventListener("sceneUpdated", this, false);
             }
-            window.addEventListener("resize", this, false);*/
-            /*this.parametersEditor.textContent = JSON.stringify(this.spline.parameters);
-            this.parametersEditor.addEventListener("keyup", function () {
-                try {
-                    self.spline.parameters = JSON.parse(self.parametersEditor.value);
-                } catch (e) {
-                }
-                self.flow.needsDraw = true;
-            }, false);*/
         }
     },
 

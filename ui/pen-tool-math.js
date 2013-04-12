@@ -906,9 +906,9 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     */
     translate: {
         value: function (offsetsArray) {
-            this._data[0] += offsetsArray[0];
-            this._data[1] += offsetsArray[1];
-            this._data[2] += offsetsArray[2];
+            this._data.set(0, this._data[0] + offsetsArray[0]);
+            this._data.set(1, this._data[1] + offsetsArray[1]);
+            this._data.set(2, this._data[2] + offsetsArray[2]);
             return this;
         }
     },

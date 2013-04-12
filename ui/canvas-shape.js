@@ -1,6 +1,13 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    Target = require("montage/core/target").Target;
 
-exports.CanvasShape = Montage.create(Montage, {
+exports.CanvasShape = Montage.create(Target, {
+
+    didCreate: {
+        value: function () {
+
+        }
+    },
 
     children: {
         value: []
@@ -38,17 +45,17 @@ exports.CanvasShape = Montage.create(Montage, {
             return this._data;
         },
         set: function (value) {
-            var i;
-
+            // this.addOwnPropertyChangeListener("_data", function(plus, minus, index) {
+            //     //console.log("addOwnPropertyChangeListener plus:",plus,"minus:", minus,"index:", index)
+            // })
             this._data = value;
-            if (this.bindings) {
-                for (i = 0; i < this.bindings.length; i++) {
-                    this.defineBinding(this.bindings[i], {
-                        "<->": this.bindings[i],
-                        source: this._data
-                    });
-                }
-            }
+            // if(this._data && this._data._data && this._data._data.length) {
+            //     console.log(this._data)
+            //     this._data.addRangeAtPathChangeListener("_data", function(plus, minus, index) {
+            //         //console.log("addRangeAtPathChangeListener plus:",plus,"minus:", minus,"index:", index)
+            //     })
+            // }
+
         }
     },
 
@@ -95,13 +102,14 @@ exports.CanvasShape = Montage.create(Montage, {
                 length = children.length,
                 i;
 
-            if (this.isSelected) {
-                s.push(this);
-            }
             for (i = 0; i < length; i++) {
                 children[i].getSelection(s);
             }
+            if (this.isSelected) {
+                s.push(this);
+            }
             if (!selection) {
+                //console.log(s[0] ? s[0]._data.type : "no selection");
                 return s;
             }
         }

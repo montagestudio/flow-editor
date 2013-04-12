@@ -7,7 +7,8 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "flow-inspector"}
+                "element": {"#": "flow-inspector"},
+                "title": {"#": "label"}
             }
         },
         "label": {
@@ -19,31 +20,35 @@
                 "value": {"<-": "@owner.labelText"}
             }
         },
-        "x": {
-            "prototype": "montage/ui/text.reel",
+        "close": {
+            "prototype": "matte/ui/button.reel",
             "properties": {
-                "element": {"#": "x"}
+                "element": {"#": "close"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "panels": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "panels"}
             },
             "bindings": {
-                "value": {"<-": "@owner.x"}
+                "switchValue": {"<-": "@owner.selection._data.type"}
             }
         },
-        "y": {
-            "prototype": "montage/ui/text.reel",
+        "knot": {
+            "prototype": "ui/flow-knot-inspector.reel",
             "properties": {
-                "element": {"#": "y"}
+                "element": {"#": "knot"}
             },
             "bindings": {
-                "value": {"<-": "@owner.y"}
-            }
-        },
-        "z": {
-            "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "z"}
-            },
-            "bindings": {
-                "value": {"<-": "@owner.z"}
+                "knot": {"<-": "@owner.selection"},
+                "scene": {"<-": "@owner.scene"}
             }
         }
     }
@@ -51,10 +56,14 @@
 </head>
 <body>
     <div data-montage-id="flow-inspector" class="FlowInspector">
+        <div data-montage-id="close" class="close">×</div>
         <div data-montage-id="label" class="label"></div>
-        <div data-montage-id="x" class="position"></div>
-        <div data-montage-id="y" class="position"></div>
-        <div data-montage-id="z" class="position"></div>
+        <div data-montage-id="panels" class="panels">
+            <div data-arg="FlowKnot" data-montage-id="knot"></div>
+            <div data-arg="FlowCamera" data-montage-id="camera">camera</div>
+            <div data-arg="FlowSpline" data-montage-id="spline">spline</div>
+            <div data-arg="FlowGrid" data-montage-id="grid">grid</div>
+        </div>
     </div>
 </body>
 </html>

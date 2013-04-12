@@ -17,19 +17,38 @@ var Grid = exports.Grid = Montage.create(Montage, {
 
     subdivisionColor: {
         value: "rgba(0, 0, 0, .5)"
+    },
+
+    type: {
+        value: "FlowGrid"
     }
 
 });
 
 exports.CanvasGrid = Montage.create(CanvasShape, {
 
-    bindings: {
-        value: [
-            "gridlineEach",
-            "subdivisions",
-            "gridlineColor",
-            "subdivisionColor"
-        ]
+    didCreate: {
+        value: function () {
+            CanvasShape.didCreate.call(this);
+            this.defineBindings({
+                "gridlineEach": {
+                    "<->": "data.gridlineEach",
+                    source: this
+                },
+                "subdivisions": {
+                    "<->": "data.subdivisions",
+                    source: this
+                },
+                "gridlineColor": {
+                    "<->": "data.gridlineColor",
+                    source: this
+                },
+                "subdivisionColor": {
+                    "<->": "data.subdivisionColor",
+                    source: this
+                }
+            });
+        }
     },
 
     _gridlineEach: {
