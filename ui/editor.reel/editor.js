@@ -521,7 +521,7 @@ exports.Editor = Montage.create(Component, {
             var shape, bezier, i, spline, j, k = 0,
                 paths = this.object.getObjectProperty("paths");
 
-            this.object.setObjectProperty("paths", []);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", []);
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
                 if (shape.type === "FlowSpline") {
@@ -585,10 +585,10 @@ exports.Editor = Montage.create(Component, {
                     k++;
                 }
             }
-            this.object.setObjectProperty("paths", paths);
-            this.object.setObjectProperty("cameraPosition", this.camera.data.cameraPosition);
-            this.object.setObjectProperty("cameraTargetPoint", this.camera.data.cameraTargetPoint);
-            this.object.setObjectProperty("cameraFov", this.camera.data.cameraFov);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", paths);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", this.camera.data.cameraPosition);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraTargetPoint", this.camera.data.cameraTargetPoint);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraFov", this.camera.data.cameraFov);
         }
     },
 

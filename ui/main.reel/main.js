@@ -22,9 +22,11 @@ exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# 
                 getObjectProperty: function (property) {
                     return self.flow[property];
                 },
-                setObjectProperty: function (property, value) {
-                    self.flow[property] = value;
-                },
+                editingDocument: {
+                    setOwnedObjectProperty: function (foo, property, value) {
+                        self.flow[property] = value;
+                    }
+                }
             };
         }
     }
