@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
 */
 exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-inspector.reel".FlowInspector# */ {
 
-    labelText: {
+    titleText: {
         value: ""
     },
 
@@ -35,7 +35,25 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
         },
         set: function (value) {
             this._selection = value;
-
+            if (value && value._data) {
+                switch (value._data.type) {
+                    case "FlowKnot":
+                        this.titleText = "Knot";
+                        break;
+                    case "FlowSpline":
+                        this.titleText = "Spline";
+                        break;
+                    case "FlowCamera":
+                        this.titleText = "Camera";
+                        break;
+                    case "FlowHandler":
+                        this.titleText = "Handler";
+                        break;
+                    default:
+                        this.titleText = value._data.type;
+                        break;
+                }
+            }
         }
     },
 
@@ -78,16 +96,9 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
 
     handleMousemove: {
         value: function (event) {
-            var dX = event.pageX - this._pointerX,
-                dY = event.pageY - this._pointerY;
-
-            this._windowPositionX += dX;
-            this._windowPositionY += dY;
-            this._pointerX = event.pageX;
-            this._pointerY = event.pageY;
+            this._windowPositionX = this._startX + event.pageX - this._pointerX;
+            this._windowPositionY = this._startY + event.pageY - this._pointerY;
             this.needsDraw = true;
-            document.addEventListener("mousemove", this, false);
-            document.addEventListener("mouseup", this, false);
         }
     },
 
@@ -95,15 +106,19 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
         value: function (event) {
             document.removeEventListener("mousemove", this, false);
             document.removeEventListener("mouseup", this, false);
+            document.body.style.pointerEvents = "auto";
         }
     },
 
     handleMousedown: {
         value: function (event) {
+            this._startX = this._windowPositionX;
+            this._startY = this._windowPositionY;
             this._pointerX = event.pageX;
             this._pointerY = event.pageY;
             document.addEventListener("mousemove", this, false);
             document.addEventListener("mouseup", this, false);
+            document.body.style.pointerEvents = "none";
             event.preventDefault();
         }
     },
@@ -112,13 +127,41 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
         value: function (firstTime) {
             if (firstTime) {
                 this.title.addEventListener("mousedown", this, false);
+                window.addEventListener("resize", this, false);
             }
+        }
+    },
+
+    handleResize: {
+        value: function () {
+            this.needsDraw = true;
+        }
+    },
+
+    willDraw: {
+        value: function () {
+            this._width = this.element.offsetWidth;
+            this._height = this.element.offsetHeight;
+            this._bodyWidth = window.innerWidth;
+            this._bodyHeight = window.innerHeight;
         }
     },
 
     draw: {
         value: function () {
             //this.element.style.display = this._visible ? "block" : "none";
+            if (this._windowPositionX > this._bodyWidth - this._width) {
+                this._windowPositionX = this._bodyWidth - this._width;
+            }
+            if (this._windowPositionX < 0) {
+                this._windowPositionX = 0;
+            }
+            if (this._windowPositionY > this._bodyHeight - this._height) {
+                this._windowPositionY = this._bodyHeight - this._height;
+            }
+            if (this._windowPositionY < 0) {
+                this._windowPositionY = 0;
+            }
             this.element.style.left = this._windowPositionX + "px";
             this.element.style.top = this._windowPositionY + "px";
         }

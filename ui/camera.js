@@ -65,8 +65,12 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
             var children = [];
 
             if (this.isSelected) {
-                children.push(this._cameraPosition);
-                children.push(this._cameraTargetPoint);
+                if (this._children) {
+                    children = this._children;
+                } else {
+                    children.push(this._cameraPosition);
+                    children.push(this._cameraTargetPoint);
+                }
             }
             return children;
         }
@@ -166,6 +170,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
                     indices = [0, 1, 2, 4, 5, 6, 8, 9, 10],
                     i = 0;
 
+                this._cameraSegments = [];
                 while (!transformMatrix[indices[i]]) {
                     i++;
                 }
@@ -187,6 +192,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
                     line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
                     this._context.moveTo(tPos.x + .5, tPos.y + .5);
                     this._context.lineTo(line[i].x + .5, line[i].y + .5);
+                    this._cameraSegments.push([tPos.x, tPos.y, line[i].x, line[i].y]);
                 }
                 this._context.stroke();
                 this._context.globalAlpha = .4;
@@ -202,11 +208,13 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
                 if (this.isSelected) {
                     this._context.moveTo(tPos.x + .5, tPos.y + .5);
                     this._context.lineTo(tFocus.x + .5, tFocus.y + .5);
+                    this._cameraSegments.push([tPos.x, tPos.y, tFocus.x, tFocus.y]);
                 }
                 for (i = 0; i < 4; i++) {
                     this._context.moveTo(tPos.x + .5, tPos.y + .5);
                     this._context.lineTo(line[i].x + .5, line[i].y + .5);
                     this._context.lineTo(line[(i + 1) % 4].x + .5, line[(i + 1) % 4].y + .5);
+                    this._cameraSegments.push([line[i].x, line[i].y, line[(i + 1) % 4].x, line[(i + 1) % 4].y]);
                 }
                 this._context.stroke();
                 this._context.restore();
@@ -215,15 +223,55 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
     },
 
     pointOnShape: {
-        value: function (x, y, transformMatrix) {
-            var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix);
+        value: function (pointerX, pointerY, transformMatrix) {
+            if (this.cameraPosition) {
+                var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
+                    tFocus = Vector3.create().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix),
+                    angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
+                    x, y, z,
+                    line = [],
+                    tmp,
+                    scale = .2,
+                    indices = [0, 1, 2, 4, 5, 6, 8, 9, 10],
+                    i = 0;
 
-            if ((x >= tPos.x - 5) && (x <= tPos.x + 5)) {
-                if ((y >= tPos.y - 5) && (y <= tPos.y + 5)) {
-                    return true;
+                this._cameraSegments = [];
+                while (!transformMatrix[indices[i]]) {
+                    i++;
                 }
+                scale = transformMatrix[indices[i]];
+                x = Math.sin(angle) * 60 / scale;
+                y = Math.cos(angle) * 60 / scale;
+                z = y;
+                for (i = 0; i < 4; i++) {
+                    tmp = this.rotateVector([[x, -x, z], [-x, -x, z], [-x, x, z], [x, x, z]][i]);
+                    line[i] = [this.cameraPosition[0] + tmp[0], this.cameraPosition[1] + tmp[1], this.cameraPosition[2] + tmp[2]];
+                }
+                for (i = 0; i < 4; i++) {
+                    line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
+                    this._cameraSegments.push([tPos.x, tPos.y, line[i].x, line[i].y]);
+                }
+                if (this.isSelected) {
+                    this._cameraSegments.push([tPos.x, tPos.y, tFocus.x, tFocus.y]);
+                }
+                for (i = 0; i < 4; i++) {
+                    this._cameraSegments.push([line[i].x, line[i].y, line[(i + 1) % 4].x, line[(i + 1) % 4].y]);
+                }
+                for (i = 0; i < this._cameraSegments.length; i++) {
+                    if (this._distanceToSegment(
+                            pointerX, pointerY,
+                            this._cameraSegments[i][0],
+                            this._cameraSegments[i][1],
+                            this._cameraSegments[i][2],
+                            this._cameraSegments[i][3]
+                        ) < 6) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return false;
             }
-            return false;
         }
     }
 

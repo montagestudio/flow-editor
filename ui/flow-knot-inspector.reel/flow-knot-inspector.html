@@ -2,7 +2,6 @@
 <html>
 <head>
     <title></title>
-    <link rel="stylesheet" type="text/css" href="flow-knot-inspector.css">
     <script type="text/montage-serialization">
     {
         "owner": {
@@ -17,7 +16,8 @@
                 "rotateX": {"<->": "@owner.knot._data.rotateX"},
                 "rotateY": {"<->": "@owner.knot._data.rotateY"},
                 "rotateZ": {"<->": "@owner.knot._data.rotateZ"},
-                "opacity": {"<->": "@owner.knot._data.opacity"}
+                "opacity": {"<->": "@owner.knot._data.opacity"},
+                "density": {"<->": "@owner.knot._data.density"}
             }
         },
         "xInput": {
@@ -104,6 +104,16 @@
             "bindings": {
                 "value": {"<->": "@owner.opacity"}
             }
+        },
+        "density": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "density"},
+                "step": 0.1
+            },
+            "bindings": {
+                "value": {"<->": "@owner.density"}
+            }
         }
     }
     </script>
@@ -137,6 +147,9 @@
         </li>
         <li>
             <span class="property">opacity</span><div data-montage-id="opacity" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">density</span><div data-montage-id="density" class="inspector-input"></div>
         </li>
     </ul>
 </body>

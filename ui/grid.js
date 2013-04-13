@@ -12,11 +12,11 @@ var Grid = exports.Grid = Montage.create(Montage, {
     },
 
     gridlineColor: {
-        value: "#ccc"
+        value: "rgba(0, 0, 0, .07)"
     },
 
     subdivisionColor: {
-        value: "rgba(0, 0, 0, .5)"
+        value: "rgba(0, 0, 0, .3)"
     },
 
     type: {
@@ -117,8 +117,10 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
                 y,
                 yStart,
                 yEnd,
-                scale = .2,
                 indices = [0, 1, 2, 4, 5, 6, 8, 9, 10],
+                width = this._width ? this._width : 500,
+                height = this._height ? this._height: 500,
+                step = 100,
                 i = 0;
 
             while (!transformMatrix[indices[i]]) {
@@ -128,20 +130,20 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
             this._context.save();
             if (scale >= .02) {
                 this._context.fillStyle = this.gridlineColor;
-                xStart = ((-offsetX / (scale * 5)) >> 1) * 100;
-                xEnd = (((500 - offsetX) / (scale * 5)) >> 1) * 100;
-                for (x = xStart; x <= xEnd; x += 100) {
-                    this._context.fillRect(Math.floor(offsetX + x * scale), 0, 1, 9999);
+                xStart = -Math.floor(offsetX / (step * scale));
+                xEnd = xStart + Math.floor(width / (step * scale));
+                for (x = xStart; x <= xEnd; x++) {
+                    this._context.fillRect(Math.floor(offsetX + x * step * scale), 0, 1, 9999);
                 }
-                yStart = ((-offsetY / (scale * 5)) >> 1) * 100;
-                yEnd = (((500 - offsetY) / (scale * 5)) >> 1) * 100;
-                for (y = yStart; y <= yEnd; y += 100) {
-                    this._context.fillRect(0, Math.floor(offsetY + y * scale), 9999, 1);
+                yStart = -Math.floor(offsetY / (step * scale));
+                yEnd = yStart + Math.floor(width / (step * scale));
+                for (y = yStart; y <= yEnd; y++) {
+                    this._context.fillRect(0, Math.floor(offsetY + y * step * scale), 9999, 1);
                 }
             }
-            /*this._canvasContext.fillStyle = "#2e2e2e";
-            this._canvasContext.fillRect(0, Math.floor(offsetY), this._width, 1);
-            this._canvasContext.fillRect(Math.floor(offsetX), 0, 1,  this._height);*/
+            this._context.fillStyle = "rgba(0,0,0,.1)";
+            this._context.fillRect(0, Math.floor(offsetY), 9999, 1);
+            this._context.fillRect(Math.floor(offsetX), 0, 1,  9999);
             this._context.restore();
         }
     }

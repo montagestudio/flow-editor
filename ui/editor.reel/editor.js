@@ -474,6 +474,9 @@ exports.Editor = Montage.create(Component, {
                             knot[k] = spline.knots[i][k];
                         }
                     }
+                    if (typeof spline.knots[i].previousDensity !== "undefined") {
+                        knot.density = spline.knots[i].previousDensity;
+                    }
                     bezier.pushControlPoint(Vector3.create().initWithCoordinates([
                         spline.knots[i].nextHandlerPosition[0],
                         spline.knots[i].nextHandlerPosition[1],
@@ -561,6 +564,8 @@ exports.Editor = Montage.create(Component, {
                             spline.knots[i].rotateY = bezier.getControlPoint(0).rotateY;
                             spline.knots[i].rotateZ = bezier.getControlPoint(0).rotateZ;
                             spline.knots[i].opacity = bezier.getControlPoint(0).opacity;
+                            spline.knots[i].nextDensity = bezier.getControlPoint(0).density;
+                            spline.knots[i].previousDensity = bezier.getControlPoint(0).density;
                             if (!spline.knots[i + 1]) {
                                 spline.knots[i + 1] = {
                                     knotPosition: [],
@@ -580,12 +585,15 @@ exports.Editor = Montage.create(Component, {
                             spline.knots[i + 1].rotateY = bezier.getControlPoint(3).rotateY;
                             spline.knots[i + 1].rotateZ = bezier.getControlPoint(3).rotateZ;
                             spline.knots[i + 1].opacity = bezier.getControlPoint(3).opacity;
+                            spline.knots[i + 1].nextDensity = bezier.getControlPoint(3).density;
+                            spline.knots[i + 1].previousDensity = bezier.getControlPoint(3).density;
                         }
                     }
                     k++;
                 }
             }
             this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", paths);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", []);
             this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", this.camera.data.cameraPosition);
             this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraTargetPoint", this.camera.data.cameraTargetPoint);
             this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraFov", this.camera.data.cameraFov);

@@ -35,7 +35,7 @@ exports.FlowNumberInput = Montage.create(Component, /** @lends module:"ui/flow-n
             return this._value;
         },
         set: function (value) {
-            this._value = value;
+            this._value = parseFloat(value);
             this.needsDraw = true;
         }
     },
@@ -55,6 +55,7 @@ exports.FlowNumberInput = Montage.create(Component, /** @lends module:"ui/flow-n
             this.needsDraw = true;
             document.addEventListener("mousemove", this, false);
             document.addEventListener("mouseup", this, false);
+            document.body.style.pointerEvents = "none";
             event.preventDefault();
         }
     },
@@ -76,6 +77,13 @@ exports.FlowNumberInput = Montage.create(Component, /** @lends module:"ui/flow-n
             this.needsDraw = true;
             document.removeEventListener("mousemove", this, false);
             document.removeEventListener("mouseup", this, false);
+            document.body.style.pointerEvents = "auto";
+        }
+    },
+
+    handleChange: {
+        value: function (event) {
+            this.value = this.input.value;
         }
     },
 
@@ -83,6 +91,7 @@ exports.FlowNumberInput = Montage.create(Component, /** @lends module:"ui/flow-n
         value: function (firstTime) {
             if (firstTime) {
                 this.knob.addEventListener("mousedown", this, false);
+                this.input.addEventListener("change", this, false);
             }
         }
     },

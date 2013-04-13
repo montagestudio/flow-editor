@@ -4,7 +4,8 @@
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Vector3 = require("ui/pen-tool-math").Vector3;
 
 /**
     Description TODO
@@ -55,7 +56,14 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
             return this._x;
         },
         set: function (value) {
+            if (!this.knot) return 0;
+
+            var dX = value - this.knot._data.x;
+
             this._x = value;
+            if (this.knot && dX) {
+                this.knot.translate([dX, 0, 0]);
+            }
             if (this.scene) {
                 this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
@@ -71,7 +79,14 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
             return this._y;
         },
         set: function (value) {
+            if (!this.knot) return 0;
+
+            var dY = value - this.knot._data.y;
+
             this._y = value;
+            if (this.knot && dY) {
+                this.knot.translate([0, dY, 0]);
+            }
             if (this.scene) {
                 this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
@@ -87,7 +102,14 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
             return this._z;
         },
         set: function (value) {
+            if (!this.knot) return 0;
+
+            var dZ = value - this.knot._data.z;
+
             this._z = value;
+            if (this.knot && dZ) {
+                this.knot.translate([0, 0, dZ]);
+            }
             if (this.scene) {
                 this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
@@ -152,6 +174,22 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
         },
         set: function (value) {
             this._opacity = value;
+            if (this.scene) {
+                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+            }
+        }
+    },
+
+    _density: {
+        value: null
+    },
+
+    density: {
+        get: function () {
+            return this._density;
+        },
+        set: function (value) {
+            this._density = value;
             if (this.scene) {
                 this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }

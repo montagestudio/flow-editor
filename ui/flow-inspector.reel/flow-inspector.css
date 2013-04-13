@@ -4,16 +4,25 @@
     font-family: Helvetica, Arial, sans-serif;
     font-size: 13px;
     z-index: 9999;
-    background: rgba(40,40,40,.9);
     border: 1px solid #000;
     border-radius: 4px;
 }
 
 .FlowInspector li {
+    background: rgba(40,40,40,.9);
     padding: 0 6px;
     border-top: 1px solid rgba(255, 255, 255, .15);
     border-bottom: 1px solid rgba(0, 0, 0, .5);
     height: 29px;
+}
+
+.FlowInspector li.section {
+    background: rgba(58,58,58,.9);
+    padding: 0 6px;
+    border-top: none;
+    border-bottom: none;
+    height: 25px;
+    line-height: 25px;
 }
 
 .FlowInspector span {
@@ -90,13 +99,13 @@
     background-color: rgba(0, 119, 255, .15);
 }
 
-.FlowKnotInspector {
+.FlowInspector ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
 }
 
-.FlowKnotInspector .property {
+.FlowInspector .property {
     display: inline-block;
     width: 60px;
     text-align: right;

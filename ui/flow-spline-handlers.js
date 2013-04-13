@@ -23,6 +23,10 @@ exports.FlowKnot = Montage.create(Vector3, {
 
     opacity: {
         value: 1
+    },
+
+    density: {
+        value: 10
     }
 
 });

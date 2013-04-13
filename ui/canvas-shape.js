@@ -276,6 +276,38 @@ exports.CanvasShape = Montage.create(Target, {
         value: function (vector) {
             this.data.translate(vector);
         }
+    },
+
+    _pointToPointDistance: {
+        value: function (x1, y1, x2, y2) {
+            var dX = x1 - x2,
+                dY = y1 - y2;
+
+            return Math.sqrt(dX * dX + dY * dY);
+        }
+    },
+
+    _distanceToSegment: {
+        value: function (pX, pY, vX, vY, wX, wY) {
+            var l = this._pointToPointDistance(vX, vY, wX, wY),
+                t;
+
+            if (l === 0) {
+                return this._pointToPointDistance(pX, pY, vX, vY);
+            }
+            t = ((pX - vX) * (wX - vX) + (pY - vY) * (wY - vY)) / (l * l);
+            if (t < 0) {
+                return this._pointToPointDistance(pX, pY, vX, vY);
+            }
+            if (t > 1) {
+                return this._pointToPointDistance(pX, pY, wX, wY);
+            }
+            return this._pointToPointDistance(
+                pX, pY,
+                vX + t * (wX - vX),
+                vY + t * (wY - vY)
+            );
+        }
     }
 
 });
