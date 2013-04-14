@@ -39,6 +39,19 @@ POSSIBILITY OF SUCH DAMAGE.
             "properties": {
                 "element": {"#": "toolbar"}
             }
+        },
+
+        "closeButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {"#": "closeButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         }
     }
     </script>
@@ -48,7 +61,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <div data-tool="arrow" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Arrow"></div>
         <div data-tool="convert" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Convert"></div>
         <div data-tool="pen" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Pen"></div>
-        <div class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Close"></div>
+        <div data-montage-id="closeButton" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Close"></div>
     </div>
 </body>
 </html>

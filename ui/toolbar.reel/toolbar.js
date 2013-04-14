@@ -51,6 +51,13 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
         value: function () {
             this._element.addEventListener("click", this, false);
         }
+    },
+
+    handleCloseButtonAction: {
+        value: function (evt) {
+            evt.stop();
+            this.dispatchEventNamed("exitModalEditor", true, true);
+        }
     }
 
 });
