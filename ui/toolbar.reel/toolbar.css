@@ -49,6 +49,8 @@ POSSIBILITY OF SUCH DAMAGE.
     border-right: 1px solid #1D1D1D;
     cursor: pointer;
     outline: none;
+    margin: 0;
+    border-radius: 0;
 }
 .flow-Editor-Toolbar-Button:active {
     border-left: 1px solid #1D1D1D;
@@ -94,6 +96,11 @@ POSSIBILITY OF SUCH DAMAGE.
     background-position: -100px 0;
 }
 .flow-Editor-Toolbar-Button-Close:after {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    margin-left: 6px;
+    margin-top: 6px;
     background: url(toolbar-icons.png) no-repeat;
     background-size: auto;
     background-position: -220px 0;
@@ -101,4 +108,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .flow-Editor-Toolbar-Button-Close {
     float: right;
+    background-color: transparent !important;
+    border-top: none;
+    border-bottom: none;
 }
