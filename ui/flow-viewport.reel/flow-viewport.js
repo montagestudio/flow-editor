@@ -45,14 +45,21 @@ exports.FlowViewport = Montage.create(Viewport, {
             if (firstTime) {
                 this._context = this._element.getContext("2d");
                 this._element.addEventListener("mousedown", this, true);
+                window.addEventListener("resize", this, false);
             }
+        }
+    },
+
+    handleResize: {
+        value: function (event) {
+            this.needsDraw = true;
         }
     },
 
     willDraw: {
         value: function () {
-            this._width = this._element.offsetWidth;
-            this._height = this._element.offsetHeight;
+            this._width = this._element.clientWidth;
+            this._height = this._element.clientHeight;
         }
     },
 

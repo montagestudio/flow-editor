@@ -30,7 +30,7 @@ exports.ArrowTool = Montage.create(Montage, {
 
     handleMousedown: {
         value: function (event, viewport) {
-            var selected = viewport.findSelectedShape(event.layerX, event.layerY);
+            var selected = viewport.findSelectedShape(event.offsetX, event.offsetY);
 
             viewport.unselect();
             if (selected) {
@@ -101,13 +101,13 @@ exports.ConvertTool = Montage.create(Montage, {
 
     handleMousedown: {
         value: function (event, viewport) {
-            /*var result = viewport.findControlPoint(event.layerX, event.layerY);
+            /*var result = viewport.findControlPoint(event.offsetX, event.offsetY);
 
             if (result) {
                 this._selectedControlPoint = result;
             } else {
                 viewport.selection = [
-                    viewport.findSelectedShape(event.layerX, event.layerY)
+                    viewport.findSelectedShape(event.offsetX, event.offsetY)
                 ];
                 this._selectedControlPoint = null;
             }
@@ -115,8 +115,8 @@ exports.ConvertTool = Montage.create(Montage, {
             this._pointerY = event.pageY;*/
             var path,
                 i;
-
-            this._selectedChild = viewport.findSelectedChild(event.layerX, event.layerY);
+console.log(event.offsetX, event.offsetY, event);
+            this._selectedChild = viewport.findSelectedChild(event.offsetX, event.offsetY);
             if (this._selectedChild) {
                 path = viewport.findPathToNode(this._selectedChild);
                 viewport.unselect();
@@ -215,12 +215,12 @@ exports.PenTool = Montage.create(Montage, {
                 bezier = this._editingSpline._data[this._editingSpline.length - 1];
                 bezier.pushControlPoint(Vector3.
                     create().
-                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
                 bezier.pushControlPoint(knot = FlowKnot.
                     create().
-                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
                 //if (bezier._data.length === 4) {
@@ -239,7 +239,7 @@ exports.PenTool = Montage.create(Montage, {
                 //}
                 bezier.pushControlPoint(knot = FlowKnot.
                     create().
-                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
                 bezier._isSelected = true;
@@ -254,12 +254,12 @@ exports.PenTool = Montage.create(Montage, {
                 bezier = BezierCurve.create().init();
                 bezier.pushControlPoint(knot = FlowKnot.
                     create().
-                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
                 bezier.pushControlPoint(Vector3.
                     create().
-                    initWithCoordinates([event.layerX, event.layerY, 0]).
+                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
                 shape.pushBezierCurve(bezier);

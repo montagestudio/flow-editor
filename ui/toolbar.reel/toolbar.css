@@ -40,10 +40,9 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 .flow-Editor-Toolbar-Button {
     display: block;
-    box-sizing: content-box;
     float: left;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     padding: 6px;
     border-left: 1px solid #363636;
     border-right: 1px solid #1D1D1D;
@@ -51,11 +50,6 @@ POSSIBILITY OF SUCH DAMAGE.
     outline: none;
     margin: 0;
     border-radius: 0;
-}
-.flow-Editor-Toolbar-Button:active {
-    border-left: 1px solid #1D1D1D;
-    border-right: 1px solid #363636;
-    background: -webkit-gradient(linear, left top, left bottom,  from(#212121), to(#323232));
 }
 .flow-Editor-Toolbar-Button:after {
     display: block;
@@ -106,9 +100,28 @@ POSSIBILITY OF SUCH DAMAGE.
     background-position: -220px 0;
 }
 
-.flow-Editor-Toolbar-Button-Close {
+.flow-Editor-Toolbar-Button-Close.matte-Button {
+    width: 44px;
+    height: 44px;
+    padding: 6px;
+    border: none;
+    margin: 0;
+    border-left: 1px solid #363636;
+    border-right: 1px solid #1D1D1D;
     float: right;
-    background-color: transparent !important;
+    background-color: transparent;
     border-top: none;
     border-bottom: none;
+    border-radius: 0;
+}
+
+.flow-Editor-Toolbar-Button-Close.matte-Button:hover {
+    background: transparent;
+}
+
+.flow-Editor-Toolbar-Button:active,
+.flow-Editor-Toolbar-Button-Close.matte-Button:active {
+    border-left: 1px solid #1D1D1D;
+    border-right: 1px solid #363636;
+    background: -webkit-gradient(linear, left top, left bottom,  from(#212121), to(#323232));
 }

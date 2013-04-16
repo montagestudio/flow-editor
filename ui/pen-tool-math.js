@@ -1735,9 +1735,14 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
     reverse: {
         value: function () {
             var length = this._data.length,
-                halfLength = length >> 1,
+                halfLength,
                 tmp, i;
 
+            if (!this._data[length - 1].getControlPoint(this._data[length - 1].order)) {
+                length--;
+                this._data.pop();
+            }
+            halfLength = length >> 1;
             for (i = 0; i < length; i++) {
                 this._data[i].reverse();
             }

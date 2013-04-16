@@ -1,9 +1,11 @@
 .flow-Editor {
     position: absolute;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
     top: 0;
     left: 0;
     width: 500px;
-    height: 700px;
+    bottom: 0;
     background: black;
 }
 
@@ -11,9 +13,18 @@
     display: block;
     position: relative;
     width: 500px;
-    height: 326px;
+    -webkit-flex: 1;
+    min-height: 0;
     background: #eee;
-    border-bottom: 1px solid #000;
+    border-bottom: 6px solid #000;
+}
+
+.flow-editor-viewports {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 44px;
 }
 
 .toolbar {
