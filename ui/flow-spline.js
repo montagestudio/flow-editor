@@ -17,11 +17,83 @@ exports.FlowSpline = Montage.create(BezierSpline, {
         value: function (transformMatrix) {
             return this.clone().transformMatrix3d(transformMatrix).axisAlignedBoundaries;
         }
+    },
+
+    _headOffset: {
+        value: 0
+    },
+
+    headOffset: {
+        get: function () {
+            return this._headOffset;
+        },
+        set: function (value) {
+            this._headOffset = value;
+            this.dispatchEventIfNeeded("bezierSplineChange");
+        }
+    },
+
+    _tailOffset: {
+        value: 0
+    },
+
+    tailOffset: {
+        get: function () {
+            return this._tailOffset;
+        },
+        set: function (value) {
+            this._tailOffset = value;
+            this.dispatchEventIfNeeded("bezierSplineChange");
+        }
     }
 
 });
 
 exports.CanvasFlowSpline = Montage.create(CanvasShape, {
+
+    _boundingBoxCorner: {
+        value: null
+    },
+
+    boundingBoxCorner: {
+        get: function () {
+            if (!this._boundingBoxCorner) {
+                this.handleUpdate();
+            }
+            return this._boundingBoxCorner;
+        },
+        set: function (value) {
+            this._boundingBoxCorner = value;
+        }
+    },
+
+    data: {
+        get: function () {
+            return this._data;
+        },
+        set: function (value) {
+            var self = this,
+                update = function () {
+                    self.handleUpdate();
+                };
+
+            this._data = value;
+            this._data.addEventListener("vectorChange", update, false);
+            this._data.addEventListener("bezierCurveChange", update, false);
+        }
+    },
+
+    handleUpdate: {
+        value: function () {
+            var axisAlignedBoundaries = this._data.axisAlignedBoundaries;
+
+            this.boundingBoxCorner = {
+                x: axisAlignedBoundaries[0].min,
+                y: axisAlignedBoundaries[1].min,
+                z: axisAlignedBoundaries[2].min
+            };
+        }
+    },
 
     children: {
         get: function () {

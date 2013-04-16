@@ -38,7 +38,7 @@
                 "element": {"#": "panels"}
             },
             "bindings": {
-                "switchValue": {"<-": "@owner.selection._data.type"}
+                "switchValue": {"<-": "@owner.type"}
             }
         },
         "knot": {
@@ -60,6 +60,36 @@
                 "spline": {"<-": "@owner.selection"},
                 "scene": {"<-": "@owner.scene"}
             }
+        },
+        "grid": {
+            "prototype": "ui/flow-flow-inspector.reel",
+            "properties": {
+                "element": {"#": "grid"}
+            },
+            "bindings": {
+                "flow": {"<-": "@owner.selection"},
+                "scene": {"<-": "@owner.scene"}
+            }
+        },
+        "camera": {
+            "prototype": "ui/flow-camera-inspector.reel",
+            "properties": {
+                "element": {"#": "camera"}
+            },
+            "bindings": {
+                "camera": {"<-": "@owner.selection"},
+                "scene": {"<-": "@owner.scene"}
+            }
+        },
+        "vector": {
+            "prototype": "ui/flow-vector3-inspector.reel",
+            "properties": {
+                "element": {"#": "vector"}
+            },
+            "bindings": {
+                "vector": {"<-": "@owner.selection"},
+                "scene": {"<-": "@owner.scene"}
+            }
         }
     }
     </script>
@@ -69,10 +99,11 @@
         <div data-montage-id="close" class="close">×</div>
         <div data-montage-id="label" class="label"></div>
         <div data-montage-id="panels" class="panels">
+            <div data-arg="Vector3" data-montage-id="vector"></div>
             <div data-arg="FlowKnot" data-montage-id="knot"></div>
-            <div data-arg="FlowCamera" data-montage-id="camera">camera</div>
+            <div data-arg="FlowCamera" data-montage-id="camera"></div>
             <div data-arg="FlowSpline" data-montage-id="spline"></div>
-            <div data-arg="FlowGrid" data-montage-id="grid">grid</div>
+            <div data-arg="FlowGrid" data-montage-id="grid"></div>
         </div>
     </div>
 </body>

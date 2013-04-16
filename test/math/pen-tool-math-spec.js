@@ -1,9 +1,9 @@
 var Montage = require("montage").Montage,
-    Vector = require("flow-editor/ui/pen-tool.reel/pen-tool-math").Vector,
-    Vector2 = require("flow-editor/ui/pen-tool.reel/pen-tool-math").Vector2,
-    Vector3 = require("flow-editor/ui/pen-tool.reel/pen-tool-math").Vector3,
-    BezierCurve = require("flow-editor/ui/pen-tool.reel/pen-tool-math").BezierCurve,
-    BezierSpline = require("flow-editor/ui/pen-tool.reel/pen-tool-math").BezierSpline;
+    Vector = require("flow-editor/ui/pen-tool-math").Vector,
+    Vector2 = require("flow-editor/ui/pen-tool-math").Vector2,
+    Vector3 = require("flow-editor/ui/pen-tool-math").Vector3,
+    BezierCurve = require("flow-editor/ui/pen-tool-math").BezierCurve,
+    BezierSpline = require("flow-editor/ui/pen-tool-math").BezierSpline;
 
 /* Vector spec */
 
@@ -1903,12 +1903,12 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             expect(result.getBezierCurve(2).getControlPoint(1).y).toBeCloseTo(10, 5);
         });
     });
-    describe("clone", function() {
+    xdescribe("clone", function() {
         it("test is missing", function() {
             expect(0).toBe(1);
         });
     });
-    describe("transformMatrix3d", function() {
+    xdescribe("transformMatrix3d", function() {
         it("test is missing", function() {
             expect(0).toBe(1);
         });

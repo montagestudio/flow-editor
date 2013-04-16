@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "flow-flow-inspector"}
+            },
+            "bindings": {
+                "isSelectionEnabled": {"<->": "@owner.flow._data.isSelectionEnabled"},
+                "hasSelectedIndexScrolling": {"<->": "@owner.flow._data.hasSelectedIndexScrolling"},
+                "duration": {"<->": "@owner.flow._data.scrollingTransitionDuration"},
+                "scrollingTransitionTimingFunction": {"<->": "@owner.flow._data.scrollingTransitionTimingFunction"}
+            }
+        },
+        "selectionEnabled": {
+            "prototype": "matte/ui/input-checkbox.reel",
+            "properties": {
+                "element": {"#": "selectionEnabled"}
+            },
+            "bindings": {
+                "checked": {"<->": "@owner.isSelectionEnabled"}
+            }
+        },
+        "scrollIntoView": {
+            "prototype": "matte/ui/input-checkbox.reel",
+            "properties": {
+                "element": {"#": "scrollIntoView"}
+            },
+            "bindings": {
+                "checked": {"<->": "@owner.hasSelectedIndexScrolling"}
+            }
+        },
+        "duration": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "duration"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.duration"}
+            }
+        },
+        "timingFunction": {
+            "prototype": "matte/ui/select.reel",
+            "properties": {
+                "element": {"#": "timingFunction"},
+                "content": [
+                    {
+                        "text": "ease",
+                        "value": "ease"
+                    },
+                    {
+                        "text": "ease-in",
+                        "value": "ease-in"
+                    },
+                    {
+                        "text": "ease-out",
+                        "value": "ease-out"
+                    },
+                    {
+                        "text": "ease-in-out",
+                        "value": "ease-in-out"
+                    },
+                    {
+                        "text": "linear",
+                        "value": "linear"
+                    }
+                ]
+            },
+            "bindings": {
+                "value": {"<->": "@owner.scrollingTransitionTimingFunction"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <ul data-montage-id="flow-flow-inspector" class="FlowFlowInspector">
+        <li class="section"><span class="property">Selection</span><input type="checkbox" data-montage-id="selectionEnabled"></li>
+        <li class="section"><span class="property">Scroll into view</span><input type="checkbox" data-montage-id="scrollIntoView"></li>
+        <li>
+            <span class="property">duration</span><div data-montage-id="duration" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">timing ƒ</span><select data-montage-id="timingFunction"></select>
+        </li>
+    </ul>
+</body>
+</html>

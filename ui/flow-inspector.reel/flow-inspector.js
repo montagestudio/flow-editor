@@ -17,12 +17,24 @@ var Montage = require("montage").Montage,
 */
 exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-inspector.reel".FlowInspector# */ {
 
-    titleText: {
-        value: ""
+    _scene: {
+        value: null
     },
 
-    _selection: {
-        value: null
+    scene: {
+        get: function () {
+            return this._scene;
+        },
+        set: function (value) {
+            this._scene = value;
+            if (value) {
+                this._scene._data.addEventListener("selectionChange", this, false);
+            }
+        }
+    },
+
+    titleText: {
+        value: ""
     },
 
     _showing: {
@@ -30,13 +42,15 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
     },
 
     selection: {
-        get: function () {
-            return this._selection;
-        },
-        set: function (value) {
-            this._selection = value;
-            if (value && value._data) {
-                switch (value._data.type) {
+        value: null
+    },
+
+    handleSelectionChange: {
+        value: function () {
+            this.selection = this._scene.getSelection(this._scene)[0];
+            this.type = this.selection._data.type;
+            if (this.selection) {
+                switch (this.type) {
                     case "FlowKnot":
                         this.titleText = "Knot";
                         break;
@@ -46,13 +60,18 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
                     case "FlowCamera":
                         this.titleText = "Camera";
                         break;
-                    case "FlowHandler":
-                        this.titleText = "Handler";
+                    case "Vector3":
+                        this.titleText = "Vector";
+                        break;
+                    case "FlowGrid":
+                        this.titleText = "Flow";
                         break;
                     default:
-                        this.titleText = value._data.type;
+                        this.titleText = this.type;
                         break;
                 }
+            } else {
+                this.titleText = "Nothing selected";
             }
         }
     },
@@ -128,6 +147,7 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
             if (firstTime) {
                 this.title.addEventListener("mousedown", this, false);
                 window.addEventListener("resize", this, false);
+                this.handleSelectionChange();
             }
         }
     },

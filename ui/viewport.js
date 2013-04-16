@@ -12,12 +12,17 @@ exports.Viewport = Montage.create(Component, {
             return this._scene;
         },
         set: function (value) {
-            if (this._scene) {
-                this._scene.removeEventListener("sceneUpdated", this, false);
-            }
+            var self = this,
+                updated = function (event) {self.handleSceneUpdated(event)};
+
             this._scene = value;
             if (this._scene) {
-                this._scene.addEventListener("sceneUpdated", this, false);
+                this._scene._data.addEventListener("vectorChange", updated, false);
+                this._scene._data.addEventListener("bezierCurveChange", updated, false);
+                this._scene._data.addEventListener("bezierSplineChange", updated, false);
+                this._scene._data.addEventListener("cameraChange", updated, false);
+                this._scene._data.addEventListener("sceneChange", updated, false);
+                this._scene._data.addEventListener("selectionChange", updated, false);
             }
             this.needsDraw = true;
         }
@@ -210,7 +215,7 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
-    _isShowingSelection: {
+    /*_isShowingSelection: {
         value: false
     },
 
@@ -236,7 +241,7 @@ exports.Viewport = Montage.create(Component, {
             this._isShowingControlPoints = value;
             this.needsDraw = true;
         }
-    }
+    }*/
 
     //////////////////////////////////
 

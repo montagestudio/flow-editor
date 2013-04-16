@@ -1,7 +1,8 @@
 var Montage = require("montage").Montage,
+    Scene = require("ui/pen-tool-math").Scene,
     CanvasShape = require("ui/canvas-shape").CanvasShape;
 
-var Grid = exports.Grid = Montage.create(Montage, {
+var Grid = exports.Grid = Montage.create(Scene, {
 
     gridlineEach: {
         value: 10
@@ -21,8 +22,63 @@ var Grid = exports.Grid = Montage.create(Montage, {
 
     type: {
         value: "FlowGrid"
-    }
+    },
 
+    _isSelectionEnabled: {
+        value: null
+    },
+
+    isSelectionEnabled: {
+        get: function () {
+            return this._isSelectionEnabled;
+        },
+        set: function (value) {
+            this._isSelectionEnabled = value;
+            this.dispatchEventNamed("sceneChange", true, true);
+        }
+    },
+
+    _hasSelectedIndexScrolling: {
+        value: null
+    },
+
+    hasSelectedIndexScrolling: {
+        get: function () {
+            return this._hasSelectedIndexScrolling;
+        },
+        set: function (value) {
+            this._hasSelectedIndexScrolling = value;
+            this.dispatchEventNamed("sceneChange", true, true);
+        }
+    },
+
+    _scrollingTransitionDuration: {
+        value: null
+    },
+
+    scrollingTransitionDuration: {
+        get: function () {
+            return this._scrollingTransitionDuration;
+        },
+        set: function (value) {
+            this._scrollingTransitionDuration = value;
+            this.dispatchEventNamed("sceneChange", true, true);
+        }
+    },
+
+    _scrollingTransitionTimingFunction: {
+        value: null
+    },
+
+    scrollingTransitionTimingFunction: {
+        get: function () {
+            return this._scrollingTransitionTimingFunction;
+        },
+        set: function (value) {
+            this._scrollingTransitionTimingFunction = value;
+            this.dispatchEventNamed("sceneChange", true, true);
+        }
+    }
 });
 
 exports.CanvasGrid = Montage.create(CanvasShape, {

@@ -1,9 +1,10 @@
 var Montage = require("montage").Montage,
     CanvasShape = require("ui/canvas-shape").CanvasShape,
     Vector3 = require("ui/pen-tool-math").Vector3,
-    CanvasVector3 = require("ui/canvas-vector3").CanvasVector3;
+    CanvasVector3 = require("ui/canvas-vector3").CanvasVector3,
+    Target = require("montage/core/target").Target;
 
-var Camera = exports.Camera = Montage.create(Montage, {
+var Camera = exports.Camera = Montage.create(Target, {
 
     type: {
         value: "FlowCamera"
@@ -32,7 +33,8 @@ var Camera = exports.Camera = Montage.create(Montage, {
                 this.cameraTargetPoint[0] + offsetsArray[0],
                 this.cameraTargetPoint[1] + offsetsArray[1],
                 this.cameraTargetPoint[2] + offsetsArray[2]
-            ]
+            ];
+            this.dispatchEventNamed("cameraChange", true, true);
         }
     }
 
@@ -93,6 +95,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
 
             vector._data = value;
             this._cameraPosition = CanvasVector3.create().initWithData(vector);
+            vector.nextTarget = this._data;
             this._cameraPosition.color = this.selectedColor;
             this.needsDraw = true;
         }
@@ -116,6 +119,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
             vector._data = value;
             this._cameraTargetPoint = CanvasVector3.create().initWithData(vector);
             this._cameraTargetPoint.color = this.selectedColor;
+            vector.nextTarget = this._data;
             this.needsDraw = true;
         }
     },
@@ -130,6 +134,9 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
         },
         set: function (value) {
             this._cameraFov = value;
+            if (this._data) {
+                this._data.dispatchEventNamed("cameraChange", true, true);
+            }
             this.needsDraw = true;
         }
     },

@@ -447,21 +447,34 @@ exports.Editor = Montage.create(Component, {
             var bezier, shape, spline, i, k, j, knot,
                 paths = this.object.getObjectProperty("paths"),
                 canvasShape,
-                grid = CanvasGrid.create().initWithData(Grid.create()),
-                cross = CanvasCross.create().initWithData(Cross.create());
+                grid = Grid.create().init(),
+                canvasGrid = CanvasGrid.create().initWithData(grid),
+                cross = CanvasCross.create().initWithData(Cross.create()),
+                camera = Camera.create();
 
             cross.zIndex = 2;
-            this.camera = CanvasCamera.create().initWithData(Camera.create());
-            this.viewport.scene = grid;
-            grid.children = [];
-            grid.children.push(cross);
-            grid.children.push(this.camera);
-            grid.isSelected = true;
+            this.camera = CanvasCamera.create().initWithData(camera);
+            canvasGrid.children = [];
+            canvasGrid.children.push(cross);
+            canvasGrid.children.push(this.camera);
+            grid.pushShape(camera);
+            grid.isSelectionEnabled =
+                this.object.getObjectProperty("isSelectionEnabled") ? true : false;
+            grid.hasSelectedIndexScrolling =
+                this.object.getObjectProperty("hasSelectedIndexScrolling") ? true : false;
+            grid.scrollingTransitionTimingFunction =
+                this.object.getObjectProperty("scrollingTransitionTimingFunction") ?
+                this.object.getObjectProperty("scrollingTransitionTimingFunction") : "ease";
+            grid.scrollingTransitionDuration =
+                this.object.getObjectProperty("scrollingTransitionDuration") ?
+                this.object.getObjectProperty("scrollingTransitionDuration") : 500;
             for (j = 0; j < paths.length; j++) {
                 canvasShape = CanvasFlowSpline.create();
                 shape = FlowSpline.create().init();
                 canvasShape.data = shape;
                 spline = paths[j];
+                shape.headOffset = spline.headOffset;
+                shape.tailOffset = spline.tailOffset;
                 for (i = 0; i < spline.knots.length - 1; i++) {
                     bezier = BezierCurve.create().init();
                     bezier.pushControlPoint(knot = FlowKnot.create().initWithCoordinates([
@@ -497,9 +510,13 @@ exports.Editor = Montage.create(Component, {
                             knot[k] = spline.knots[i + 1][k];
                         }
                     }
+                    if (typeof spline.knots[i + 1].previousDensity !== "undefined") {
+                        knot.density = spline.knots[i + 1].previousDensity;
+                    }
                     shape.pushBezierCurve(bezier);
                 }
-                grid.children.push(canvasShape);
+                canvasGrid.children.push(canvasShape);
+                grid.pushShape(shape);
             }
             if (typeof this.object.getObjectProperty("cameraPosition") !== "undefined") {
                 this.camera.data.cameraPosition = this.object.getObjectProperty("cameraPosition")
@@ -516,15 +533,51 @@ exports.Editor = Montage.create(Component, {
             } else {
                 this.camera.data.cameraFov = Object.clone(Flow._cameraFov);
             }
+            this.viewport.scene = canvasGrid;
+            var self = this,
+                updated = function (event) {self.handleSceneUpdated(event)};
+            this.viewport.scene._data.addEventListener("vectorChange", updated, false);
+            this.viewport.scene._data.addEventListener("bezierCurveChange", updated, false);
+            this.viewport.scene._data.addEventListener("bezierSplineChange", updated, false);
+            this.viewport.scene._data.addEventListener("cameraChange", updated, false);
+            this.viewport.scene._data.addEventListener("sceneChange", updated, false);
+            this.viewport.scene._data.addEventListener("selectionChange", updated, false);
+        }
+    },
+
+    handleSceneUpdated: {
+        value: function () {
+            this.convertShapeToFlow();
         }
     },
 
     convertShapeToFlow: {
         value: function () {
             var shape, bezier, i, spline, j, k = 0,
-                paths = this.object.getObjectProperty("paths");
+                paths;
 
             this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", []);
+            paths = this.object.getObjectProperty("paths");
+            this.object.editingDocument.setOwnedObjectProperty(
+                this.object,
+                "isSelectionEnabled",
+                this.viewport.scene._data.isSelectionEnabled
+            );
+            this.object.editingDocument.setOwnedObjectProperty(
+                this.object,
+                "hasSelectedIndexScrolling",
+                this.viewport.scene._data.hasSelectedIndexScrolling
+            );
+            this.object.editingDocument.setOwnedObjectProperty(
+                this.object,
+                "scrollingTransitionDuration",
+                this.viewport.scene._data.scrollingTransitionDuration
+            );
+            this.object.editingDocument.setOwnedObjectProperty(
+                this.object,
+                "scrollingTransitionTimingFunction",
+                this.viewport.scene._data.scrollingTransitionTimingFunction
+            );
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
                 if (shape.type === "FlowSpline") {
@@ -542,17 +595,28 @@ exports.Editor = Montage.create(Component, {
                     spline.units.rotateY = "";
                     spline.units.rotateZ = "";
                     spline.units.opacity = "";
+                    spline.headOffset = shape.headOffset;
+                    spline.tailOffset = shape.tailOffset;
                     for (i = 0; i < shape.length; i++) {
                         bezier = shape.getBezierCurve(i);
                         if (bezier.length === 4) {
                             if (!spline.knots[i]) {
-                                spline.knots[i] = {
-                                    knotPosition: [],
-                                    nextHandlerPosition: [],
-                                    previousHandlerPosition: [],
-                                    nextDensity: 10,
-                                    previousDensity: 10
-                                };
+                                spline.knots[i] = {};
+                            }
+                            if (!spline.knots[i].knotPosition) {
+                                spline.knots[i].knotPosition = [];
+                            }
+                            if (!spline.knots[i].nextHandlerPosition) {
+                                spline.knots[i].nextHandlerPosition = [];
+                            }
+                            if (!spline.knots[i].previousHandlerPosition) {
+                                spline.knots[i].previousHandlerPosition = [];
+                            }
+                            if (!spline.knots[i].nextDensity) {
+                                spline.knots[i].nextDensity = [];
+                            }
+                            if (!spline.knots[i].previousDensity) {
+                                spline.knots[i].previousDensity = [];
                             }
                             spline.knots[i].knotPosition[0] = (bezier.getControlPoint(0).x);
                             spline.knots[i].knotPosition[1] = (bezier.getControlPoint(0).y);
@@ -600,19 +664,19 @@ exports.Editor = Montage.create(Component, {
         }
     },
 
-    handleSceneUpdated: {
+    /*handleSceneUpdated: {
         value: function () {
             this.convertShapeToFlow();
             this.selection = this.viewport.scene.getSelection()[0];
         }
-    },
+    },*/
 
     enterDocument: {
         enumerable: false,
         value: function (firstTime) {
             if (firstTime) {
                 this.convertFlowToShape();
-                this.viewport.scene.addEventListener("sceneUpdated", this, false);
+                //this.viewport.scene.addEventListener("sceneUpdated", this, false);
             }
         }
     },

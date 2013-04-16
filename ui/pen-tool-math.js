@@ -1,6 +1,7 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    Target = require("montage/core/target").Target;
 
-var MapReducible = exports.MapReducible = Montage.create(Montage, {
+var MapReducible = exports.MapReducible = Montage.create(Target, {
 
     init: {
         value: function () {
@@ -54,7 +55,39 @@ var MapReducible = exports.MapReducible = Montage.create(Montage, {
         value: function () {
             return this._data.filter.apply(this._data, arguments);
         }
+    },
+
+    nextTarget: {
+        value: null
+    },
+
+    _eventsToDispatch: {
+        value: {}
+    },
+
+    _timeout: {
+        value: null
+    },
+
+    dispatchEventIfNeeded: {
+        value: function (type) {
+            if(this.nextTarget && !MapReducible._eventsToDispatch[type]) {
+                MapReducible._eventsToDispatch[type] = this;
+                if (MapReducible._timeout === null) {
+                    MapReducible._timeout = window.setTimeout(function () {
+                        var t;
+
+                        for (t in MapReducible._eventsToDispatch) {
+                            MapReducible._eventsToDispatch[t].dispatchEventNamed(t, true, true);
+                        }
+                        MapReducible._timeout = null;
+                        MapReducible._eventsToDispatch = {};
+                    }, 0);
+                }
+            }
+        }
     }
+
 });
 
 var Vector = exports.Vector = Montage.create(MapReducible, {
@@ -86,6 +119,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     setCoordinates: {
         value: function (coordinatesArray) {
             this._data = coordinatesArray.slice(0);
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -96,6 +130,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     setCoordinate: {
         value: function (index, value) {
             this._data[index] = value;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -351,6 +386,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     init: {
         value: function () {
             this._data = [0, 0];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -383,6 +419,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (coordinatesArray) {
             this._data[0] = coordinatesArray[0];
             this._data[1] = coordinatesArray[1];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -397,6 +434,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         },
         set: function (value) {
             this._data[0] = value;
+            this.dispatchEventIfNeeded("vectorChange");
         }
     },
 
@@ -410,6 +448,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         },
         set: function (value) {
             this._data[1] = value;
+            this.dispatchEventIfNeeded("vectorChange");
         }
     },
 
@@ -433,6 +472,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (vector2) {
             this._data[0] += vector2._data[0];
             this._data[1] += vector2._data[1];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -444,6 +484,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (vector2) {
             this._data[0] -= vector2._data[0];
             this._data[1] -= vector2._data[1];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -455,6 +496,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function () {
             this._data[0] = -this._data[0];
             this._data[1] = -this._data[1];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -466,6 +508,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (scalar) {
             this._data[0] *= scalar;
             this._data[1] *= scalar;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -477,6 +520,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (scalar) {
             this._data[0] /= scalar;
             this._data[1] /= scalar;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -505,6 +549,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
 
             this._data[0] = this._data[0] * cos - this._data[1] * sin;
             this._data[1] = this._data[1] * cos + tmp * sin;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -525,6 +570,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
                 tmp * matrix[1] +
                 this._data[1] * matrix[3] +
                 matrix[5];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -537,6 +583,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (offsetsArray) {
             this._data[0] += offsetsArray[0];
             this._data[1] += offsetsArray[1];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -549,6 +596,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
         value: function (factorsArray) {
             this._data[0] *= factorsArray[0];
             this._data[1] *= factorsArray[1];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -559,6 +607,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     skewX: {
         value: function (angle) {
             this._data[0] += this._data[1] * Math.tan(angle);
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -569,6 +618,7 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     skewY: {
         value: function (angle) {
             this._data[1] += this._data[0] * Math.tan(angle);
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     }
@@ -584,6 +634,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     init: {
         value: function () {
             this._data = [0, 0, 0];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -617,6 +668,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] = coordinatesArray[0];
             this._data[1] = coordinatesArray[1];
             this._data[2] = coordinatesArray[2];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -631,6 +683,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
         },
         set: function (value) {
             this._data[0] = value;
+            this.dispatchEventIfNeeded("vectorChange");
         }
     },
 
@@ -644,6 +697,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
         },
         set: function (value) {
             this._data[1] = value;
+            this.dispatchEventIfNeeded("vectorChange");
         }
     },
 
@@ -657,6 +711,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
         },
         set: function (value) {
             this._data[2] = value;
+            this.dispatchEventIfNeeded("vectorChange");
         }
     },
 
@@ -682,6 +737,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] += vector3._data[0];
             this._data[1] += vector3._data[1];
             this._data[2] += vector3._data[2];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -694,6 +750,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] -= vector3._data[0];
             this._data[1] -= vector3._data[1];
             this._data[2] -= vector3._data[2];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -706,6 +763,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] = -this._data[0];
             this._data[1] = -this._data[1];
             this._data[2] = -this._data[2];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -718,6 +776,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] *= scalar;
             this._data[1] *= scalar;
             this._data[2] *= scalar;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -730,6 +789,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] /= scalar;
             this._data[1] /= scalar;
             this._data[2] /= scalar;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -751,6 +811,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[2] =
                 tmpX * vector3._data[1] -
                 tmpY * vector3._data[0];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -781,6 +842,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
             this._data[1] = this._data[1] * cos - this._data[2] * sin;
             this._data[2] = this._data[2] * cos + tmp * sin;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -797,6 +859,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
             this._data[0] = this._data[0] * cos + this._data[2] * sin;
             this._data[2] = this._data[2] * cos - tmp * sin;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -813,6 +876,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
 
             this._data[0] = this._data[0] * cos - this._data[1] * sin;
             this._data[1] = this._data[1] * cos + tmp * sin;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -834,6 +898,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
                 tmp * matrix[1] +
                 this._data[1] * matrix[3] +
                 matrix[5];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -862,6 +927,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
                 tmpY * matrix[6] +
                 this._data[2] * matrix[10] +
                 matrix[14];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -896,6 +962,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
                 tmpY * matrix[6] +
                 this._data[2] * matrix[10] +
                 matrix[14]) / w;
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -909,6 +976,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data.set(0, this._data[0] + offsetsArray[0]);
             this._data.set(1, this._data[1] + offsetsArray[1]);
             this._data.set(2, this._data[2] + offsetsArray[2]);
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -922,6 +990,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this._data[0] *= factorsArray[0];
             this._data[1] *= factorsArray[1];
             this._data[2] *= factorsArray[2];
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -932,6 +1001,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     skewX: {
         value: function (angle) {
             this._data[0] += this._data[1] * Math.tan(angle);
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     },
@@ -942,6 +1012,7 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     skewY: {
         value: function (angle) {
             this._data[1] += this._data[0] * Math.tan(angle);
+            this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
     }
@@ -997,6 +1068,8 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     pushControlPoint: {
         value: function (vector) {
             this._data.push(vector);
+            vector.nextTarget = this;
+            this.dispatchEventIfNeeded("bezierCurveChange");
         }
     },
 
@@ -1006,7 +1079,11 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     */
     popControlPoint: {
         value: function () {
-            return this._data.pop();
+            var vector = this._data.pop();
+
+            vector.nextTarget = null;
+            this.dispatchEventIfNeeded("bezierCurveChange");
+            return vector;
         }
     },
 
@@ -1026,6 +1103,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     setControlPoint: {
         value: function (index, vector) {
             this._data[index] = vector;
+            this.dispatchEventIfNeeded("bezierCurveChange");
         }
     },
 
@@ -1109,8 +1187,10 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                 for (i = 1; i < order; i++) {
                     rightSide.setControlPoint(i, intermediateValues[i]);
                 }
+                this.dispatchEventIfNeeded("bezierCurveChange");
                 return rightSide;
             } else {
+                this.dispatchEventIfNeeded("bezierCurveChange");
                 return null;
             }
         }
@@ -1130,6 +1210,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                 this.setControlPoint(i, this.getControlPoint(order - i));
                 this.setControlPoint(order - i, tmp);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1146,6 +1227,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).translate(offsetsArray);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1162,6 +1244,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).scale(factorsArray);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1177,6 +1260,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotate(angle);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1193,6 +1277,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotateX(angle);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1209,6 +1294,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotateY(angle);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1225,6 +1311,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).rotateZ(angle);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1242,6 +1329,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).transformMatrix(matrix);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1258,6 +1346,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).transformMatrix3d(matrix);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1273,6 +1362,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).skewX(angle);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1288,6 +1378,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
             for (i = 0; i <= order; i++) {
                 this.getControlPoint(i).skewY(angle);
             }
+            this.dispatchEventIfNeeded("bezierCurveChange");
             return this;
         }
     },
@@ -1303,6 +1394,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
 
             for (i = 0; i < length; i++) {
                 clone._data[i] = this._data[i].clone();
+                clone._data[i].nextTarget = clone;
             }
             return clone;
         }
@@ -1493,11 +1585,13 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
         value: function (bezierCurve) {
             var index = this._data.push(bezierCurve) - 1;
 
+            bezierCurve.nextTarget = this;
             if (index > 0) {
                 this._data[index].setControlPoint(0,
                     this._data[index - 1].getControlPoint(this._data[index - 1].order)
                 );
             }
+            this.dispatchEventIfNeeded("bezierSplineChange");
         }
     },
 
@@ -1520,6 +1614,8 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
             var bezierCurve = this._data.pop();
 
             bezierCurve.setControlPoint(0, bezierCurve.getControlPoint(0).clone());
+            bezierCurve.nextTarget = null;
+            this.dispatchEventIfNeeded("bezierSplineChange");
             return bezierCurve;
         }
     },
@@ -1540,8 +1636,10 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
             if (index) {
                 for (i = index + 1; i < this.length; i++) {
                     rightSide.pushBezierCurve(this._data[i]);
+                    this._data[i].nextTarget = rightSide;
                 }
                 this._data = this._data.slice(0, index);
+                this.dispatchEventIfNeeded("bezierSplineChange");
                 if (rightSide.length) {
                     return rightSide;
                 } else {
@@ -1549,6 +1647,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                 }
             } else {
                 this._data = this._data.slice(1);
+                this.dispatchEventIfNeeded("bezierSplineChange");
                 return null;
             }
         }
@@ -1576,6 +1675,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                     this._data[index + 1].getControlPoint(this._data[index + 1].order)
                 );
             }
+            this.dispatchEventIfNeeded("bezierSplineChange");
             return this;
         }
     },
@@ -1601,6 +1701,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                     this._data[i].getControlPoint(j).translate(offsetsArray);
                 }
             }
+            this.dispatchEventIfNeeded("bezierSplineChange");
             return this;
         }
     },
@@ -1626,6 +1727,26 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                     this._data[i].getControlPoint(j).scale(factorsArray);
                 }
             }
+            this.dispatchEventIfNeeded("bezierSplineChange");
+            return this;
+        }
+    },
+
+    reverse: {
+        value: function () {
+            var length = this._data.length,
+                halfLength = length >> 1,
+                tmp, i;
+
+            for (i = 0; i < length; i++) {
+                this._data[i].reverse();
+            }
+            for (i = 0; i < halfLength; i++) {
+                tmp = this._data[i];
+                this._data[i] = this._data[length - i - 1];
+                this._data[length - i - 1] = tmp;
+            }
+            this.dispatchEventIfNeeded("bezierSplineChange");
             return this;
         }
     },
@@ -1652,6 +1773,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                     this._data[i].getControlPoint(j).rotate(angle);
                 }
             }
+            this.dispatchEventIfNeeded("bezierSplineChange");
             return this;
         }
     },
@@ -1731,7 +1853,8 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                 i;
 
             for (i = 0; i < length; i++) {
-                clone._data[i] = this._data[i].clone();
+                clone.pushBezierCurve(this._data[i].clone());
+                clone._data[i].nextTarget = clone;
             }
             return clone;
         }
@@ -1746,8 +1869,17 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                 i;
 
             for (i = 0; i < length; i++) {
-                this.getBezierCurve(i).transformMatrix3d(matrix);
+                curveLength = this._data[i].length;
+                if (i) {
+                    start = 1;
+                } else {
+                    start = 0;
+                }
+                for (j = start; j < curveLength; j++) {
+                    this._data[i].getControlPoint(j).transformMatrix3d(matrix);
+                }
             }
+            this.dispatchEventIfNeeded("bezierSplineChange");
             return this;
         }
     }
@@ -1764,6 +1896,15 @@ var Scene = exports.Scene = Montage.create(MapReducible, {
     pushShape: {
         value: function (shape) {
             this._data.push(shape);
+            shape.nextTarget = this;
+            this.dispatchEventIfNeeded("sceneChange");
+        }
+    },
+
+    removeShape: {
+        value: function (index) {
+            this._data.splice(index, 1);
+            this.dispatchEventIfNeeded("sceneChange");
         }
     },
 

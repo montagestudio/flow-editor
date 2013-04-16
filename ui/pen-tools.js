@@ -36,7 +36,7 @@ exports.ArrowTool = Montage.create(Montage, {
             if (selected) {
                 selected.isSelected = true;
             }
-            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            //viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             this._pointerX = event.pageX,
             this._pointerY = event.pageY;
         }
@@ -47,7 +47,7 @@ exports.ArrowTool = Montage.create(Montage, {
             var dX = event.pageX - this._pointerX,
                 dY = event.pageY - this._pointerY;
 
-            if (viewport.selection && viewport.selection[0]) {
+            if (viewport.selection && viewport.selection[0] && viewport.selection[0]._data.type !== "FlowGrid") {
                 viewport.selection[0].translate(
                     Vector3.
                     create().
@@ -60,7 +60,7 @@ exports.ArrowTool = Montage.create(Montage, {
                         transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                     )._data
                 );
-                viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             } else {
                 viewport.translateX += dX;
                 viewport.translateY += dY;
@@ -130,7 +130,7 @@ exports.ConvertTool = Montage.create(Montage, {
             } else {
                 viewport.unselect();
             }
-            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            //viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             /*viewport.unselect();
             if (selected) {
                 selected.isSelected = true;
@@ -163,7 +163,7 @@ exports.ConvertTool = Montage.create(Montage, {
                 viewport.translateX += dX;
                 viewport.translateY += dY;
             }
-            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            //viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             this._pointerX = event.pageX;
             this._pointerY = event.pageY;
         }
@@ -247,7 +247,9 @@ exports.PenTool = Montage.create(Montage, {
 
             } else {
                 canvasShape = CanvasFlowSpline.create();
+                viewport.scene.children.push(canvasShape);
                 this._editingSpline = shape = FlowSpline.create().init();
+                viewport.scene._data.pushShape(shape);
                 canvasShape.initWithData(shape);
                 bezier = BezierCurve.create().init();
                 bezier.pushControlPoint(knot = FlowKnot.
@@ -255,19 +257,18 @@ exports.PenTool = Montage.create(Montage, {
                     initWithCoordinates([event.layerX, event.layerY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
-                bezier._isSelected = true;
-                knot._isSelected = true;
                 bezier.pushControlPoint(Vector3.
                     create().
                     initWithCoordinates([event.layerX, event.layerY, 0]).
                     transformMatrix3d(viewport._inverseTransformMatrix(viewport.matrix))
                 );
                 shape.pushBezierCurve(bezier);
+                bezier._isSelected = true;
+                knot._isSelected = true;
                 canvasShape.isSelected = true;
-                viewport.scene.children.push(canvasShape);
                 this.previousKnot = knot;
             }
-            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            //viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             this._pointerX = event.pageX;
             this._pointerY = event.pageY;
         }
@@ -321,7 +322,7 @@ exports.PenTool = Montage.create(Montage, {
                 viewport.translateY += dY;
             }
             viewport.scene.dispatchEventNamed("sceneUpdated", true, true);*/
-            viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
+            //viewport.scene.dispatchEventNamed("sceneUpdated", true, true);
             this._pointerX = event.pageX;
             this._pointerY = event.pageY;
         }

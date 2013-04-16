@@ -30,5 +30,11 @@
     -webkit-box-shadow: inset 2px 6px 8px -4px #fff, inset -2px -5px 6px -4px #333, 0 0 10px rgba(0, 0, 0, .3);
     -webkit-transform-origin: 100px 100px 0 !important;
     border-radius: 40px;
-    gdisplay: none;
+}
+.active .slide {
+    background: -webkit-gradient(linear, left top, left bottom, from(#aaa), to(#bbb));
+}
+
+.selected .slide {
+    background: -webkit-gradient(linear, left top, left bottom, from(#888), to(#ddd));
 }

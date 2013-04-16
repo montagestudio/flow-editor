@@ -9,26 +9,75 @@ exports.FlowKnot = Montage.create(Vector3, {
         value: "FlowKnot"
     },
 
+    _rotateX: {
+        value: 0
+    },
+
     rotateX: {
+        get: function () {
+            return this._rotateX;
+        },
+        set: function (value) {
+            this._rotateX = value;
+            this.dispatchEventNamed("vectorChange", true, true);
+        }
+    },
+
+    _rotateY: {
         value: 0
     },
 
     rotateY: {
+        get: function () {
+            return this._rotateY;
+        },
+        set: function (value) {
+            this._rotateY = value;
+            this.dispatchEventNamed("vectorChange", true, true);
+        }
+    },
+
+    _rotateZ: {
         value: 0
     },
 
     rotateZ: {
-        value: 0
+        get: function () {
+            return this._rotateZ;
+        },
+        set: function (value) {
+            this._rotateZ = value;
+            this.dispatchEventNamed("vectorChange", true, true);
+        }
     },
 
-    opacity: {
+    _opacity: {
         value: 1
     },
 
-    density: {
-        value: 10
-    }
+    opacity: {
+        get: function () {
+            return this._opacity;
+        },
+        set: function (value) {
+            this._opacity = value;
+            this.dispatchEventNamed("vectorChange", true, true);
+        }
+    },
 
+    _density: {
+        value: 10
+    },
+
+    density: {
+        get: function () {
+            return this._density;
+        },
+        set: function (value) {
+            this._density = value;
+            this.dispatchEventNamed("vectorChange", true, true);
+        }
+    }
 });
 
 exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
@@ -103,6 +152,7 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
                 case "smooth":
                 break;
             }
+            this._data.dispatchEventNamed("vectorChange", true, true);
         }
     },
 

@@ -7,7 +7,7 @@ exports.FlowViewport = Montage.create(Viewport, {
     selection: {
         get: function () {
             if (this.scene) {
-                return this.scene.getSelection();
+                return this.scene.getSelection(this.scene);
             } else {
                 return null;
             }

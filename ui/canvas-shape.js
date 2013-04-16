@@ -13,6 +13,14 @@ exports.CanvasShape = Montage.create(Target, {
         value: []
     },
 
+    deleteChild: {
+        value: function (index) {
+            this.children.splice(index, 1);
+            this._data.dispatchEventNamed("sceneChange", true, true);
+            this._data.dispatchEventNamed("selectionChange", true, true);
+        }
+    },
+
     hasChild: {
         value: function (shape) {
             var children = this.children,
@@ -21,7 +29,7 @@ exports.CanvasShape = Montage.create(Target, {
 
             for (i = 0; i < length; i++) {
                 if (shape.data === children[i].data) {
-                    return true;
+                    return [i];
                 }
             }
             return false;
@@ -45,17 +53,7 @@ exports.CanvasShape = Montage.create(Target, {
             return this._data;
         },
         set: function (value) {
-            // this.addOwnPropertyChangeListener("_data", function(plus, minus, index) {
-            //     //console.log("addOwnPropertyChangeListener plus:",plus,"minus:", minus,"index:", index)
-            // })
             this._data = value;
-            // if(this._data && this._data._data && this._data._data.length) {
-            //     console.log(this._data)
-            //     this._data.addRangeAtPathChangeListener("_data", function(plus, minus, index) {
-            //         //console.log("addRangeAtPathChangeListener plus:",plus,"minus:", minus,"index:", index)
-            //     })
-            // }
-
         }
     },
 
@@ -96,20 +94,23 @@ exports.CanvasShape = Montage.create(Target, {
     },
 
     getSelection: {
-        value: function (selection) {
+        value: function (scene, selection) {
             var s = selection ? selection : [],
                 children = this.children,
                 length = children.length,
                 i;
 
             for (i = 0; i < length; i++) {
-                children[i].getSelection(s);
+                children[i].getSelection(scene, s);
             }
             if (this.isSelected) {
                 s.push(this);
             }
             if (!selection) {
                 //console.log(s[0] ? s[0]._data.type : "no selection");
+                if (!s[0]) {
+                    return [scene];
+                }
                 return s;
             }
         }
@@ -255,6 +256,9 @@ exports.CanvasShape = Montage.create(Target, {
         },
         set: function (value) {
             this._data._isSelected = value;
+            if (this._data.dispatchEventNamed) {
+                this._data.dispatchEventNamed("selectionChange", true, true);
+            }
             this.needsDraw = true;
         }
     },

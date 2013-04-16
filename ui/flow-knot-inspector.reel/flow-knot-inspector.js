@@ -25,7 +25,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
         set: function (value) {
             if (value) {
                 this._type = value;
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -65,7 +65,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
                 this.knot.translate([dX, 0, 0]);
             }
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -88,7 +88,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
                 this.knot.translate([0, dY, 0]);
             }
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -111,7 +111,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
                 this.knot.translate([0, 0, dZ]);
             }
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -127,7 +127,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
         set: function (value) {
             this._rotateX = value;
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -143,7 +143,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
         set: function (value) {
             this._rotateY = value;
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -159,7 +159,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
         set: function (value) {
             this._rotateZ = value;
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -175,7 +175,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
         set: function (value) {
             this._opacity = value;
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -191,7 +191,7 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
         set: function (value) {
             this._density = value;
             if (this.scene) {
-                this.scene.dispatchEventNamed("sceneUpdated", true, true);
+                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     }
