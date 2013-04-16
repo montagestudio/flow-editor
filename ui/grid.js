@@ -174,8 +174,8 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
                 yStart,
                 yEnd,
                 indices = [0, 1, 2, 4, 5, 6, 8, 9, 10],
-                width = this._width ? this._width : 500,
-                height = this._height ? this._height: 500,
+                width = this.canvas.width,
+                height = this.canvas.height,
                 step = 100,
                 i = 0;
 
@@ -192,7 +192,7 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
                     this._context.fillRect(Math.floor(offsetX + x * step * scale), 0, 1, 9999);
                 }
                 yStart = -Math.floor(offsetY / (step * scale));
-                yEnd = yStart + Math.floor(width / (step * scale));
+                yEnd = yStart + Math.floor(height / (step * scale));
                 for (y = yStart; y <= yEnd; y++) {
                     this._context.fillRect(0, Math.floor(offsetY + y * step * scale), 9999, 1);
                 }

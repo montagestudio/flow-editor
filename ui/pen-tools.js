@@ -115,7 +115,7 @@ exports.ConvertTool = Montage.create(Montage, {
             this._pointerY = event.pageY;*/
             var path,
                 i;
-console.log(event.offsetX, event.offsetY, event);
+
             this._selectedChild = viewport.findSelectedChild(event.offsetX, event.offsetY);
             if (this._selectedChild) {
                 path = viewport.findPathToNode(this._selectedChild);
