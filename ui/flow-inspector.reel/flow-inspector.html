@@ -90,6 +90,16 @@
                 "vector": {"<-": "@owner.selection"},
                 "scene": {"<-": "@owner.scene"}
             }
+        },
+        "spiral": {
+            "prototype": "ui/flow-spiral-inspector.reel",
+            "properties": {
+                "element": {"#": "spiral"}
+            },
+            "bindings": {
+                "spiral": {"<-": "@owner.selection"},
+                "scene": {"<-": "@owner.scene"}
+            }
         }
     }
     </script>
@@ -104,6 +114,7 @@
             <div data-arg="FlowCamera" data-montage-id="camera"></div>
             <div data-arg="FlowSpline" data-montage-id="spline"></div>
             <div data-arg="FlowGrid" data-montage-id="grid"></div>
+            <div data-arg="FlowSpiral" data-montage-id="spiral"></div>
         </div>
     </div>
 </body>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "flow-spiral-inspector"}
+            },
+            "bindings": {
+                "radius": {"<->": "@owner.spiral.radius"},
+                "height": {"<->": "@owner.spiral.height"},
+                "density": {"<->": "@owner.spiral.density"},
+                "segments": {"<->": "@owner.spiral.segments"}
+            }
+        },
+        "radius": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "radius"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.radius"}
+            }
+        },
+        "height": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "height"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.height"}
+            }
+        },
+        "density": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "density"},
+                "step": 0.01
+            },
+            "bindings": {
+                "value": {"<->": "@owner.density"}
+            }
+        },
+        "segments": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "segments"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.segments"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <ul data-montage-id="flow-spiral-inspector" class="FlowSpiralInspector">
+        <li>
+            <span class="property">radius</span><div data-montage-id="radius" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">height</span><div data-montage-id="height" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">density</span><div data-montage-id="density" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">segments</span><div data-montage-id="segments" class="inspector-input"></div>
+        </li>
+    </ul>
+</body>
+</html>

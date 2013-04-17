@@ -9,6 +9,8 @@ var Montage = require("montage").Montage,
     Scene = PenToolMath.Scene,
     FlowSpline = require("ui/flow-spline").FlowSpline,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
+    FlowSpiral = require("ui/flow-spiral").FlowSpiral,
+    CanvasFlowSpiral = require("ui/flow-spiral").CanvasFlowSpiral,
     Grid = require("ui/grid").Grid,
     CanvasGrid = require("ui/grid").CanvasGrid,
     Camera = require("ui/camera").Camera,
@@ -518,6 +520,15 @@ exports.Editor = Montage.create(Component, {
                 canvasGrid.children.push(canvasShape);
                 grid.pushShape(shape);
             }
+
+            if (!window.top.document.getElementsByTagName("iframe")[0]) {
+                var canvasSpiral = CanvasFlowSpiral.create();
+
+                canvasSpiral.update();
+                canvasGrid.children.push(canvasSpiral);
+                grid.pushShape(canvasSpiral._data);
+            }
+
             if (typeof this.object.getObjectProperty("cameraPosition") !== "undefined") {
                 this.camera.data.cameraPosition = this.object.getObjectProperty("cameraPosition")
             } else {
@@ -580,7 +591,7 @@ exports.Editor = Montage.create(Component, {
             );
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
-                if (shape.type === "FlowSpline") {
+                if ((shape.type === "FlowSpline")||(shape.type === "FlowSpiral")) {
                     spline = paths[k];
                     if (!spline) {
                         paths.push({
@@ -684,7 +695,7 @@ exports.Editor = Montage.create(Component, {
     willDraw: {
         enumerable: false,
         value: function () {
-            if (!window.top.document.getElementsByTagName("iframe")[0].component.currentMode) {
+            if (window.top.document.getElementsByTagName("iframe")[0] && !window.top.document.getElementsByTagName("iframe")[0].component.currentMode) {
                 window.top.document.getElementsByTagName("iframe")[0].component.currentMode = 1;
             }
             /*this.frontView.width = this._element.offsetWidth;
