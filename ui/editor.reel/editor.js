@@ -557,7 +557,7 @@ exports.Editor = Montage.create(Component, {
                 paths;
 
             this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", []);
-            paths = this.object.getObjectProperty("paths");
+            paths = [];
             this.object.editingDocument.setOwnedObjectProperty(
                 this.object,
                 "isSelectionEnabled",
