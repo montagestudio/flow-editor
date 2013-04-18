@@ -521,7 +521,7 @@ exports.Editor = Montage.create(Component, {
                 grid.pushShape(shape);
             }
 
-            if (!window.top.document.getElementsByTagName("iframe")[0]) {
+            if (this.standAlone) {
                 var canvasSpiral = CanvasFlowSpiral.create();
 
                 canvasSpiral.update();
@@ -695,7 +695,7 @@ exports.Editor = Montage.create(Component, {
     willDraw: {
         enumerable: false,
         value: function () {
-            if (window.top.document.getElementsByTagName("iframe")[0] && !window.top.document.getElementsByTagName("iframe")[0].component.currentMode) {
+            if (!this.standAlone && !window.top.document.getElementsByTagName("iframe")[0].component.currentMode) {
                 window.top.document.getElementsByTagName("iframe")[0].component.currentMode = 1;
             }
             /*this.frontView.width = this._element.offsetWidth;
