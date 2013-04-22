@@ -55,7 +55,7 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
 
     handleCloseButtonAction: {
         value: function (evt) {
-            window.top.document.getElementsByTagName("iframe")[0].component.currentMode = 0;
+            window.top.document.getElementsByTagName("iframe")[0].parentNode.component.currentMode = 0;
             evt.stop();
             this.dispatchEventNamed("exitModalEditor", true, true);
         }

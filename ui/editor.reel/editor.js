@@ -695,8 +695,8 @@ exports.Editor = Montage.create(Component, {
     willDraw: {
         enumerable: false,
         value: function () {
-            if (!this.standAlone && !window.top.document.getElementsByTagName("iframe")[0].component.currentMode) {
-                window.top.document.getElementsByTagName("iframe")[0].component.currentMode = 1;
+            if (!this.standAlone && !window.top.document.getElementsByTagName("iframe")[0].parentNode.component.currentMode) {
+                window.top.document.getElementsByTagName("iframe")[0].parentNode.component.currentMode = 1;
             }
             /*this.frontView.width = this._element.offsetWidth;
             this.frontView.height = (this._element.offsetHeight - this.toolbar.element.offsetHeight - 1) >> 1;
