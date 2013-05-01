@@ -43,6 +43,8 @@ exports.FlowViewport = Montage.create(Viewport, {
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
             if (firstTime) {
+                this.translateX = this._width / 2;
+                this.translateY = this._height / 2;
                 this._context = this._element.getContext("2d");
                 this._element.addEventListener("mousedown", this, true);
                 window.addEventListener("resize", this, false);
