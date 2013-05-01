@@ -210,7 +210,12 @@ exports.Viewport = Montage.create(Component, {
 
     handleMousewheel: {
         value: function (event) {
-            this.scale *= 1 + event.wheelDelta/10000;
+            var x = event.offsetX - this.translateX,
+                y = event.offsetY - this.translateY;
+
+            this.translateX -= x * event.wheelDelta / 10000;
+            this.translateY -= y * event.wheelDelta / 10000;
+            this.scale *= 1 + event.wheelDelta / 10000;
             event.preventDefault();
         }
     },
