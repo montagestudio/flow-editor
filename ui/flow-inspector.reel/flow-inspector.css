@@ -43,7 +43,6 @@
     height: 25px;
     padding: 0 6px;
     font-weight: bold;
-    -webkit-user-select: none;
 }
 
 .FlowInspector .flow-number-input {
