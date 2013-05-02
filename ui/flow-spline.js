@@ -95,6 +95,13 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
         }
     },
 
+    reverse: {
+        value: function () {
+            this._children = null;
+            this._data.reverse();
+        }
+    },
+
     children: {
         get: function () {
             var self = this,

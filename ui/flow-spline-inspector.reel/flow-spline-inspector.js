@@ -92,7 +92,7 @@ exports.FlowSplineInspector = Montage.create(Component, /** @lends module:"ui/fl
 
     handleReverseAction: {
         value: function () {
-            this.spline._data.reverse();
+            this.spline.reverse();
         }
     },
 

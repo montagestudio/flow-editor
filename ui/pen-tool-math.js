@@ -1734,23 +1734,18 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
 
     reverse: {
         value: function () {
-            var length = this._data.length,
-                halfLength,
-                tmp, i;
+            var reversedSpline = Montage.create(Object.getPrototypeOf(this)).init(),
+                length = this._data.length,
+                i;
 
-            if (!this._data[length - 1].getControlPoint(this._data[length - 1].order)) {
+            if (this._data[length - 1].order < 3) {
                 length--;
-                this._data.pop();
             }
-            halfLength = length >> 1;
-            for (i = 0; i < length; i++) {
-                this._data[i].reverse();
+            for (i = length - 1; i >= 0; i--) {
+                reversedSpline.pushBezierCurve(this._data[i].clone().reverse());
+                reversedSpline._data[length - 1 - i].nextTarget = reversedSpline;
             }
-            for (i = 0; i < halfLength; i++) {
-                tmp = this._data[i];
-                this._data[i] = this._data[length - i - 1];
-                this._data[length - i - 1] = tmp;
-            }
+            this._data = reversedSpline._data;
             this.dispatchEventIfNeeded("bezierSplineChange");
             return this;
         }
