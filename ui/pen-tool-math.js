@@ -1746,6 +1746,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                 reversedSpline._data[length - 1 - i].nextTarget = reversedSpline;
             }
             this._data = reversedSpline._data;
+            reversedSpline.nextTarget = this;
             this.dispatchEventIfNeeded("bezierSplineChange");
             return this;
         }
