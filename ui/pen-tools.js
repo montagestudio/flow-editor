@@ -180,6 +180,7 @@ exports.PenTool = Montage.create(Montage, {
 
     start: {
         value: function (viewport) {
+            viewport.unselect();
             this._editingSpline = null;
         }
     },
