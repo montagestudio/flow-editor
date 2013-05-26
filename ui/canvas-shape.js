@@ -5,12 +5,30 @@ exports.CanvasShape = Montage.create(Target, {
 
     didCreate: {
         value: function () {
-
+            this.children = [];
         }
     },
 
     children: {
-        value: []
+        value: null
+    },
+
+    appendChild: {
+        value: function (canvasShape) {
+            this.children.push(canvasShape);
+            if (this._data) {
+                this._data.dispatchEventNamed("sceneChange");
+            }
+        }
+    },
+
+    insertChildAtStart: {
+        value: function (canvasShape) {
+            this.children.splice(0, 0, canvasShape);
+            if (this._data) {
+                this._data.dispatchEventNamed("sceneChange");
+            }
+        }
     },
 
     deleteChild: {
@@ -116,22 +134,64 @@ exports.CanvasShape = Montage.create(Target, {
         }
     },
 
+    sortByZIndex: {
+        value: function (a, b) {
+            if (b.isSelected && !a.isSelected) {
+                return 1;
+            }
+            if (!b.isSelected && a.isSelected) {
+                return -1;
+            }
+            return b.zIndex - a.zIndex;
+        }
+    },
+
+    sortByReversedZIndex: {
+        value: function (a, b) {
+            if (b.isSelected && !a.isSelected) {
+                return -1;
+            }
+            if (!b.isSelected && a.isSelected) {
+                return 1;
+            }
+            return a.zIndex - b.zIndex;
+        }
+    },
+
+    sortedChildrenIndexesBy: {
+        value: function (sortingMethod) {
+            var result = [],
+                children = this.children,
+                length = children.length,
+                i;
+
+            for (i = 0; i < length; i++) {
+                result[i] = {
+                    zIndex: children[i].zIndex,
+                    isSelected: children[i].isSelected,
+                    index: i
+                }
+            }
+            result.sort(sortingMethod);
+            return result;
+        }
+    },
+
     findSelectedShape: {
         value: function (x, y, transformMatrix) {
             var transform = this.getTransform ? this.getTransform(transformMatrix) : transformMatrix,
                 children = this.children,
                 length = children.length,
+                sortedIndexes,
                 result,
                 i;
 
             if (this.pointOnShape && this.pointOnShape(x, y, transform)) {
                 return this;
             }
-            children.sort(function (a, b) {
-                return b.zIndex - a.zIndex;
-            });
+            sortedIndexes = this.sortedChildrenIndexesBy(this.sortByZIndex);
             for (i = 0; i < length; i++) {
-                result = children[i].findSelectedShape(x, y, transform);
+                result = children[sortedIndexes[i].index].findSelectedShape(x, y, transform);
                 if (result) {
                     return result;
                 }
@@ -168,48 +228,73 @@ exports.CanvasShape = Montage.create(Target, {
 
     findSelectedLeaf: {
         value: function (x, y, transformMatrix) {
+            if (this.isVisible) {
+                var transform = this.getTransform ? this.getTransform(transformMatrix) : transformMatrix,
+                    children = this.children,
+                    length = children.length,
+                    sortedIndexes,
+                    result,
+                    i;
+
+                if (length) {
+                    sortedIndexes = this.sortedChildrenIndexesBy(this.sortByZIndex);
+                    for (i = 0; i < length; i++) {
+                        result = children[sortedIndexes[i].index].findSelectedLeaf(x, y, transform);
+                        if (result) {
+                            return result;
+                        }
+                    }
+                }
+                if (this.pointOnShape && this.pointOnShape(x, y, transform)) {
+                    return this;
+                }
+            }
+            return null;
+        }
+    },
+
+    findCloserShapeType: {
+        value: function (type, x, y, transformMatrix) {
             var transform = this.getTransform ? this.getTransform(transformMatrix) : transformMatrix,
                 children = this.children,
                 length = children.length,
+                sortedIndexes,
                 result,
                 i;
 
             if (length) {
-                children.sort(function (a, b) {
-                    return b.zIndex - a.zIndex;
-                });
+                sortedIndexes = this.sortedChildrenIndexesBy(this.sortByZIndex);
                 for (i = 0; i < length; i++) {
-                    result = children[i].findSelectedLeaf(x, y, transform);
+                    result = children[sortedIndexes[i].index].findCloserShapeType(type, x, y, transform);
                     if (result) {
                         return result;
                     }
                 }
             }
-            // else {
-                if (this.pointOnShape && this.pointOnShape(x, y, transform)) {
-                    return this;
-                }
-            //}
+            if ((this._data) && (this._data.type === type) && this.pointOnShape && this.pointOnShape(x, y, transform)) {
+                return this;
+            }
             return null;
         }
     },
 
     draw: {
         value: function (transformMatrix) {
-            var transform = this.getTransform ? this.getTransform(transformMatrix) : transformMatrix,
-                children = this.children,
-                length = children.length,
-                i;
+            if (this.isVisible) {
+                var transform = this.getTransform ? this.getTransform(transformMatrix) : transformMatrix,
+                    children = this.children,
+                    length = children.length,
+                    sortedIndexes,
+                    i;
 
-            if (this.drawSelf) {
-                this.drawSelf(transform);
-            }
-            children.sort(function (a, b) {
-                return a.zIndex - b.zIndex;
-            });
-            for (i = 0; i < length; i++) {
-                children[i].canvas = this.canvas;
-                children[i].draw(transform);
+                if (this.drawSelf) {
+                    this.drawSelf(transform);
+                }
+                sortedIndexes = this.sortedChildrenIndexesBy(this.sortByReversedZIndex);
+                for (i = 0; i < length; i++) {
+                    children[sortedIndexes[i].index].canvas = this.canvas;
+                    children[sortedIndexes[i].index].draw(transform);
+                }
             }
         }
     },
@@ -246,20 +331,43 @@ exports.CanvasShape = Montage.create(Target, {
         }
     },
 
-    _isSelected: {
-        value: false
-    },
-
     isSelected: {
         get: function () {
-            return this._data._isSelected;
+            if (this._data) {
+                if (typeof this._data._isSelected !== "undefined") {
+                    return this._data._isSelected;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         },
         set: function (value) {
-            this._data._isSelected = value;
-            if (this._data.dispatchEventNamed) {
+            if (this._data && (this._data._isSelected !== value) && this._data.dispatchEventNamed) {
+                this._data._isSelected = value;
                 this._data.dispatchEventNamed("selectionChange", true, true);
+                this.needsDraw = true;
             }
-            this.needsDraw = true;
+        }
+    },
+
+    _isVisible: {
+        value: true
+    },
+
+    isVisible: {
+        get: function () {
+            return this._isVisible;
+        },
+        set: function (value) {
+            if (this._isVisible !== value) {
+                this._isVisible = value;
+                if (this._data && this._data.dispatchEventNamed) {
+                    this._data.dispatchEventNamed("visibilityChange", true, true);
+                }
+                this.needsDraw = true;
+            }
         }
     },
 

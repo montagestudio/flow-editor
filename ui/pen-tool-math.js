@@ -71,7 +71,7 @@ var MapReducible = exports.MapReducible = Montage.create(Target, {
 
     dispatchEventIfNeeded: {
         value: function (type) {
-            if(this.nextTarget && !MapReducible._eventsToDispatch[type]) {
+            if (this.nextTarget && !MapReducible._eventsToDispatch[type]) {
                 MapReducible._eventsToDispatch[type] = this;
                 if (MapReducible._timeout === null) {
                     MapReducible._timeout = window.setTimeout(function () {
@@ -1038,6 +1038,19 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
         }
     },
 
+    dimensions: {
+        get: function () {
+            var length = this._data.length,
+                i;
+
+            for (i = 0; i < length; i++) {
+                if (this._data[i]) {
+                    return this._data[i].dimensions;
+                }
+            }
+        }
+    },
+
     /**
         Number of inserted control points. During edition, like while drawing a curve,
         the curve might be not complete and length - 1 might be lower than order
@@ -1103,6 +1116,9 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     setControlPoint: {
         value: function (index, vector) {
             this._data[index] = vector;
+            if (vector) {
+                vector.nextTarget = this;
+            }
             this.dispatchEventIfNeeded("bezierCurveChange");
         }
     },
@@ -1118,7 +1134,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                     i, j, n, m,
                     k = 1 - t,
                     intermediateValues = [],
-                    dimensions = this.getControlPoint(0).dimensions,
+                    dimensions = this.dimensions,
                     currentPoint, nextPoint = this.getControlPoint(0);
 
                 for (i = 1; i <= order; i++) {
@@ -1160,7 +1176,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
         value: function (t) {
             var order = this.order,
                 intermediateValues = [],
-                dimensions = this.getControlPoint(0).dimensions,
+                dimensions = this.dimensions,
                 currentPoint,
                 nextPoint = this.getControlPoint(0),
                 rightSide = Montage.create(Object.getPrototypeOf(this)).init(),
@@ -1393,8 +1409,10 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                 i;
 
             for (i = 0; i < length; i++) {
-                clone._data[i] = this._data[i].clone();
-                clone._data[i].nextTarget = clone;
+                if (this._data[i]) {
+                    clone._data[i] = this._data[i].clone();
+                    clone._data[i].nextTarget = clone;
+                }
             }
             return clone;
         }
@@ -1407,7 +1425,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
         get: function () {
             var boundaries = [],
                 order = this.order,
-                dimensions = this.getControlPoint(0).dimensions,
+                dimensions = this.dimensions,
                 i, j, iControlPoint, jCoordinate;
 
             for (i = 0; i < dimensions; i++) {
@@ -1439,7 +1457,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     hardAxisAlignedBoundaries: {
         get: function () {
             var boundaries = [],
-                dimensions = this.getControlPoint(0).dimensions,
+                dimensions = this.dimensions,
                 i;
 
             if (this.isComplete) {
@@ -1476,7 +1494,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                                 boundaries[k].max = iBoundaries[k].min;
                             }
                             if (rightSide = curves[i].split(.5)) {
-                                curves.push(rightSide)
+                                curves.push(rightSide);
                             }
                             i--;
                         }
@@ -1488,7 +1506,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                     for (i = 0; i < dimensions; i++) {
                         boundaries[i] = {
                             min: this.getControlPoint(0).getCoordinate(i),
-                            max:  this.getControlPoint(0).getCoordinate(i)
+                            max: this.getControlPoint(0).getCoordinate(i)
                         };
                     }
                     return boundaries;
@@ -1506,7 +1524,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     */
     getCloserPointTo: {
         value: function (vector) {
-            var dimensions = this.getControlPoint(0).dimensions,
+            var dimensions = this.dimensions,
                 iPoint,
                 distance,
                 minDistance = Infinity,
@@ -1551,11 +1569,75 @@ var CubicBezierCurve = exports.CubicBezierCurve = Montage.create(BezierCurve, {
     },
 
     /**
-        Returns true if the curve have enough control points defined to be a cubic Bézier
+        Returns true if all control points are defined
     */
     isComplete: {
         get: function () {
-            return this.length > 3;
+            var i;
+
+            for (i = 0; i < 4; i++) {
+                if (!this.getControlPoint(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    },
+
+    /**
+        Overrides BezierCurve's hardAxisAlignedBoundaries with speed optimized algorithm for cubic beziers curves
+    */
+    hardAxisAlignedBoundaries: {
+        get: function () {
+            var boundaries = [],
+                dimensions = this.dimensions,
+                p0, p1, p2, p3,
+                a, b, c, r0, r1,
+                discriminant,
+                value,
+                values,
+                i;
+
+            if (this.isComplete) {
+                for (i = 0; i < dimensions; i++) {
+                    p0 = this.getControlPoint(0).getCoordinate(i);
+                    p1 = this.getControlPoint(1).getCoordinate(i);
+                    p2 = this.getControlPoint(2).getCoordinate(i);
+                    p3 = this.getControlPoint(3).getCoordinate(i);
+                    values = [p0, p3];
+                    a = 9 * (p1 - p2) + 3 * (p3 - p0);
+                    b = 6 * (p0 + p2) - 12 * p1;
+                    c = 3 * (p1 - p0);
+                    discriminant = b * b - 4 * (a * c);
+                    if (discriminant >= 0) {
+                        discriminant = Math.sqrt(discriminant);
+                        value = (-b + discriminant) / (2 * a);
+                        if ((value === Infinity) || (value === -Infinity)) {
+                            value = -c / b;
+                            if ((value === Infinity) || (value === -Infinity)) {
+                                if ((value > 0) && (value < 1)) {
+                                    values.push(this.value(value).getCoordinate(i));
+                                }
+                            }
+                        } else {
+                            if ((value > 0) && (value < 1)) {
+                                values.push(this.value(value).getCoordinate(i));
+                            }
+                            value = (-b - discriminant) / (2 * a);
+                            if ((value > 0) && (value < 1)) {
+                                values.push(this.value(value).getCoordinate(i));
+                            }
+                        }
+                    }
+                    boundaries[i] = {
+                        min: Math.min.apply(Math, values),
+                        max: Math.max.apply(Math, values)
+                    };
+                }
+                return boundaries;
+            } else {
+                return null;
+            }
         }
     }
 });
@@ -1577,6 +1659,44 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
     },
 
     /**
+        Returns the first knot of the bezier
+    */
+    firstKnot: {
+        get: function () {
+            var curve = this.getBezierCurve(0);
+
+            if (curve) {
+                if (curve.getControlPoint(0)) {
+                    return curve.getControlPoint(0);
+                } else {
+                    return curve.getControlPoint(3);
+                }
+            } else {
+                return null;
+            }
+        }
+    },
+
+    /**
+        Returns the last knot of the bezier
+    */
+    lastKnot: {
+        get: function () {
+            var curve = this.getBezierCurve(this.length - 1);
+
+            if (curve) {
+                if (curve.isComplete) {
+                    return curve.getControlPoint(curve.order);
+                } else {
+                    return curve.getControlPoint(0);
+                }
+            } else {
+                return null;
+            }
+        }
+    },
+
+    /**
         Inserts the provided Bézier curve at the end of the spline and if there is
         a previous Bézier curve, it sets the first control point of the inserted
         Bézier curve to be the last control point of the previous Bézier curve (if any)
@@ -1589,6 +1709,22 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
             if (index > 0) {
                 this._data[index].setControlPoint(0,
                     this._data[index - 1].getControlPoint(this._data[index - 1].order)
+                );
+            }
+            this.dispatchEventIfNeeded("bezierSplineChange");
+        }
+    },
+
+    /**
+        Inserts the provided cubic Bézier curve at the start of the spline
+    */
+    insertCubicBezierCurveAtStart: {
+        value: function (bezierCurve) {
+            this._data.splice(0, 0, bezierCurve);
+            bezierCurve.nextTarget = this;
+            if (this._data.length > 1) {
+                this._data[0].setControlPoint(3,
+                    this._data[1].getControlPoint(0)
                 );
             }
             this.dispatchEventIfNeeded("bezierSplineChange");
@@ -1698,7 +1834,9 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                     start = 0;
                 }
                 for (j = start; j < curveLength; j++) {
-                    this._data[i].getControlPoint(j).translate(offsetsArray);
+                    if (this._data[i].getControlPoint(j)) {
+                        this._data[i].getControlPoint(j).translate(offsetsArray);
+                    }
                 }
             }
             this.dispatchEventIfNeeded("bezierSplineChange");
@@ -1724,7 +1862,9 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                     start = 0;
                 }
                 for (j = start; j < curveLength; j++) {
-                    this._data[i].getControlPoint(j).scale(factorsArray);
+                    if (this._data[i].getControlPoint(j)) {
+                        this._data[i].getControlPoint(j).scale(factorsArray);
+                    }
                 }
             }
             this.dispatchEventIfNeeded("bezierSplineChange");
@@ -1738,11 +1878,15 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                 length = this._data.length,
                 i;
 
-            if (this._data[length - 1].order < 3) {
+            if (this._data[0] && !this._data[0].isComplete) {
+                this._data.splice(0, 1);
+                length--;
+            }
+            if (this._data[length - 1] && !this._data[length - 1].isComplete) {
                 length--;
             }
             for (i = length - 1; i >= 0; i--) {
-                reversedSpline.pushBezierCurve(this._data[i].clone().reverse());
+                reversedSpline.pushBezierCurve(this._data[i].reverse());
                 reversedSpline._data[length - 1 - i].nextTarget = reversedSpline;
             }
             this._data = reversedSpline._data;
@@ -1786,7 +1930,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
     */
     axisAlignedBoundaries: {
         get: function () {
-            var dimensions = this._data[0].getControlPoint(0).dimensions,
+            var dimensions = this._data[0].dimensions,
                 length = this._data.length,
                 boundaries = [],
                 iBoundaries,
@@ -1809,7 +1953,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                             boundaries[j].max = iBoundaries[j].max;
                         }
                     }
-                    }
+                }
             }
             return boundaries;
         }
@@ -1877,7 +2021,9 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
                     start = 0;
                 }
                 for (j = start; j < curveLength; j++) {
-                    this._data[i].getControlPoint(j).transformMatrix3d(matrix);
+                    if (this._data[i].getControlPoint(j)) {
+                        this._data[i].getControlPoint(j).transformMatrix3d(matrix);
+                    }
                 }
             }
             this.dispatchEventIfNeeded("bezierSplineChange");

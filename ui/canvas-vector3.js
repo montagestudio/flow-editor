@@ -3,6 +3,10 @@ var Montage = require("montage").Montage,
 
 exports.CanvasVector3 = Montage.create(CanvasShape, {
 
+    _isVisible: {
+        value: false
+    },
+
     _color: {
         value: null
     },
@@ -36,8 +40,8 @@ exports.CanvasVector3 = Montage.create(CanvasShape, {
         value: function (x, y, transformMatrix) {
             var vector = this._data.clone().transformMatrix3d(transformMatrix);
 
-            if ((x >= vector.x - 3) && (x <= vector.x + 5)) {
-                if ((y >= vector.y - 3) && (y <= vector.y + 5)) {
+            if ((x >= vector.x - 6) && (x <= vector.x + 6)) {
+                if ((y >= vector.y - 6) && (y <= vector.y + 7)) {
                     return true;
                 }
             }

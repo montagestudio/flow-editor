@@ -66,14 +66,10 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
         get: function () {
             var children = [];
 
-            if (this.isSelected) {
-                if (this._children) {
-                    children = this._children;
-                } else {
-                    children.push(this._cameraPosition);
-                    children.push(this._cameraTargetPoint);
-                }
-            }
+            children.push(this._cameraPosition);
+            children.push(this._cameraTargetPoint);
+            this._cameraPosition.isVisible = this.isSelected;
+            this._cameraTargetPoint.isVisible = this.isSelected;
             return children;
         }
     },

@@ -40,7 +40,8 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
                 this._tools = {
                     "arrow": PenTools.ArrowTool,
                     "convert": PenTools.ConvertTool,
-                    "pen": PenTools.PenTool
+                    "pen": PenTools.PenTool,
+                    "add": PenTools.AddTool
                 };
             }
         }

@@ -1,11 +1,11 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Flow = require("matte/ui/flow.reel").Flow,
-    FlowBezierSpline = require("matte/core/flow-bezier-spline").FlowBezierSpline,
+    Flow = require("montage/ui/flow.reel").Flow,
+    FlowBezierSpline = require("montage/ui/flow.reel/flow-bezier-spline").FlowBezierSpline,
     PenToolMath = require("ui/pen-tool-math"),
     FlowKnot = require("ui/flow-spline-handlers").FlowKnot,
     Vector3 = PenToolMath.Vector3,
-    BezierCurve = PenToolMath.BezierCurve,
+    BezierCurve = PenToolMath.CubicBezierCurve,
     Scene = PenToolMath.Scene,
     FlowSpline = require("ui/flow-spline").FlowSpline,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
@@ -16,7 +16,8 @@ var Montage = require("montage").Montage,
     Camera = require("ui/camera").Camera,
     CanvasCamera = require("ui/camera").CanvasCamera,
     Cross = require("ui/cross").Cross,
-    CanvasCross = require("ui/cross").CanvasCross;
+    CanvasCross = require("ui/cross").CanvasCross,
+    CanvasSplineAppendMark = require("ui/canvas-spline-append-mark").CanvasSplineAppendMark;
 
 exports.Editor = Montage.create(Component, {
 
@@ -446,19 +447,21 @@ exports.Editor = Montage.create(Component, {
 
     convertFlowToShape: {
         value: function () {
-            var bezier, shape, spline, i, k, j, knot,
+            var shape, spline, i, k, j, knot,
                 paths = this.object.getObjectProperty("paths"),
-                canvasShape,
                 grid = Grid.create().init(),
                 canvasGrid = CanvasGrid.create().initWithData(grid),
                 cross = CanvasCross.create().initWithData(Cross.create()),
+                canvasSpline,
                 camera = Camera.create();
 
+            canvasGrid.appendMark = CanvasSplineAppendMark.create().initWithData(Vector3.create().initWithCoordinates([0, 0, 0]));
             cross.zIndex = 2;
             this.camera = CanvasCamera.create().initWithData(camera);
             canvasGrid.children = [];
             canvasGrid.children.push(cross);
             canvasGrid.children.push(this.camera);
+            canvasGrid.children.push(canvasGrid.appendMark);
             grid.pushShape(camera);
             grid.isSelectionEnabled =
                 this.object.getObjectProperty("isSelectionEnabled") ? true : false;
@@ -471,38 +474,38 @@ exports.Editor = Montage.create(Component, {
                 this.object.getObjectProperty("scrollingTransitionDuration") ?
                 this.object.getObjectProperty("scrollingTransitionDuration") : 500;
             for (j = 0; j < paths.length; j++) {
-                canvasShape = CanvasFlowSpline.create();
                 shape = FlowSpline.create().init();
-                canvasShape.data = shape;
                 spline = paths[j];
                 shape.headOffset = spline.headOffset;
                 shape.tailOffset = spline.tailOffset;
+                canvasSpline = canvasGrid.appendFlowSpline(shape);
                 for (i = 0; i < spline.knots.length - 1; i++) {
-                    bezier = BezierCurve.create().init();
-                    bezier.pushControlPoint(knot = FlowKnot.create().initWithCoordinates([
-                        spline.knots[i].knotPosition[0],
-                        spline.knots[i].knotPosition[1],
-                        spline.knots[i].knotPosition[2]
-                    ]));
-                    for (k in spline.units) {
-                        if (typeof spline.knots[i][k] !== "undefined") {
-                            knot[k] = spline.knots[i][k];
+                    if (!i) {
+                        canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
+                            spline.knots[i].knotPosition[0],
+                            spline.knots[i].knotPosition[1],
+                            spline.knots[i].knotPosition[2]
+                        ]));
+                        for (k in spline.units) {
+                            if (typeof spline.knots[i][k] !== "undefined") {
+                                knot[k] = spline.knots[i][k];
+                            }
+                        }
+                        if (typeof spline.knots[i].previousDensity !== "undefined") {
+                            knot.density = spline.knots[i].previousDensity;
                         }
                     }
-                    if (typeof spline.knots[i].previousDensity !== "undefined") {
-                        knot.density = spline.knots[i].previousDensity;
-                    }
-                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                    canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
                         spline.knots[i].nextHandlerPosition[0],
                         spline.knots[i].nextHandlerPosition[1],
                         spline.knots[i].nextHandlerPosition[2]
                     ]));
-                    bezier.pushControlPoint(Vector3.create().initWithCoordinates([
+                    canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
                         spline.knots[i + 1].previousHandlerPosition[0],
                         spline.knots[i + 1].previousHandlerPosition[1],
                         spline.knots[i + 1].previousHandlerPosition[2]
                     ]));
-                    bezier.pushControlPoint(knot = FlowKnot.create().initWithCoordinates([
+                    canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
                         spline.knots[i + 1].knotPosition[0],
                         spline.knots[i + 1].knotPosition[1],
                         spline.knots[i + 1].knotPosition[2]
@@ -515,19 +518,16 @@ exports.Editor = Montage.create(Component, {
                     if (typeof spline.knots[i + 1].previousDensity !== "undefined") {
                         knot.density = spline.knots[i + 1].previousDensity;
                     }
-                    shape.pushBezierCurve(bezier);
                 }
-                canvasGrid.children.push(canvasShape);
-                grid.pushShape(shape);
             }
 
-            if (this.standAlone) {
+            /*if (this.standAlone) {
                 var canvasSpiral = CanvasFlowSpiral.create();
 
                 canvasSpiral.update();
                 canvasGrid.children.push(canvasSpiral);
                 grid.pushShape(canvasSpiral._data);
-            }
+            }*/
 
             if (typeof this.object.getObjectProperty("cameraPosition") !== "undefined") {
                 this.camera.data.cameraPosition = this.object.getObjectProperty("cameraPosition")
@@ -565,7 +565,7 @@ exports.Editor = Montage.create(Component, {
     convertShapeToFlow: {
         value: function () {
             var shape, bezier, i, spline, j, k = 0,
-                paths;
+                paths, n;
 
             this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", []);
             paths = [];
@@ -608,41 +608,42 @@ exports.Editor = Montage.create(Component, {
                     spline.units.opacity = "";
                     spline.headOffset = shape.headOffset;
                     spline.tailOffset = shape.tailOffset;
+                    n = 0;
                     for (i = 0; i < shape.length; i++) {
                         bezier = shape.getBezierCurve(i);
-                        if (bezier.length === 4) {
-                            if (!spline.knots[i]) {
-                                spline.knots[i] = {};
+                        if (bezier.isComplete) {
+                            if (!spline.knots[n]) {
+                                spline.knots[n] = {};
                             }
-                            if (!spline.knots[i].knotPosition) {
-                                spline.knots[i].knotPosition = [];
+                            if (!spline.knots[n].knotPosition) {
+                                spline.knots[n].knotPosition = [];
                             }
-                            if (!spline.knots[i].nextHandlerPosition) {
-                                spline.knots[i].nextHandlerPosition = [];
+                            if (!spline.knots[n].nextHandlerPosition) {
+                                spline.knots[n].nextHandlerPosition = [];
                             }
-                            if (!spline.knots[i].previousHandlerPosition) {
-                                spline.knots[i].previousHandlerPosition = [];
+                            if (!spline.knots[n].previousHandlerPosition) {
+                                spline.knots[n].previousHandlerPosition = [];
                             }
-                            if (!spline.knots[i].nextDensity) {
-                                spline.knots[i].nextDensity = [];
+                            if (!spline.knots[n].nextDensity) {
+                                spline.knots[n].nextDensity = [];
                             }
-                            if (!spline.knots[i].previousDensity) {
-                                spline.knots[i].previousDensity = [];
+                            if (!spline.knots[n].previousDensity) {
+                                spline.knots[n].previousDensity = [];
                             }
-                            spline.knots[i].knotPosition[0] = (bezier.getControlPoint(0).x);
-                            spline.knots[i].knotPosition[1] = (bezier.getControlPoint(0).y);
-                            spline.knots[i].knotPosition[2] = (bezier.getControlPoint(0).z);
-                            spline.knots[i].nextHandlerPosition[0] = (bezier.getControlPoint(1).x);
-                            spline.knots[i].nextHandlerPosition[1] = (bezier.getControlPoint(1).y);
-                            spline.knots[i].nextHandlerPosition[2] = (bezier.getControlPoint(1).z);
-                            spline.knots[i].rotateX = bezier.getControlPoint(0).rotateX;
-                            spline.knots[i].rotateY = bezier.getControlPoint(0).rotateY;
-                            spline.knots[i].rotateZ = bezier.getControlPoint(0).rotateZ;
-                            spline.knots[i].opacity = bezier.getControlPoint(0).opacity;
-                            spline.knots[i].nextDensity = bezier.getControlPoint(0).density;
-                            spline.knots[i].previousDensity = bezier.getControlPoint(0).density;
-                            if (!spline.knots[i + 1]) {
-                                spline.knots[i + 1] = {
+                            spline.knots[n].knotPosition[0] = (bezier.getControlPoint(0).x);
+                            spline.knots[n].knotPosition[1] = (bezier.getControlPoint(0).y);
+                            spline.knots[n].knotPosition[2] = (bezier.getControlPoint(0).z);
+                            spline.knots[n].nextHandlerPosition[0] = (bezier.getControlPoint(1).x);
+                            spline.knots[n].nextHandlerPosition[1] = (bezier.getControlPoint(1).y);
+                            spline.knots[n].nextHandlerPosition[2] = (bezier.getControlPoint(1).z);
+                            spline.knots[n].rotateX = bezier.getControlPoint(0).rotateX;
+                            spline.knots[n].rotateY = bezier.getControlPoint(0).rotateY;
+                            spline.knots[n].rotateZ = bezier.getControlPoint(0).rotateZ;
+                            spline.knots[n].opacity = bezier.getControlPoint(0).opacity;
+                            spline.knots[n].nextDensity = bezier.getControlPoint(0).density;
+                            spline.knots[n].previousDensity = bezier.getControlPoint(0).density;
+                            if (!spline.knots[n + 1]) {
+                                spline.knots[n + 1] = {
                                     knotPosition: [],
                                     nextHandlerPosition: [],
                                     previousHandlerPosition: [],
@@ -650,18 +651,19 @@ exports.Editor = Montage.create(Component, {
                                     previousDensity: 10
                                 };
                             }
-                            spline.knots[i + 1].previousHandlerPosition[0] = (bezier.getControlPoint(2).x);
-                            spline.knots[i + 1].previousHandlerPosition[1] = (bezier.getControlPoint(2).y);
-                            spline.knots[i + 1].previousHandlerPosition[2] = (bezier.getControlPoint(2).z);
-                            spline.knots[i + 1].knotPosition[0] = (bezier.getControlPoint(3).x);
-                            spline.knots[i + 1].knotPosition[1] = (bezier.getControlPoint(3).y);
-                            spline.knots[i + 1].knotPosition[2] = (bezier.getControlPoint(3).z);
-                            spline.knots[i + 1].rotateX = bezier.getControlPoint(3).rotateX;
-                            spline.knots[i + 1].rotateY = bezier.getControlPoint(3).rotateY;
-                            spline.knots[i + 1].rotateZ = bezier.getControlPoint(3).rotateZ;
-                            spline.knots[i + 1].opacity = bezier.getControlPoint(3).opacity;
-                            spline.knots[i + 1].nextDensity = bezier.getControlPoint(3).density;
-                            spline.knots[i + 1].previousDensity = bezier.getControlPoint(3).density;
+                            spline.knots[n + 1].previousHandlerPosition[0] = (bezier.getControlPoint(2).x);
+                            spline.knots[n + 1].previousHandlerPosition[1] = (bezier.getControlPoint(2).y);
+                            spline.knots[n + 1].previousHandlerPosition[2] = (bezier.getControlPoint(2).z);
+                            spline.knots[n + 1].knotPosition[0] = (bezier.getControlPoint(3).x);
+                            spline.knots[n + 1].knotPosition[1] = (bezier.getControlPoint(3).y);
+                            spline.knots[n + 1].knotPosition[2] = (bezier.getControlPoint(3).z);
+                            spline.knots[n + 1].rotateX = bezier.getControlPoint(3).rotateX;
+                            spline.knots[n + 1].rotateY = bezier.getControlPoint(3).rotateY;
+                            spline.knots[n + 1].rotateZ = bezier.getControlPoint(3).rotateZ;
+                            spline.knots[n + 1].opacity = bezier.getControlPoint(3).opacity;
+                            spline.knots[n + 1].nextDensity = bezier.getControlPoint(3).density;
+                            spline.knots[n + 1].previousDensity = bezier.getControlPoint(3).density;
+                            n++;
                         }
                     }
                     k++;

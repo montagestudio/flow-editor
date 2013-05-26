@@ -23,6 +23,7 @@ exports.Viewport = Montage.create(Component, {
                 this._scene._data.addEventListener("cameraChange", updated, false);
                 this._scene._data.addEventListener("sceneChange", updated, false);
                 this._scene._data.addEventListener("selectionChange", updated, false);
+                this._scene._data.addEventListener("visibilityChange", updated, false);
             }
             this.needsDraw = true;
         }
@@ -73,7 +74,7 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
-    _inverseTransformMatrix: {
+    inverseTransformMatrix: {
         value: function (matrix) {
             var inverse = [],
                 determinant;
@@ -152,6 +153,12 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
+    enterDocument: {
+        value: function () {
+            this._element.addEventListener("mousemove", this, true);
+        }
+    },
+
     prepareForActivationEvents: {
         value: function () {
             this._element.addEventListener("mousedown", this, false);
@@ -170,6 +177,14 @@ exports.Viewport = Montage.create(Component, {
         set: function (value) {
             this._selection = value;
             this.needsDraw = true;
+        }
+    },
+
+    captureMousemove: {
+        value: function (event) {
+            if (this._selectedTool && this._selectedTool.handleHover) {
+                this._selectedTool.handleHover(event, this);
+            }
         }
     },
 
@@ -603,12 +618,12 @@ exports.Viewport = Montage.create(Component, {
                                 Vector3.
                                 create().
                                 initWithCoordinates([dX, dY, 0]).
-                                transformMatrix3d(this._inverseTransformMatrix(this.matrix)).
+                                transformMatrix3d(this.inverseTransformMatrix(this.matrix)).
                                 subtract(
                                     Vector3.
                                     create().
                                     initWithCoordinates([0, 0, 0]).
-                                    transformMatrix3d(this._inverseTransformMatrix(this.matrix))
+                                    transformMatrix3d(this.inverseTransformMatrix(this.matrix))
                                 )._data
                             );
                         }

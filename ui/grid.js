@@ -1,5 +1,7 @@
 var Montage = require("montage").Montage,
     Scene = require("ui/pen-tool-math").Scene,
+    FlowSpline = require("ui/flow-spline").FlowSpline,
+    CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
     CanvasShape = require("ui/canvas-shape").CanvasShape;
 
 var Grid = exports.Grid = Montage.create(Scene, {
@@ -104,6 +106,16 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
                     source: this
                 }
             });
+        }
+    },
+
+    appendFlowSpline: {
+        value: function (flowSpline) {
+            var canvasFlowSpline = CanvasFlowSpline.create().initWithData(flowSpline);
+
+            this._data.pushShape(flowSpline);
+            this.appendChild(canvasFlowSpline);
+            return canvasFlowSpline;
         }
     },
 
