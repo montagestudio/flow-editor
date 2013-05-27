@@ -26,6 +26,13 @@ exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# 
                     setOwnedObjectProperty: function (foo, property, value) {
                         self.flow[property] = value;
                     }
+                },
+                setObjectProperties: function (values) {
+                    for (var name in values) {
+                        if (values.hasOwnProperty(name)) {
+                            self.flow[name] = values[name];
+                        }
+                    }
                 }
             };
         }

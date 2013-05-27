@@ -222,9 +222,11 @@ exports.Editor = Montage.create(Component, {
         value: function () {
             var shape, bezier, i, spline, j, k = 0,
                 paths, n,
-                metadata = {
-                    flowEditorVersion: this.flowEditorVersion,
-                    shapes: []
+                objectProperties = {
+                    flowEditorMetadata: {
+                        flowEditorVersion: this.flowEditorVersion,
+                        shapes: []
+                    }
                 },
                 pathIndex = 0;
 
@@ -232,7 +234,7 @@ exports.Editor = Montage.create(Component, {
                 shape = this.viewport.scene.children[j];
                 switch (shape.type) {
                     case "FlowHelix":
-                        metadata.shapes.push({
+                        objectProperties.flowEditorMetadata.shapes.push({
                             type: "FlowHelix",
                             pathIndex: pathIndex,
                             axisOriginPosition: [shape._x, shape._y, shape._z],
@@ -248,29 +250,11 @@ exports.Editor = Montage.create(Component, {
                         break;
                 }
             }
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "flowEditorMetadata", metadata);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", []);
             paths = [];
-            this.object.editingDocument.setOwnedObjectProperty(
-                this.object,
-                "isSelectionEnabled",
-                this.viewport.scene._data.isSelectionEnabled
-            );
-            this.object.editingDocument.setOwnedObjectProperty(
-                this.object,
-                "hasSelectedIndexScrolling",
-                this.viewport.scene._data.hasSelectedIndexScrolling
-            );
-            this.object.editingDocument.setOwnedObjectProperty(
-                this.object,
-                "scrollingTransitionDuration",
-                this.viewport.scene._data.scrollingTransitionDuration
-            );
-            this.object.editingDocument.setOwnedObjectProperty(
-                this.object,
-                "scrollingTransitionTimingFunction",
-                this.viewport.scene._data.scrollingTransitionTimingFunction
-            );
+            objectProperties.isSelectionEnabled = this.viewport.scene._data.isSelectionEnabled;
+            objectProperties.hasSelectedIndexScrolling = this.viewport.scene._data.hasSelectedIndexScrolling;
+            objectProperties.scrollingTransitionDuration = this.viewport.scene._data.scrollingTransitionDuration;
+            objectProperties.scrollingTransitionTimingFunction = this.viewport.scene._data.scrollingTransitionTimingFunction;
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
                 if ((shape.type === "FlowSpline") || (shape.type === "FlowHelix")) {
@@ -351,11 +335,11 @@ exports.Editor = Montage.create(Component, {
                     k++;
                 }
             }
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", paths);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", []);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", this.camera.cameraPosition);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraTargetPoint", this.camera.cameraTargetPoint);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraFov", this.camera.cameraFov);
+            objectProperties.paths = paths;
+            objectProperties.cameraPosition = this.camera.cameraPosition;
+            objectProperties.cameraTargetPoint = this.camera.cameraTargetPoint;
+            objectProperties.cameraFov = this.camera.cameraFov;
+            this.object.setObjectProperties(objectProperties);
         }
     },
 
