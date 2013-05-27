@@ -135,7 +135,6 @@ exports.CanvasShape = Montage.create(Target, {
                 s.push(this);
             }
             if (!selection) {
-                //console.log(s[0] ? s[0]._data.type : "no selection");
                 if (!s[0]) {
                     return [scene];
                 }
@@ -189,21 +188,23 @@ exports.CanvasShape = Montage.create(Target, {
 
     findSelectedShape: {
         value: function (x, y, transformMatrix) {
-            var transform = this.getTransform ? this.getTransform(transformMatrix) : transformMatrix,
-                children = this.children,
-                length = children.length,
-                sortedIndexes,
-                result,
-                i;
+            if (this.isVisible) {
+                var transform = this.getTransform ? this.getTransform(transformMatrix) : transformMatrix,
+                    children = this.children,
+                    length = children.length,
+                    sortedIndexes,
+                    result,
+                    i;
 
-            if (this.pointOnShape && this.pointOnShape(x, y, transform)) {
-                return this;
-            }
-            sortedIndexes = this.sortedChildrenIndexesBy(this.sortByZIndex);
-            for (i = 0; i < length; i++) {
-                result = children[sortedIndexes[i].index].findSelectedShape(x, y, transform);
-                if (result) {
-                    return result;
+                if (this.pointOnShape && this.pointOnShape(x, y, transform)) {
+                    return this;
+                }
+                sortedIndexes = this.sortedChildrenIndexesBy(this.sortByZIndex);
+                for (i = 0; i < length; i++) {
+                    result = children[sortedIndexes[i].index].findSelectedShape(x, y, transform);
+                    if (result) {
+                        return result;
+                    }
                 }
             }
             return null;
