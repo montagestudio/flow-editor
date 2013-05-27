@@ -6,6 +6,13 @@ var Montage = require("montage").Montage,
 
 var Camera = exports.Camera = Montage.create(Target, {
 
+    init: {
+        value: function () {
+            this._data = [];
+            return this;
+        }
+    },
+
     type: {
         value: "FlowCamera"
     },

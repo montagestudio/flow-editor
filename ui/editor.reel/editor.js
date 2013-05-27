@@ -68,7 +68,7 @@ exports.Editor = Montage.create(Component, {
                 canvasGrid = CanvasGrid.create().initWithData(grid),
                 cross = CanvasCross.create().initWithData(Cross.create()),
                 canvasSpline,
-                camera = Camera.create(),
+                camera = Camera.create().init(),
                 iShape,
                 specialPaths = {},
                 canvasHelix;
@@ -185,19 +185,19 @@ exports.Editor = Montage.create(Component, {
                 }
             }
             if (typeof this.object.getObjectProperty("cameraPosition") !== "undefined") {
-                this.camera.data.cameraPosition = this.object.getObjectProperty("cameraPosition")
+                this.camera.cameraPosition = this.object.getObjectProperty("cameraPosition")
             } else {
-                this.camera.data.cameraPosition = Object.clone(Flow._cameraPosition);
+                this.camera.cameraPosition = Object.clone(Flow._cameraPosition);
             }
             if (typeof this.object.getObjectProperty("cameraTargetPoint") !== "undefined") {
-                this.camera.data.cameraTargetPoint = this.object.getObjectProperty("cameraTargetPoint")
+                this.camera.cameraTargetPoint = this.object.getObjectProperty("cameraTargetPoint")
             } else {
-                this.camera.data.cameraTargetPoint = Object.clone(Flow._cameraTargetPoint);
+                this.camera.cameraTargetPoint = Object.clone(Flow._cameraTargetPoint);
             }
             if (typeof this.object.getObjectProperty("cameraFov") !== "undefined") {
-                this.camera.data.cameraFov = this.object.getObjectProperty("cameraFov")
+                this.camera.cameraFov = this.object.getObjectProperty("cameraFov")
             } else {
-                this.camera.data.cameraFov = Object.clone(Flow._cameraFov);
+                this.camera.cameraFov = Object.clone(Flow._cameraFov);
             }
             this.viewport.scene = canvasGrid;
             var self = this,
@@ -208,6 +208,7 @@ exports.Editor = Montage.create(Component, {
             this.viewport.scene._data.addEventListener("cameraChange", updated, false);
             this.viewport.scene._data.addEventListener("sceneChange", updated, false);
             this.viewport.scene._data.addEventListener("selectionChange", updated, false);
+            camera.translate([0, 0, 0]);
         }
     },
 
@@ -352,9 +353,9 @@ exports.Editor = Montage.create(Component, {
             }
             this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", paths);
             this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", []);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", this.camera.data.cameraPosition);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraTargetPoint", this.camera.data.cameraTargetPoint);
-            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraFov", this.camera.data.cameraFov);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraPosition", this.camera.cameraPosition);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraTargetPoint", this.camera.cameraTargetPoint);
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "cameraFov", this.camera.cameraFov);
         }
     },
 
