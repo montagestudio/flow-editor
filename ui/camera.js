@@ -49,9 +49,9 @@ var Camera = exports.Camera = Montage.create(Target, {
 
 exports.CanvasCamera = Montage.create(CanvasShape, {
 
-    didCreate: {
+    constructor: {
         value: function () {
-            CanvasShape.didCreate.call(this);
+            CanvasShape.constructor.call(this);
             this.defineBindings({
                 "cameraPosition": {
                     "<->": "data.cameraPosition",

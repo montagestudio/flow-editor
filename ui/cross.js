@@ -24,9 +24,9 @@ var Cross = exports.Cross = Montage.create(Montage, {
 
 exports.CanvasCross = Montage.create(CanvasShape, {
 
-    didCreate: {
+    constructor: {
         value: function () {
-            CanvasShape.didCreate.call(this);
+            CanvasShape.constructor.call(this);
             this.defineBindings({
                 "xColor": {
                     "<->": "data.xColor",

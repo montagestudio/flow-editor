@@ -85,9 +85,9 @@ var Grid = exports.Grid = Montage.create(Scene, {
 
 exports.CanvasGrid = Montage.create(CanvasShape, {
 
-    didCreate: {
+    constructor: {
         value: function () {
-            CanvasShape.didCreate.call(this);
+            CanvasShape.constructor.call(this);
             this.defineBindings({
                 "gridlineEach": {
                     "<->": "data.gridlineEach",

@@ -13,7 +13,7 @@ exports.CanvasShape = Montage.create(Target, {
         }
     },
 
-    didCreate: {
+    constructor: {
         value: function () {
             this.children = [];
         }
