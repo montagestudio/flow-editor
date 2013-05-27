@@ -10,7 +10,7 @@
             },
             "bindings": {
                 "radius": {"<->": "@owner.helix.radius"},
-                "height": {"<->": "@owner.helix.height"},
+                "pitch": {"<->": "@owner.helix.pitch"},
                 "density": {"<->": "@owner.helix.density"},
                 "segments": {"<->": "@owner.helix.segments"}
             }
@@ -24,13 +24,13 @@
                 "value": {"<->": "@owner.radius"}
             }
         },
-        "height": {
+        "pitch": {
             "prototype": "ui/flow-number-input.reel",
             "properties": {
-                "element": {"#": "height"}
+                "element": {"#": "pitch"}
             },
             "bindings": {
-                "value": {"<->": "@owner.height"}
+                "value": {"<->": "@owner.pitch"}
             }
         },
         "density": {
@@ -61,7 +61,7 @@
             <span class="property">radius</span><div data-montage-id="radius" class="inspector-input"></div>
         </li>
         <li>
-            <span class="property">height</span><div data-montage-id="height" class="inspector-input"></div>
+            <span class="property">pitch</span><div data-montage-id="pitch" class="inspector-input"></div>
         </li>
         <li>
             <span class="property">density</span><div data-montage-id="density" class="inspector-input"></div>

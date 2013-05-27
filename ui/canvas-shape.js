@@ -3,6 +3,16 @@ var Montage = require("montage").Montage,
 
 exports.CanvasShape = Montage.create(Target, {
 
+    type: {
+        get: function () {
+            if (this._data && this._data.type) {
+                return this._data.type;
+            } else {
+                return "Shape";
+            }
+        }
+    },
+
     didCreate: {
         value: function () {
             this.children = [];

@@ -149,6 +149,19 @@ exports.FlowHelixInspector = Montage.create(Component, {
         set: function (value) {
             this._density = value;
         }
+    },
+
+    _pitch: {
+        value: null
+    },
+
+    pitch: {
+        get: function () {
+            return this._pitch;
+        },
+        set: function (value) {
+            this._pitch = value;
+        }
     }
 
 });

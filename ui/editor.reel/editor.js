@@ -21,6 +21,10 @@ var Montage = require("montage").Montage,
 
 exports.Editor = Montage.create(Component, {
 
+    flowEditorVersion: {
+        value: 0.1
+    },
+
     object: {
         get: function () {
             return this.flow;
@@ -66,17 +70,18 @@ exports.Editor = Montage.create(Component, {
                 canvasSpline,
                 camera = Camera.create(),
                 iShape,
-                rejectedPaths = {};
+                specialPaths = {},
+                canvasHelix;
 
             if (metadata) {
-                if (metadata.flowEditorVersion <= 0.1) {
+                if (metadata.flowEditorVersion <= this.flowEditorVersion) {
                     if (metadata.shapes) {
                         for (i = 0; i < metadata.shapes.length; i++) {
                             iShape = metadata.shapes[i];
                             switch (iShape.type) {
                                 case "FlowHelix":
                                     if (typeof iShape.pathIndex !== "undefined") {
-                                        rejectedPaths[iShape.pathIndex] = true;
+                                        specialPaths[iShape.pathIndex] = metadata.shapes[i];
                                     }
                                     break;
                             }
@@ -105,7 +110,7 @@ exports.Editor = Montage.create(Component, {
                 this.object.getObjectProperty("scrollingTransitionDuration") ?
                 this.object.getObjectProperty("scrollingTransitionDuration") : 500;
             for (j = 0; j < paths.length; j++) {
-                if (!rejectedPaths[j]) {
+                if (!specialPaths[j]) {
                     shape = FlowSpline.create().init();
                     spline = paths[j];
                     shape.headOffset = spline.headOffset;
@@ -151,16 +156,34 @@ exports.Editor = Montage.create(Component, {
                             knot.density = spline.knots[i + 1].previousDensity;
                         }
                     }
+                } else {
+                    switch (specialPaths[j].type) {
+                        case "FlowHelix":
+                            canvasHelix = CanvasFlowHelix.create();
+                            if (specialPaths[j].axisOriginPosition) {
+                                canvasHelix._x = specialPaths[j].axisOriginPosition[0];
+                                canvasHelix._y = specialPaths[j].axisOriginPosition[1];
+                                canvasHelix._z = specialPaths[j].axisOriginPosition[2];
+                            }
+                            if (specialPaths[j].radius) {
+                                canvasHelix.radius = specialPaths[j].radius;
+                            }
+                            if (specialPaths[j].density) {
+                                canvasHelix.density = specialPaths[j].density;
+                            }
+                            if (specialPaths[j].pitch) {
+                                canvasHelix.pitch = specialPaths[j].pitch;
+                            }
+                            if (specialPaths[j].segments) {
+                                canvasHelix.segments = specialPaths[j].segments;
+                            }
+                            canvasHelix.update();
+                            canvasGrid.children.push(canvasHelix);
+                            grid.pushShape(canvasHelix._data);
+                            break;
+                    }
                 }
             }
-            if (this.standAlone) {
-                var canvasHelix = CanvasFlowHelix.create();
-
-                canvasHelix.update();
-                canvasGrid.children.push(canvasHelix);
-                grid.pushShape(canvasHelix._data);
-            }
-
             if (typeof this.object.getObjectProperty("cameraPosition") !== "undefined") {
                 this.camera.data.cameraPosition = this.object.getObjectProperty("cameraPosition")
             } else {
@@ -197,8 +220,34 @@ exports.Editor = Montage.create(Component, {
     convertShapeToFlow: {
         value: function () {
             var shape, bezier, i, spline, j, k = 0,
-                paths, n;
+                paths, n,
+                metadata = {
+                    flowEditorVersion: this.flowEditorVersion,
+                    shapes: []
+                },
+                pathIndex = 0;
 
+            for (j = 0; j < this.viewport.scene.children.length; j++) {
+                shape = this.viewport.scene.children[j];
+                switch (shape.type) {
+                    case "FlowHelix":
+                        metadata.shapes.push({
+                            type: "FlowHelix",
+                            pathIndex: pathIndex,
+                            axisOriginPosition: [shape._x, shape._y, shape._z],
+                            radius: shape.radius,
+                            pitch: shape.pitch,
+                            density: shape.density,
+                            segments: shape.segments
+                        });
+                        pathIndex++;
+                        break;
+                    case "FlowSpline":
+                        pathIndex++;
+                        break;
+                }
+            }
+            this.object.editingDocument.setOwnedObjectProperty(this.object, "flowEditorMetadata", metadata);
             this.object.editingDocument.setOwnedObjectProperty(this.object, "paths", []);
             paths = [];
             this.object.editingDocument.setOwnedObjectProperty(
@@ -223,7 +272,7 @@ exports.Editor = Montage.create(Component, {
             );
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
-                if ((shape.type === "FlowSpline")||(shape.type === "FlowHelix")) {
+                if ((shape.type === "FlowSpline") || (shape.type === "FlowHelix")) {
                     spline = paths[k];
                     if (!spline) {
                         paths.push({
