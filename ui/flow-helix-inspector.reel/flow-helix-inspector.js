@@ -162,6 +162,16 @@ exports.FlowHelixInspector = Montage.create(Component, {
         set: function (value) {
             this._pitch = value;
         }
+    },
+
+    handleDeleteAction: {
+        value: function () {
+            var path = this.scene.findPathToNode(this.helix),
+                parent = path[path.length - 1],
+                index = parent.hasChild(this.helix)[0];
+
+            parent.deleteChild(index);
+        }
     }
 
 });
