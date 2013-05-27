@@ -5,7 +5,9 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Vector3 = require("ui/pen-tool-math").Vector3;
+    Vector3 = require("ui/pen-tool-math").Vector3,
+    FlowSpline = require("ui/flow-spline").FlowSpline,
+    CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline;
 
 exports.FlowHelixInspector = Montage.create(Component, {
 

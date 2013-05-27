@@ -43,7 +43,7 @@ POSSIBILITY OF SUCH DAMAGE.
     float: left;
     width: 44px;
     height: 42px;
-    padding: 6px;
+    padding: 5px;
     border-left: 1px solid #363636;
     border-right: 1px solid #1D1D1D;
     cursor: pointer;
@@ -70,6 +70,9 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 .flow-Editor-Toolbar-Button-Inspector:after {
     background-position: -320px 0;
+}
+.flow-Editor-Toolbar-Button-Helix:after {
+    background-position: -416px 0;
 }
 .flow-Editor-Toolbar-Button-Pen:after {
     background-position: 0 0;
@@ -109,7 +112,7 @@ POSSIBILITY OF SUCH DAMAGE.
 .flow-Editor-Toolbar-Button.matte-Button {
     width: 44px;
     height: 42px;
-    padding: 6px;
+    padding: 5px;
     border: none;
     margin: 0;
     border-left: 1px solid #363636;

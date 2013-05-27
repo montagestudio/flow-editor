@@ -4,7 +4,8 @@ var Montage = require("montage").Montage,
     Vector3 = PenToolMath.Vector3,
     FlowSpline = require("ui/flow-spline").FlowSpline,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
-    BezierCurve = PenToolMath.CubicBezierCurve;
+    BezierCurve = PenToolMath.CubicBezierCurve,
+    CanvasFlowHelix = require("ui/flow-helix").CanvasFlowHelix;
 
 exports.ArrowTool = Montage.create(Montage, {
 
@@ -518,3 +519,75 @@ exports.AddTool = Montage.create(Montage, {
 
 });
 
+exports.HelixTool = Montage.create(Montage, {
+
+    start: {
+        value: function (viewport) {
+            viewport.unselect();
+        }
+    },
+
+    stop: {
+        value: function (viewport) {
+        }
+    },
+
+    _pointerX: {
+        value: null
+    },
+
+    _pointerY: {
+        value: null
+    },
+
+    handleMousedown: {
+        value: function (event, viewport) {
+            var canvasHelix = CanvasFlowHelix.create(),
+                axisOriginPosition =
+                    Vector3.
+                    create().
+                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
+                    transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
+                    _data;
+
+            viewport.unselect();
+            canvasHelix._x = axisOriginPosition[0];
+            canvasHelix._y = axisOriginPosition[1];
+            canvasHelix._z = axisOriginPosition[2];
+            canvasHelix.update();
+            viewport.scene.appendCanvasFlowHelix(canvasHelix);
+            canvasHelix.isSelected = true;
+            this.helix = canvasHelix;
+            this._pointerX = event.pageX;
+            this._pointerY = event.pageY;
+        }
+    },
+
+    handleMousemove: {
+        value: function (event, viewport) {
+            var dX = event.pageX - this._pointerX,
+                dY = event.pageY - this._pointerY;
+
+            this.helix.translate(
+                Vector3.
+                create().
+                initWithCoordinates([dX, dY, 0]).
+                transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
+                subtract(
+                    Vector3.
+                    create().
+                    initWithCoordinates([0, 0, 0]).
+                    transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
+                )._data
+            );
+            this._pointerX = event.pageX;
+            this._pointerY = event.pageY;
+        }
+    },
+
+    handleMouseup: {
+        value: function (event, viewport) {
+        }
+    }
+
+});

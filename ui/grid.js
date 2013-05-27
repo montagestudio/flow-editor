@@ -119,6 +119,14 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
         }
     },
 
+    // TODO: remove this and create appendFlowHelix in the same way as appendFlowSpline
+    appendCanvasFlowHelix: {
+        value: function (canvasFlowHelix) {
+            this._data.pushShape(canvasFlowHelix._data);
+            this.appendChild(canvasFlowHelix);
+        }
+    },
+
     _gridlineEach: {
         value: null
     },
