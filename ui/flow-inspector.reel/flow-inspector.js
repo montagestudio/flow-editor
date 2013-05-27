@@ -78,21 +78,20 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
 
     handleCloseAction: {
         value: function () {
-            this._visible = false;
-            this.needsDraw = true;
+            this.isVisible = false;
         }
     },
 
-    _visible: {
-        value: false
+    _isVisible: {
+        value: true
     },
 
-    visible: {
+    isVisible: {
         get: function () {
-            return this._visible;
+            return this._isVisible;
         },
         set: function (value) {
-            this._visible = value;
+            this._isVisible = value;
             this.needsDraw = true;
         }
     },
@@ -169,7 +168,7 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
 
     draw: {
         value: function () {
-            //this.element.style.display = this._visible ? "block" : "none";
+            this.element.style.display = this._isVisible ? "block" : "none";
             if (this._windowPositionX > this._bodyWidth - this._width) {
                 this._windowPositionX = this._bodyWidth - this._width;
             }
@@ -184,6 +183,9 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
             }
             this.element.style.left = this._windowPositionX + "px";
             this.element.style.top = this._windowPositionY + "px";
+            if (this._isVisible && (this._width === 0)) {
+                this.needsDraw = true;
+            }
         }
     }
 

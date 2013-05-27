@@ -68,6 +68,9 @@ POSSIBILITY OF SUCH DAMAGE.
 .flow-Editor-Toolbar-Button-Convert:after {
     background-position: -288px 0;
 }
+.flow-Editor-Toolbar-Button-Inspector:after {
+    background-position: -320px 0;
+}
 .flow-Editor-Toolbar-Button-Pen:after {
     background-position: 0 0;
 }
@@ -103,7 +106,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background-position: -220px 0;
 }
 
-.flow-Editor-Toolbar-Button-Close.matte-Button {
+.flow-Editor-Toolbar-Button.matte-Button {
     width: 44px;
     height: 42px;
     padding: 6px;
@@ -111,19 +114,22 @@ POSSIBILITY OF SUCH DAMAGE.
     margin: 0;
     border-left: 1px solid #363636;
     border-right: 1px solid #1D1D1D;
-    float: right;
     background-color: transparent;
     border-top: none;
     border-bottom: none;
     border-radius: 0;
 }
 
-.flow-Editor-Toolbar-Button-Close.matte-Button:hover {
+.flow-Editor-Toolbar-Button-Close {
+    float: right;
+}
+
+.flow-Editor-Toolbar-Button.matte-Button:hover {
     background: transparent;
 }
 
 .flow-Editor-Toolbar-Button:active,
-.flow-Editor-Toolbar-Button-Close.matte-Button:active {
+.flow-Editor-Toolbar-Button.matte-Button:active {
     border-left: 1px solid #1D1D1D;
     border-right: 1px solid #363636;
     background: -webkit-gradient(linear, left top, left bottom,  from(#212121), to(#323232));

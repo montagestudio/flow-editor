@@ -20,17 +20,19 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
     handleClick: {
         enumerable: false,
         value: function (event) {
-            if (event.target !== this._element) {
-                var elements = this.element.getElementsByTagName("*"),
-                    i;
+            if (event.target.getAttribute("data-tool")) {
+                if (event.target !== this._element) {
+                    var elements = this.element.getElementsByTagName("*"),
+                        i;
 
-                for (i = 0; i < elements.length; i++) {
-                    elements[i].classList.remove("flow-Editor-Toolbar-Button--selected");
+                    for (i = 0; i < elements.length; i++) {
+                        elements[i].classList.remove("flow-Editor-Toolbar-Button--selected");
+                    }
+                    event.target.classList.add("flow-Editor-Toolbar-Button--selected");
+                    this.selectedTool = this._tools[event.target.getAttribute("data-tool")];
                 }
-                event.target.classList.add("flow-Editor-Toolbar-Button--selected");
-                this.selectedTool = this._tools[event.target.getAttribute("data-tool")];
+                event.preventDefault();
             }
-            event.preventDefault();
         }
     },
 
@@ -59,6 +61,16 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
             window.top.document.getElementsByTagName("iframe")[0].parentNode.component.currentMode = 0;
             evt.stop();
             this.dispatchEventNamed("exitModalEditor", true, true);
+        }
+    },
+
+    isInspectorVisible: {
+        value: true
+    },
+
+    handleInspectorButtonAction: {
+        value: function () {
+            this.isInspectorVisible = !this.isInspectorVisible;
         }
     }
 

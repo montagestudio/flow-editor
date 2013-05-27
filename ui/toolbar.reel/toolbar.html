@@ -52,6 +52,19 @@ POSSIBILITY OF SUCH DAMAGE.
                     "listener": {"@": "owner"}
                 }
             ]
+        },
+
+        "inspectorButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {"#": "inspectorButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         }
     }
     </script>
@@ -62,6 +75,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <div data-tool="convert" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Convert"></div>
         <div data-tool="pen" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Pen"></div>
         <div data-tool="add" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Add"></div>
+        <div data-montage-id="inspectorButton" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Inspector"></div>
         <div data-montage-id="closeButton" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Close"></div>
     </div>
 </body>
