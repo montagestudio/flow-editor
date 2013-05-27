@@ -9,8 +9,8 @@ var Montage = require("montage").Montage,
     Scene = PenToolMath.Scene,
     FlowSpline = require("ui/flow-spline").FlowSpline,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
-    FlowSpiral = require("ui/flow-spiral").FlowSpiral,
-    CanvasFlowSpiral = require("ui/flow-spiral").CanvasFlowSpiral,
+    FlowHelix = require("ui/flow-helix").FlowHelix,
+    CanvasFlowHelix = require("ui/flow-helix").CanvasFlowHelix,
     Grid = require("ui/grid").Grid,
     CanvasGrid = require("ui/grid").CanvasGrid,
     Camera = require("ui/camera").Camera,
@@ -51,410 +51,41 @@ exports.Editor = Montage.create(Component, {
         value: true
     },
 
-/*    _selectedTool: {
-        enumerable: false,
-        value: "add"
-    },
-
-    selectedTool: {
-        get: function () {
-            return this._selectedTool;
-        },
-        set: function (value) {
-            this._selectedTool = value;
-            this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate =
-            this.topView.mousemoveDelegate =
-            this.frontView.mousemoveDelegate = null;
-            this.topView.isDrawingHandlers =
-            this.frontView.isDrawingHandlers =
-            this.topView.isDrawingDensities =
-            this.frontView.isDrawingDensities =
-            this.topView.isHighlightingCloserKnot =
-            this.frontView.isHighlightingCloserKnot =
-            this.topView.isHighlightingCloserHandler =
-            this.frontView.isHighlightingCloserHandler = false;
-
-            // TODO move this to draw
-            this.frontView.element.style.display =
-            this.topView.element.style.display = "block";
-            this.parametersEditor.style.display = "none";
-            this[value + "ButtonAction"]();
-        }
-    },
-
-    addButtonAction: {
-        value: function () {
-            var self = this,
-                sX,
-                sY,
-                tmp;
-
-            this.topView.isDrawingHandlers = this.frontView.isDrawingHandlers = true;
-            this.topView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
-                self.spline.previousHandlers.push([x, 0, y]);
-                self.spline.knots.push([x, 0, y]);
-                self.spline.nextHandlers.push([x, 0, y]);
-                self.spline.densities.push(3);
-                self.spline._computeDensitySummation.call(self.spline);
-                self.frontView.updateSpline();
-                self.topView.updateSpline();
-                self.hasSplineUpdated = true;
-                self.flow._updateLength();
-                sX = x;
-                sY = y;
-                return false;
-            };
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
-                self.spline.previousHandlers.push([x, y, 0]);
-                self.spline.knots.push([x, y, 0]);
-                self.spline.nextHandlers.push([x, y, 0]);
-                self.spline.densities.push(3);
-                self.spline._computeDensitySummation.call(self.spline);
-                self.frontView.updateSpline();
-                self.topView.updateSpline();
-                self.hasSplineUpdated = true;
-                self.flow._updateLength();
-                sX = x;
-                sY = y;
-                return false;
-            };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                sX -= x;
-                sY -= y;
-                tmp = self.spline.knots[self.spline.knots.length - 1];
-                self.spline.previousHandlers[self.spline.previousHandlers.length - 1] = [tmp[0] * 2 - sX, 0, tmp[2] * 2 - sY];
-                self.spline.nextHandlers[self.spline.nextHandlers.length - 1] = [sX, 0, sY];
-                self.frontView.updateSpline();
-                self.topView.updateSpline();
-                self.hasSplineUpdated = true;
-                self.flow._updateLength();
-                return false;
-            };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                sX -= x;
-                sY -= y;
-                tmp = self.spline.knots[self.spline.knots.length - 1];
-                self.spline.previousHandlers[self.spline.previousHandlers.length - 1] = [tmp[0] * 2 - sX, tmp[1] * 2 - sY, 0];
-                self.spline.nextHandlers[self.spline.nextHandlers.length - 1] = [sX, sY, 0];
-                self.frontView.updateSpline();
-                self.topView.updateSpline();
-                self.hasSplineUpdated = true;
-                self.flow._updateLength();
-                return false;
-            };
-        }
-    },
-
-    removeButtonAction: {
-        value: function () {
-            var self = this;
-
-            this.topView.isDrawingHandlers = this.frontView.isDrawingHandlers = false;
-            this.topView.isDrawingDensities = this.frontView.isDrawingDensities = false;
-            this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
-            this.topView.mousedownDelegate = this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (knot !== null) {
-                    self.spline.knots.splice(knot, 1);
-                    self.spline.nextHandlers.splice(knot, 1);
-                    self.spline.previousHandlers.splice(knot, 1);
-                    self.spline.densities.splice(knot, 1);
-                    self.frontView.updateSpline();
-                    self.topView.updateSpline();
-                    self.hasSplineUpdated = true;
-                    self.spline._computeDensitySummation.call(self.spline);
-                    self.flow._updateLength();
-                    return false;
-                } else {
-                    return true;
-                }
-            };
-        }
-    },
-
-    moveKnotButtonAction: {
-        value: function () {
-            var self = this;
-
-            this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
-            this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (knot !== null) {
-                    self._selectedKnot = knot;
-                    return false;
-                } else {
-                    self._selectedKnot = null;
-                    return true;
-                }
-            };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (self._selectedKnot !== null) {
-                    self.spline.knots[self._selectedKnot][0] -= x;
-                    self.spline.knots[self._selectedKnot][2] -= y;
-                    self.spline.nextHandlers[self._selectedKnot][0] -= x;
-                    self.spline.nextHandlers[self._selectedKnot][2] -= y;
-                    self.spline.previousHandlers[self._selectedKnot][0] -= x;
-                    self.spline.previousHandlers[self._selectedKnot][2] -= y;
-                    self.frontView.updateSpline(true);
-                    self.topView.updateSpline(true);
-                    self.hasSplineUpdated = true;
-                    self.flow._updateLength();
-                }
-            };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (self._selectedKnot !== null) {
-                    self.spline.knots[self._selectedKnot][0] -= x;
-                    self.spline.knots[self._selectedKnot][1] -= y;
-                    self.spline.nextHandlers[self._selectedKnot][0] -= x;
-                    self.spline.nextHandlers[self._selectedKnot][1] -= y;
-                    self.spline.previousHandlers[self._selectedKnot][0] -= x;
-                    self.spline.previousHandlers[self._selectedKnot][1] -= y;
-                    self.frontView.updateSpline(true);
-                    self.topView.updateSpline(true);
-                    self.hasSplineUpdated = true;
-                    self.flow._updateLength();
-                }
-            };
-        }
-    },
-
-    moveHandlerButtonAction: {
-        value: function () {
-            var self = this;
-
-            this.topView.isDrawingHandlers = this.frontView.isDrawingHandlers = true;
-            this.topView.isHighlightingCloserHandler = this.frontView.isHighlightingCloserHandler = true;
-            this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (handler !== null) {
-                    self._selectedHandler = handler;
-                    self._selectedHandlerType = type;
-                    return false;
-                } else {
-                    self._selectedHandler = null;
-                    return true;
-                }
-            };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (self._selectedHandler !== null) {
-                    if (self._selectedHandlerType === "next") {
-                        var sX = self.spline.nextHandlers[self._selectedHandler][0] - x,
-                            sY = self.spline.nextHandlers[self._selectedHandler][2] - y,
-                            tmp;
-
-                        tmp = self.spline.knots[self._selectedHandler];
-                        self.spline.previousHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
-                        self.spline.previousHandlers[self._selectedHandler][2] = tmp[2] * 2 - sY;
-                        self.spline.nextHandlers[self._selectedHandler][0] = sX
-                        self.spline.nextHandlers[self._selectedHandler][2] = sY;
-                        self.frontView.updateSpline(true);
-                        self.topView.updateSpline(true);
-                        self.hasSplineUpdated = true;
-                        self.flow._updateLength();
-                    } else {
-                        var sX = self.spline.previousHandlers[self._selectedHandler][0] - x,
-                            sY = self.spline.previousHandlers[self._selectedHandler][2] - y,
-                            tmp;
-
-                        tmp = self.spline.knots[self._selectedHandler];
-                        self.spline.nextHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
-                        self.spline.nextHandlers[self._selectedHandler][2] = tmp[2] * 2 - sY;
-                        self.spline.previousHandlers[self._selectedHandler][0] = sX
-                        self.spline.previousHandlers[self._selectedHandler][2] = sY;
-                        self.frontView.updateSpline(true);
-                        self.topView.updateSpline(true);
-                        self.hasSplineUpdated = true;
-                        self.flow._updateLength();
-                    }
-                }
-            };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (self._selectedHandler !== null) {
-                    if (self._selectedHandlerType === "next") {
-                        var sX = self.spline.nextHandlers[self._selectedHandler][0] - x,
-                            sY = self.spline.nextHandlers[self._selectedHandler][1] - y,
-                            tmp;
-
-                        tmp = self.spline.knots[self._selectedHandler];
-                        self.spline.previousHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
-                        self.spline.previousHandlers[self._selectedHandler][1] = tmp[1] * 2 - sY;
-                        self.spline.nextHandlers[self._selectedHandler][0] = sX
-                        self.spline.nextHandlers[self._selectedHandler][1] = sY;
-                        self.frontView.updateSpline(true);
-                        self.topView.updateSpline(true);
-                        self.hasSplineUpdated = true;
-                        self.flow._updateLength();
-                    } else {
-                        var sX = self.spline.previousHandlers[self._selectedHandler][0] - x,
-                            sY = self.spline.previousHandlers[self._selectedHandler][1] - y,
-                            tmp;
-
-                        tmp = self.spline.knots[self._selectedHandler];
-                        self.spline.nextHandlers[self._selectedHandler][0] = tmp[0] * 2 - sX;
-                        self.spline.nextHandlers[self._selectedHandler][1] = tmp[1] * 2 - sY;
-                        self.spline.previousHandlers[self._selectedHandler][0] = sX
-                        self.spline.previousHandlers[self._selectedHandler][1] = sY;
-                        self.frontView.updateSpline(true);
-                        self.topView.updateSpline(true);
-                        self.hasSplineUpdated = true;
-                        self.flow._updateLength();
-                    }
-                }
-            };
-        }
-    },
-
-    cameraButtonAction: {
-        value: function () {
-            var self = this;
-
-            this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
-                return false;
-            };
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                self.cameraPosition = [
-                    self.cameraPosition[0] - x,
-                    self.cameraPosition[1],
-                    self.cameraPosition[2] - y
-                ];
-            };
-            this.frontView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                self.cameraPosition = [
-                    self.cameraPosition[0] - x,
-                    self.cameraPosition[1] - y,
-                    self.cameraPosition[2]
-                ];
-            };
-        }
-    },
-
-    weightButtonAction: {
-        value: function () {
-            var self = this;
-
-            this.topView.isDrawingDensities = this.frontView.isDrawingDensities = true;
-            this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
-            this.topView.mousedownDelegate =
-            this.frontView.mousedownDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (knot !== null) {
-                    self._selectedKnot = knot;
-                    return false;
-                } else {
-                    self._selectedKnot = null;
-                    return true;
-                }
-            };
-            this.frontView.mousemoveDelegate =
-            this.topView.mousemoveDelegate = function (x, y, knot, handler, type, isScrolling) {
-                if (self._selectedKnot !== null) {
-                    self.spline.densities[self._selectedKnot] += y * self.frontView._scale / 20;
-                    if (self.spline.densities[self._selectedKnot] < 0.05) {
-                        self.spline.densities[self._selectedKnot] = 0.05;
-                    }
-                    self.frontView.updateSpline(true);
-                    self.topView.updateSpline(true);
-                    self.hasSplineUpdated = true;
-                    self.flow._updateLength();
-                }
-            };
-        }
-    },
-
-    parametersButtonAction: {
-        value: function () {
-            this.parametersEditor.style.display = "block";
-            this.frontView.element.style.display =
-            this.topView.element.style.display = "none";
-        }
-    },*/
-
     spline: {
         value: null
     },
-
-/*    _centralX: {
-        enumerable: false,
-        value: 0
-    },
-
-    centralX: {
-        get: function () {
-            return this._centralX;
-        },
-        set: function (value) {
-            this._centralX = value;
-        }
-    },
-
-    _centralY: {
-        enumerable: false,
-        value: 0
-    },
-
-    centralY: {
-        get: function () {
-            return this._centralY;
-        },
-        set: function (value) {
-            this._centralY = value;
-        }
-    },
-
-    _centralZ: {
-        enumerable: false,
-        value: 0
-    },
-
-    centralZ: {
-        get: function () {
-            return this._centralZ;
-        },
-        set: function (value) {
-            this._centralZ = value;
-        }
-    },
-
-    scale: {
-        get: function () {
-            return this._scale;
-        },
-        set: function (value) {
-            this._scale = value;
-        }
-    },
-
-    _scale: {
-        enumerable: false,
-        value: .2
-    },
-
-    scale: {
-        get: function () {
-            return this._scale;
-        },
-        set: function (value) {
-            this._scale = value;
-        }
-    },
-
-    handleResize: {
-        enumerable: false,
-        value: function () {
-            this.needsDraw = true;
-        }
-    },*/
 
     convertFlowToShape: {
         value: function () {
             var shape, spline, i, k, j, knot,
                 paths = this.object.getObjectProperty("paths"),
+                metadata = this.object.getObjectProperty("flowEditorMetadata"),
                 grid = Grid.create().init(),
                 canvasGrid = CanvasGrid.create().initWithData(grid),
                 cross = CanvasCross.create().initWithData(Cross.create()),
                 canvasSpline,
-                camera = Camera.create();
+                camera = Camera.create(),
+                iShape,
+                rejectedPaths = {};
 
+            if (metadata) {
+                if (metadata.flowEditorVersion <= 0.1) {
+                    if (metadata.shapes) {
+                        for (i = 0; i < metadata.shapes.length; i++) {
+                            iShape = metadata.shapes[i];
+                            switch (iShape.type) {
+                                case "FlowHelix":
+                                    if (typeof iShape.pathIndex !== "undefined") {
+                                        rejectedPaths[iShape.pathIndex] = true;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                } else {
+                    // Could not parse metadata from newer versions of Flow Editor
+                }
+            }
             canvasGrid.appendMark = CanvasSplineAppendMark.create().initWithData(Vector3.create().initWithCoordinates([0, 0, 0]));
             cross.zIndex = 2;
             this.camera = CanvasCamera.create().initWithData(camera);
@@ -474,60 +105,61 @@ exports.Editor = Montage.create(Component, {
                 this.object.getObjectProperty("scrollingTransitionDuration") ?
                 this.object.getObjectProperty("scrollingTransitionDuration") : 500;
             for (j = 0; j < paths.length; j++) {
-                shape = FlowSpline.create().init();
-                spline = paths[j];
-                shape.headOffset = spline.headOffset;
-                shape.tailOffset = spline.tailOffset;
-                canvasSpline = canvasGrid.appendFlowSpline(shape);
-                for (i = 0; i < spline.knots.length - 1; i++) {
-                    if (!i) {
-                        canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
-                            spline.knots[i].knotPosition[0],
-                            spline.knots[i].knotPosition[1],
-                            spline.knots[i].knotPosition[2]
-                        ]));
-                        for (k in spline.units) {
-                            if (typeof spline.knots[i][k] !== "undefined") {
-                                knot[k] = spline.knots[i][k];
+                if (!rejectedPaths[j]) {
+                    shape = FlowSpline.create().init();
+                    spline = paths[j];
+                    shape.headOffset = spline.headOffset;
+                    shape.tailOffset = spline.tailOffset;
+                    canvasSpline = canvasGrid.appendFlowSpline(shape);
+                    for (i = 0; i < spline.knots.length - 1; i++) {
+                        if (!i) {
+                            canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
+                                spline.knots[i].knotPosition[0],
+                                spline.knots[i].knotPosition[1],
+                                spline.knots[i].knotPosition[2]
+                            ]));
+                            for (k in spline.units) {
+                                if (typeof spline.knots[i][k] !== "undefined") {
+                                    knot[k] = spline.knots[i][k];
+                                }
+                            }
+                            if (typeof spline.knots[i].previousDensity !== "undefined") {
+                                knot.density = spline.knots[i].previousDensity;
                             }
                         }
-                        if (typeof spline.knots[i].previousDensity !== "undefined") {
-                            knot.density = spline.knots[i].previousDensity;
+                        canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
+                            spline.knots[i].nextHandlerPosition[0],
+                            spline.knots[i].nextHandlerPosition[1],
+                            spline.knots[i].nextHandlerPosition[2]
+                        ]));
+                        canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
+                            spline.knots[i + 1].previousHandlerPosition[0],
+                            spline.knots[i + 1].previousHandlerPosition[1],
+                            spline.knots[i + 1].previousHandlerPosition[2]
+                        ]));
+                        canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
+                            spline.knots[i + 1].knotPosition[0],
+                            spline.knots[i + 1].knotPosition[1],
+                            spline.knots[i + 1].knotPosition[2]
+                        ]));
+                        for (k in spline.units) {
+                            if (typeof spline.knots[i + 1][k] !== "undefined") {
+                                knot[k] = spline.knots[i + 1][k];
+                            }
                         }
-                    }
-                    canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
-                        spline.knots[i].nextHandlerPosition[0],
-                        spline.knots[i].nextHandlerPosition[1],
-                        spline.knots[i].nextHandlerPosition[2]
-                    ]));
-                    canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
-                        spline.knots[i + 1].previousHandlerPosition[0],
-                        spline.knots[i + 1].previousHandlerPosition[1],
-                        spline.knots[i + 1].previousHandlerPosition[2]
-                    ]));
-                    canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
-                        spline.knots[i + 1].knotPosition[0],
-                        spline.knots[i + 1].knotPosition[1],
-                        spline.knots[i + 1].knotPosition[2]
-                    ]));
-                    for (k in spline.units) {
-                        if (typeof spline.knots[i + 1][k] !== "undefined") {
-                            knot[k] = spline.knots[i + 1][k];
+                        if (typeof spline.knots[i + 1].previousDensity !== "undefined") {
+                            knot.density = spline.knots[i + 1].previousDensity;
                         }
-                    }
-                    if (typeof spline.knots[i + 1].previousDensity !== "undefined") {
-                        knot.density = spline.knots[i + 1].previousDensity;
                     }
                 }
             }
+            if (this.standAlone) {
+                var canvasHelix = CanvasFlowHelix.create();
 
-            /*if (this.standAlone) {
-                var canvasSpiral = CanvasFlowSpiral.create();
-
-                canvasSpiral.update();
-                canvasGrid.children.push(canvasSpiral);
-                grid.pushShape(canvasSpiral._data);
-            }*/
+                canvasHelix.update();
+                canvasGrid.children.push(canvasHelix);
+                grid.pushShape(canvasHelix._data);
+            }
 
             if (typeof this.object.getObjectProperty("cameraPosition") !== "undefined") {
                 this.camera.data.cameraPosition = this.object.getObjectProperty("cameraPosition")
@@ -591,7 +223,7 @@ exports.Editor = Montage.create(Component, {
             );
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
-                if ((shape.type === "FlowSpline")||(shape.type === "FlowSpiral")) {
+                if ((shape.type === "FlowSpline")||(shape.type === "FlowHelix")) {
                     spline = paths[k];
                     if (!spline) {
                         paths.push({
@@ -677,19 +309,11 @@ exports.Editor = Montage.create(Component, {
         }
     },
 
-    /*handleSceneUpdated: {
-        value: function () {
-            this.convertShapeToFlow();
-            this.selection = this.viewport.scene.getSelection()[0];
-        }
-    },*/
-
     enterDocument: {
         enumerable: false,
         value: function (firstTime) {
             if (firstTime) {
                 this.convertFlowToShape();
-                //this.viewport.scene.addEventListener("sceneUpdated", this, false);
             }
         }
     },
@@ -700,10 +324,6 @@ exports.Editor = Montage.create(Component, {
             if (!this.standAlone && !window.top.document.getElementsByTagName("iframe")[0].parentNode.component.currentMode) {
                 window.top.document.getElementsByTagName("iframe")[0].parentNode.component.currentMode = 1;
             }
-            /*this.frontView.width = this._element.offsetWidth;
-            this.frontView.height = (this._element.offsetHeight - this.toolbar.element.offsetHeight - 1) >> 1;
-            this.topView.width = this._element.offsetWidth;
-            this.topView.height = this._element.offsetHeight - this.toolbar.element.offsetHeight - this.frontView.height - 1;*/
         }
     },
 

@@ -7,18 +7,18 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Vector3 = require("ui/pen-tool-math").Vector3;
 
-exports.FlowSpiralInspector = Montage.create(Component, {
+exports.FlowHelixInspector = Montage.create(Component, {
 
-    _spiral: {
+    _helix: {
         value: null
     },
 
-    spiral: {
+    helix: {
         get: function () {
             return this._knot;
         },
         set: function (value) {
-            if (value && (value._data.type === "FlowSpiral")) {
+            if (value && (value._data.type === "FlowHelix")) {
                 this._knot = value;
             } else {
                 this._knot = null;

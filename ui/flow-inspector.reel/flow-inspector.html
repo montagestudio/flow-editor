@@ -91,13 +91,13 @@
                 "scene": {"<-": "@owner.scene"}
             }
         },
-        "spiral": {
-            "prototype": "ui/flow-spiral-inspector.reel",
+        "helix": {
+            "prototype": "ui/flow-helix-inspector.reel",
             "properties": {
-                "element": {"#": "spiral"}
+                "element": {"#": "helix"}
             },
             "bindings": {
-                "spiral": {"<-": "@owner.selection"},
+                "helix": {"<-": "@owner.selection"},
                 "scene": {"<-": "@owner.scene"}
             }
         }
@@ -114,7 +114,7 @@
             <div data-arg="FlowCamera" data-montage-id="camera"></div>
             <div data-arg="FlowSpline" data-montage-id="spline"></div>
             <div data-arg="FlowGrid" data-montage-id="grid"></div>
-            <div data-arg="FlowSpiral" data-montage-id="spiral"></div>
+            <div data-arg="FlowHelix" data-montage-id="helix"></div>
         </div>
     </div>
 </body>

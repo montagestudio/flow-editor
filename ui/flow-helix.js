@@ -8,14 +8,14 @@ var Montage = require("montage").Montage,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
     BezierCurve = require("ui/pen-tool-math").BezierCurve;
 
-var FlowSpiral = exports.FlowSpiral = Montage.create(FlowSpline, {
+var FlowHelix = exports.FlowHelix = Montage.create(FlowSpline, {
 
     type: {
-        value: "FlowSpiral"
+        value: "FlowHelix"
     }
 });
 
-exports.CanvasFlowSpiral = Montage.create(CanvasFlowSpline, {
+exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
 
     _segments: {
         value: 32
@@ -130,7 +130,7 @@ exports.CanvasFlowSpiral = Montage.create(CanvasFlowSpline, {
                     shape.popBezierCurve();
                 }
             } else {
-                this._shape = shape = FlowSpiral.create().init();
+                this._shape = shape = FlowHelix.create().init();
                 this.initWithData(shape);
             }
             for (i = 0; i < this._segments; i++) {

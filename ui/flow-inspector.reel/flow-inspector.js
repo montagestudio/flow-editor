@@ -66,6 +66,9 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
                     case "FlowGrid":
                         this.titleText = "Flow";
                         break;
+                    case "FlowHelix":
+                        this.titleText = "Helix";
+                        break;
                     default:
                         this.titleText = this.type;
                         break;

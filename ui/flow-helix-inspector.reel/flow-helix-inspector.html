@@ -6,13 +6,13 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "flow-spiral-inspector"}
+                "element": {"#": "flow-helix-inspector"}
             },
             "bindings": {
-                "radius": {"<->": "@owner.spiral.radius"},
-                "height": {"<->": "@owner.spiral.height"},
-                "density": {"<->": "@owner.spiral.density"},
-                "segments": {"<->": "@owner.spiral.segments"}
+                "radius": {"<->": "@owner.helix.radius"},
+                "height": {"<->": "@owner.helix.height"},
+                "density": {"<->": "@owner.helix.density"},
+                "segments": {"<->": "@owner.helix.segments"}
             }
         },
         "radius": {
@@ -56,7 +56,7 @@
     </script>
 </head>
 <body>
-    <ul data-montage-id="flow-spiral-inspector" class="FlowSpiralInspector">
+    <ul data-montage-id="flow-helix-inspector" class="FlowSpiralInspector">
         <li>
             <span class="property">radius</span><div data-montage-id="radius" class="inspector-input"></div>
         </li>
