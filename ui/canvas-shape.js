@@ -355,9 +355,9 @@ exports.CanvasShape = Montage.create(Target, {
             }
         },
         set: function (value) {
-            if (this._data && (this._data._isSelected !== value) && this._data.dispatchEventNamed) {
+            if (this._data && (this._data._isSelected !== value) && this._data.dispatchEventIfNeeded) {
                 this._data._isSelected = value;
-                this._data.dispatchEventNamed("selectionChange", true, true);
+                this._data.dispatchEventIfNeeded("selectionChange");
                 this.needsDraw = true;
             }
         }

@@ -23,7 +23,8 @@
                     0, 0, 1, 0,
                     0, 0, 0, 1
                 ],
-                "camera": {"@": "camera"}
+                "camera": {"@": "camera"},
+                "editor": {"@": "owner"}
             },
             "bindings": {
                 "selectedTool": {"<-": "@toolbar.selectedTool"}
@@ -39,7 +40,8 @@
                     0, 0.1, 0, 0,
                     0, 0, 0, 1
                 ],
-                "camera": {"@": "camera"}
+                "camera": {"@": "camera"},
+                "editor": {"@": "owner"}
             },
             "bindings": {
                 "selectedTool": {"<-": "@toolbar.selectedTool"},
@@ -54,7 +56,6 @@
             },
             "bindings": {
                 "scene": {"<->": "@viewport.scene"},
-                "selection": {"<->": "@owner.selection"},
                 "isVisible": {"<->": "@toolbar.isInspectorVisible"}
             }
         },

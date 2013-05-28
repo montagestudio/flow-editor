@@ -2,16 +2,9 @@ var Montage = require("montage").Montage,
     CanvasShape = require("ui/canvas-shape").CanvasShape,
     Vector3 = require("ui/pen-tool-math").Vector3,
     CanvasVector3 = require("ui/canvas-vector3").CanvasVector3,
-    Target = require("montage/core/target").Target;
+    MapReducible = require("ui/pen-tool-math").MapReducible;
 
-var Camera = exports.Camera = Montage.create(Target, {
-
-    init: {
-        value: function () {
-            this._data = [];
-            return this;
-        }
-    },
+var Camera = exports.Camera = Montage.create(MapReducible, {
 
     type: {
         value: "FlowCamera"

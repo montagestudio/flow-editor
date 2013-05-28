@@ -212,6 +212,32 @@ exports.Editor = Montage.create(Component, {
         }
     },
 
+    _objectProperties: {
+        value: {
+            flowEditorMetadata: true,
+            isSelectionEnabled: true,
+            hasSelectedIndexScrolling: true,
+            scrollingTransitionDuration: true,
+            scrollingTransitionTimingFunction: true,
+            paths: true,
+            cameraPosition: true,
+            cameraTargetPoint: true,
+            cameraFov: true
+        }
+    },
+
+    sceneWillChange: {
+        value: function () {
+            this._previousValues = this.object.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties);
+        }
+    },
+
+    sceneDidChange: {
+        value: function () {
+            this.object.editingDocument.setOwnedObjectProperties(this.object, this._objectProperties, this._previousValues);
+        }
+    },
+
     handleSceneUpdated: {
         value: function () {
             this.convertShapeToFlow();
@@ -222,19 +248,17 @@ exports.Editor = Montage.create(Component, {
         value: function () {
             var shape, bezier, i, spline, j, k = 0,
                 paths, n,
-                objectProperties = {
-                    flowEditorMetadata: {
-                        flowEditorVersion: this.flowEditorVersion,
-                        shapes: []
-                    }
-                },
                 pathIndex = 0;
 
+            this._objectProperties.flowEditorMetadata = {
+                flowEditorVersion: this.flowEditorVersion,
+                shapes: []
+            };
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j];
                 switch (shape.type) {
                     case "FlowHelix":
-                        objectProperties.flowEditorMetadata.shapes.push({
+                        this._objectProperties.flowEditorMetadata.shapes.push({
                             type: "FlowHelix",
                             pathIndex: pathIndex,
                             axisOriginPosition: [shape._x, shape._y, shape._z],
@@ -251,10 +275,10 @@ exports.Editor = Montage.create(Component, {
                 }
             }
             paths = [];
-            objectProperties.isSelectionEnabled = this.viewport.scene._data.isSelectionEnabled;
-            objectProperties.hasSelectedIndexScrolling = this.viewport.scene._data.hasSelectedIndexScrolling;
-            objectProperties.scrollingTransitionDuration = this.viewport.scene._data.scrollingTransitionDuration;
-            objectProperties.scrollingTransitionTimingFunction = this.viewport.scene._data.scrollingTransitionTimingFunction;
+            this._objectProperties.isSelectionEnabled = this.viewport.scene._data.isSelectionEnabled;
+            this._objectProperties.hasSelectedIndexScrolling = this.viewport.scene._data.hasSelectedIndexScrolling;
+            this._objectProperties.scrollingTransitionDuration = this.viewport.scene._data.scrollingTransitionDuration;
+            this._objectProperties.scrollingTransitionTimingFunction = this.viewport.scene._data.scrollingTransitionTimingFunction;
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
                 if ((shape.type === "FlowSpline") || (shape.type === "FlowHelix")) {
@@ -335,11 +359,11 @@ exports.Editor = Montage.create(Component, {
                     k++;
                 }
             }
-            objectProperties.paths = paths;
-            objectProperties.cameraPosition = this.camera.cameraPosition;
-            objectProperties.cameraTargetPoint = this.camera.cameraTargetPoint;
-            objectProperties.cameraFov = this.camera.cameraFov;
-            this.object.setObjectProperties(objectProperties);
+            this._objectProperties.paths = paths;
+            this._objectProperties.cameraPosition = this.camera.cameraPosition.slice(0);
+            this._objectProperties.cameraTargetPoint = this.camera.cameraTargetPoint.slice(0);
+            this._objectProperties.cameraFov = this.camera.cameraFov;
+            this.object.setObjectProperties(this._objectProperties);
         }
     },
 

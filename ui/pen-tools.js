@@ -294,7 +294,6 @@ exports.AddTool = Montage.create(Montage, {
                     spline,
                     i;
 
-                viewport.unselect();
                 viewport.scene.appendMark.isVisible = false;
                 if (selected) {
                     path = viewport.findPathToNode(selected);
@@ -305,7 +304,8 @@ exports.AddTool = Montage.create(Montage, {
                     }
                     if (spline) {
                         if (selected.isLastKnotOf(spline) || selected.isFirstKnotOf(spline)) {
-                            viewport.scene.appendMark.data = selected.data;
+                            viewport.scene.appendMark.data = selected.data.clone();
+                            viewport.scene.appendMark.data.nextTarget = viewport.scene.data;
                             viewport.scene.appendMark.isVisible = true;
                         }
                     }

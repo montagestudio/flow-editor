@@ -140,7 +140,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
                 for (i = 0; i < length; i++) {
                     this.children[i].isVisible = value;
                 }
-                this._data.dispatchEventNamed("selectionChange", true, true);
+                this._data.dispatchEventIfNeeded("selectionChange");
                 this.needsDraw = true;
             }
         }

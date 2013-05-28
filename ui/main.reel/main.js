@@ -22,16 +22,60 @@ exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# 
                 getObjectProperty: function (property) {
                     return self.flow[property];
                 },
-                editingDocument: {
-                    setOwnedObjectProperty: function (foo, property, value) {
-                        self.flow[property] = value;
-                    }
-                },
                 setObjectProperties: function (values) {
                     for (var name in values) {
                         if (values.hasOwnProperty(name)) {
                             self.flow[name] = values[name];
                         }
+                    }
+                },
+                getObjectProperties: function (values) {
+                    var result = {};
+
+                    for (var name in values) {
+                        if (values.hasOwnProperty(name)) {
+                            result[name] = self.flow[name];
+                        }
+                    }
+                    return result;
+                },
+                editingDocument: {
+                    getOwnedObjectProperties: function (proxy, values) {
+                        return proxy.getObjectProperties(values);
+                    },
+                    setOwnedObjectProperties: function (proxy, values, previousValues) {
+                        /*var undoManager = this.undoManager,
+                            undoneValues = (previousValues ? previousValues : proxy.getObjectProperties(values));*/
+
+                        proxy.setObjectProperties(values);
+
+                        /*var previousValuesString = JSON.stringify(previousValues),
+                            valuesString = JSON.stringify(proxy.getObjectProperties(values)),
+                            i = 0, j = 0;
+
+                        while (
+                            (i < previousValuesString.length) &&
+                            (i < valuesString.length) &&
+                            (previousValuesString[i] === valuesString[i])) {
+                            i++;
+                        }
+                        valuesString = valuesString.substr(i);
+                        previousValuesString = previousValuesString.substr(i);
+                        while (
+                            (j < previousValuesString.length) &&
+                            (j < valuesString.length) &&
+                            (previousValuesString[previousValuesString.length - 1 - j] === valuesString[valuesString.length - 1 - j])) {
+                            j++;
+                        }
+                        valuesString = valuesString.substr(0, valuesString.length - j);
+                        previousValuesString = previousValuesString.substr(0, previousValuesString.length - j);
+                        if (valuesString.length || previousValuesString.length) {
+                            console.log(previousValuesString, "--------", valuesString);
+                        }*/
+                        //undoManager.register("Set Properties", Promise.resolve([this.setOwnedObjectProperties, this, proxy, values, undoneValues]));
+                    },
+                    setOwnedObjectProperty: function (foo, property, value) {
+                        self.flow[property] = value;
                     }
                 }
             };
