@@ -22,7 +22,7 @@ exports.FlowNumberInput = Montage.create(Component, /** @lends module:"ui/flow-n
             return this._step;
         },
         set: function(value) {
-            this._step =  String.isString(value) ? parseFloat(value) : value;
+            this._step =  typeof value === "string" ? parseFloat(value) : value;
         }
     },
 
