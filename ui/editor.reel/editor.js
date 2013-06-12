@@ -226,15 +226,29 @@ exports.Editor = Montage.create(Component, {
         }
     },
 
+    _isSceneChanging: {
+        value: 0
+    },
+
     sceneWillChange: {
         value: function () {
-            this._previousValues = this.object.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties);
+            if (!this._isSceneChanging) {
+                this._previousValues = this.object.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties);
+            }
+            this._isSceneChanging++;
         }
     },
 
     sceneDidChange: {
         value: function () {
-            this.object.editingDocument.setOwnedObjectProperties(this.object, this._objectProperties, this._previousValues);
+            this._isSceneChanging--;
+            if (!this._isSceneChanging) {
+                var self = this;
+
+                window.setTimeout(function () {
+                    self.object.editingDocument.setOwnedObjectProperties(self.object, self._objectProperties, self._previousValues);
+                }, 0);
+            }
         }
     },
 
@@ -282,16 +296,11 @@ exports.Editor = Montage.create(Component, {
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
                 if ((shape.type === "FlowSpline") || (shape.type === "FlowHelix")) {
+                    paths.push({
+                        knots: [],
+                        units: {}
+                    });
                     spline = paths[k];
-                    if (!spline) {
-                        paths.push({
-                            knots: []
-                        });
-                        spline = paths[k];
-                    }
-                    if (!spline.units) {
-                        spline.units = {};
-                    }
                     spline.units.rotateX = "";
                     spline.units.rotateY = "";
                     spline.units.rotateZ = "";

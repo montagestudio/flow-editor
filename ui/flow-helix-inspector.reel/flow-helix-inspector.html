@@ -21,7 +21,8 @@
                 "element": {"#": "radius"}
             },
             "bindings": {
-                "value": {"<->": "@owner.radius"}
+                "value": {"<->": "@owner.radius"},
+                "editor": {"<-": "@owner.editor"}
             }
         },
         "pitch": {
@@ -30,7 +31,8 @@
                 "element": {"#": "pitch"}
             },
             "bindings": {
-                "value": {"<->": "@owner.pitch"}
+                "value": {"<->": "@owner.pitch"},
+                "editor": {"<-": "@owner.editor"}
             }
         },
         "density": {
@@ -40,7 +42,8 @@
                 "step": 0.01
             },
             "bindings": {
-                "value": {"<->": "@owner.density"}
+                "value": {"<->": "@owner.density"},
+                "editor": {"<-": "@owner.editor"}
             }
         },
         "segments": {
@@ -49,7 +52,8 @@
                 "element": {"#": "segments"}
             },
             "bindings": {
-                "value": {"<->": "@owner.segments"}
+                "value": {"<->": "@owner.segments"},
+                "editor": {"<-": "@owner.editor"}
             }
         },
         "delete": {

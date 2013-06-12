@@ -151,7 +151,7 @@ exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
                 knot.rotateY = -angle2 - Math.PI / 2;
                 shape.pushBezierCurve(bezier);
             }
-            this._data.dispatchEventNamed("bezierSplineChange", true, true);
+            this._data.dispatchEventIfNeeded("bezierSplineChange");
         }
     },
 

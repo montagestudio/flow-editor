@@ -172,7 +172,9 @@ exports.FlowHelixInspector = Montage.create(Component, {
                 parent = path[path.length - 1],
                 index = parent.hasChild(this.helix)[0];
 
+            this.editor.sceneWillChange();
             parent.deleteChild(index);
+            this.editor.sceneDidChange();
         }
     }
 

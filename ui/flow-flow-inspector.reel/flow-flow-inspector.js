@@ -22,7 +22,9 @@ exports.FlowFlowInspector = Montage.create(Component, /** @lends module:"ui/flow
             return this._isSelectionEnabled;
         },
         set: function (value) {
+            this.editor.sceneWillChange();
             this._isSelectionEnabled = value;
+            this.editor.sceneDidChange();
         }
     },
 
@@ -35,7 +37,24 @@ exports.FlowFlowInspector = Montage.create(Component, /** @lends module:"ui/flow
             return this._hasSelectedIndexScrolling;
         },
         set: function (value) {
+            this.editor.sceneWillChange();
             this._hasSelectedIndexScrolling = value;
+            this.editor.sceneDidChange();
+        }
+    },
+
+    _scrollingTransitionTimingFunction: {
+        value: null
+    },
+
+    scrollingTransitionTimingFunction: {
+        get: function () {
+            return this._scrollingTransitionTimingFunction;
+        },
+        set: function (value) {
+            this.editor.sceneWillChange();
+            this._scrollingTransitionTimingFunction = value;
+            this.editor.sceneDidChange();
         }
     },
 
