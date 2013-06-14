@@ -1,9 +1,9 @@
 {
     "name": "flow-editor",
-    "version": "0.2.0",
+    "version": "0.10.0",
     "main": "core/controller",
     "dependencies": {
-        "montage": "0.13.0-alpha",
-        "matte": "0.1.1-alpha"
+        "montage": "git@github.com:montagejs/montage.git#6096b96573e7f1ea35761d38cd9c5d8b8f6cf36f",
+        "matte": "0.1.1"
     }
  }
