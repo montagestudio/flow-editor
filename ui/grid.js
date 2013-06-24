@@ -127,6 +127,10 @@ var Grid = exports.Grid = Montage.create(Scene, {
 
 exports.CanvasGrid = Montage.create(CanvasShape, {
 
+    name: {
+        value: "Flow"
+    },
+
     constructor: {
         value: function () {
             CanvasShape.constructor.call(this);

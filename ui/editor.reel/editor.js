@@ -92,7 +92,10 @@ exports.Editor = Montage.create(Component, {
                 }
             }
             canvasGrid.appendMark = CanvasSplineAppendMark.create().initWithData(Vector3.create().initWithCoordinates([0, 0, 0]));
+            canvasGrid.appendMark.isHiddenInInspector = true;
+            canvasGrid.isExpanded = true;
             cross.zIndex = 2;
+            cross.isHiddenInInspector = true;
             this.camera = CanvasCamera.create().initWithData(camera);
             canvasGrid.children = [];
             canvasGrid.children.push(cross);

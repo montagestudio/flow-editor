@@ -75,6 +75,16 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
         }
     },
 
+    isTreeVisible: {
+        value: true
+    },
+
+    handleTreeButtonAction: {
+        value: function () {
+            this.isTreeVisible = !this.isTreeVisible;
+        }
+    },
+
     handleZoomExtendsAction: {
         value: function () {
             var boundaries = this.viewport.scene.getRecursiveAxisAlignedBoundaries(),

@@ -78,6 +78,19 @@ POSSIBILITY OF SUCH DAMAGE.
                     "listener": {"@": "owner"}
                 }
             ]
+        },
+
+        "treeButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {"#": "treeButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         }
     }
     </script>
@@ -91,6 +104,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <div data-tool="helix" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Helix"></div>
         <div data-montage-id="zoomExtends" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Zoom-Extends"></div>
         <div data-montage-id="inspectorButton" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Inspector"></div>
+        <div data-montage-id="treeButton" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Tree"></div>
         <div data-montage-id="closeButton" class="flow-Editor-Toolbar-Button flow-Editor-Toolbar-Button-Close"></div>
     </div>
 </body>

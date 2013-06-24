@@ -61,6 +61,10 @@ var Camera = exports.Camera = Montage.create(MapReducible, {
 
 exports.CanvasCamera = Montage.create(CanvasShape, {
 
+    name: {
+        value: "Camera"
+    },
+
     constructor: {
         value: function () {
             CanvasShape.constructor.call(this);
@@ -87,6 +91,8 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
 
             children.push(this._cameraPosition);
             children.push(this._cameraTargetPoint);
+            this._cameraPosition.name = "Position";
+            this._cameraTargetPoint.name = "Target";
             this._cameraPosition.isVisible = this.isSelected;
             this._cameraTargetPoint.isVisible = this.isSelected;
             return children;
