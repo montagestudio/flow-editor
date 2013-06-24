@@ -80,6 +80,48 @@ var Grid = exports.Grid = Montage.create(Scene, {
             this._scrollingTransitionTimingFunction = value;
             this.dispatchEventNamed("sceneChange", true, true);
         }
+    },
+
+    _selectedIndexScrollingOffset: {
+        value: null
+    },
+
+    selectedIndexScrollingOffset: {
+        get: function () {
+            return this._selectedIndexScrollingOffset;
+        },
+        set: function (value) {
+            this._selectedIndexScrollingOffset = value;
+            this.dispatchEventNamed("sceneChange", true, true);
+        }
+    },
+
+    _scrollVectorX: {
+        value: null
+    },
+
+    scrollVectorX: {
+        get: function () {
+            return this._scrollVectorX;
+        },
+        set: function (value) {
+            this._scrollVectorX = value;
+            this.dispatchEventNamed("sceneChange", true, true);
+        }
+    },
+
+    _scrollVectorY: {
+        value: null
+    },
+
+    scrollVectorY: {
+        get: function () {
+            return this._scrollVectorY;
+        },
+        set: function (value) {
+            this._scrollVectorY = value;
+            this.dispatchEventNamed("sceneChange", true, true);
+        }
     }
 });
 

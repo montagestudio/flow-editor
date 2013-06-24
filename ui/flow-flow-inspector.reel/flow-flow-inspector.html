@@ -11,7 +11,10 @@
             "bindings": {
                 "isSelectionEnabled": {"<->": "@owner.flow._data.isSelectionEnabled"},
                 "hasSelectedIndexScrolling": {"<->": "@owner.flow._data.hasSelectedIndexScrolling"},
+                "offset": {"<->": "@owner.flow._data.selectedIndexScrollingOffset"},
                 "duration": {"<->": "@owner.flow._data.scrollingTransitionDuration"},
+                "scrollVectorX": {"<->": "@owner.flow._data.scrollVectorX"},
+                "scrollVectorY": {"<->": "@owner.flow._data.scrollVectorY"},
                 "scrollingTransitionTimingFunction": {"<->": "@owner.flow._data.scrollingTransitionTimingFunction"}
             }
         },
@@ -31,6 +34,16 @@
             },
             "bindings": {
                 "checked": {"<->": "@owner.hasSelectedIndexScrolling"}
+            }
+        },
+        "offset": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "offset"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.offset"},
+                "editor": {"<-": "@owner.editor"}
             }
         },
         "duration": {
@@ -73,6 +86,26 @@
             "bindings": {
                 "value": {"<->": "@owner.scrollingTransitionTimingFunction"}
             }
+        },
+        "scrollVectorX": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "scrollVectorX"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.scrollVectorX"},
+                "editor": {"<-": "@owner.editor"}
+            }
+        },
+        "scrollVectorY": {
+            "prototype": "ui/flow-number-input.reel",
+            "properties": {
+                "element": {"#": "scrollVectorY"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.scrollVectorY"},
+                "editor": {"<-": "@owner.editor"}
+            }
         }
     }
     </script>
@@ -82,10 +115,20 @@
         <li class="section"><span class="property">Selection</span><input type="checkbox" data-montage-id="selectionEnabled"></li>
         <li class="section"><span class="property">Scroll into view</span><input type="checkbox" data-montage-id="scrollIntoView"></li>
         <li>
+            <span class="property">offset</span><div data-montage-id="offset" class="inspector-input"></div>
+        </li>
+        <li>
             <span class="property">duration</span><div data-montage-id="duration" class="inspector-input"></div>
         </li>
         <li>
             <span class="property">timing ƒ</span><select data-montage-id="timingFunction"></select>
+        </li>
+        <li class="section"><span class="property">Scroll direction</span></li>
+        <li>
+            <span class="property">vector x</span><div data-montage-id="scrollVectorX" class="inspector-input"></div>
+        </li>
+        <li>
+            <span class="property">vector y</span><div data-montage-id="scrollVectorY" class="inspector-input"></div>
         </li>
     </ul>
 </body>
