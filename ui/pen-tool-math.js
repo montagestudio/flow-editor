@@ -1015,6 +1015,25 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
             this.dispatchEventIfNeeded("vectorChange");
             return this;
         }
+    },
+
+    axisAlignedBoundaries: {
+        get: function () {
+            return [
+                {
+                    min: this._data[0],
+                    max: this._data[0]
+                },
+                {
+                    min: this._data[1],
+                    max: this._data[1]
+                },
+                {
+                    min: this._data[2],
+                    max: this._data[2]
+                }
+            ];
+        }
     }
 
     // TODO: skewXZ / YZ / ZX / ZY, translateX / Y / Z, rotate3d (very low priority)

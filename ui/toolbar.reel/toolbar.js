@@ -73,6 +73,29 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
         value: function () {
             this.isInspectorVisible = !this.isInspectorVisible;
         }
+    },
+
+    handleZoomExtendsAction: {
+        value: function () {
+            var boundaries = this.viewport.scene.getRecursiveAxisAlignedBoundaries(),
+                x = boundaries[0].max - boundaries[0].min,
+                y = boundaries[1].max - boundaries[1].min,
+                z = boundaries[2].max - boundaries[2].min,
+                scaleX = this.viewport._width / x,
+                scaleY = this.viewport._height / y,
+                scaleZ = this.viewport._height / z,
+                scale = Math.min(scaleX, scaleY, scaleZ) * .8,
+                xCenter = (boundaries[0].max + boundaries[0].min) / 2,
+                yCenter = (boundaries[1].max + boundaries[1].min) / 2,
+                zCenter = (boundaries[2].max + boundaries[2].min) / 2;
+
+            this.viewport.scale = scale;
+            this.viewport2.scale = scale;
+            this.viewport.translateX = (this.viewport._width / 2) - (xCenter * scale);
+            this.viewport.translateY = (this.viewport._height / 2) - (yCenter * scale);
+            this.viewport2.translateX = (this.viewport2._width / 2) - (xCenter * scale);
+            this.viewport2.translateY = (this.viewport2._height / 2) - (zCenter * scale);
+        }
     }
 
 });

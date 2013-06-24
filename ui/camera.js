@@ -36,6 +36,25 @@ var Camera = exports.Camera = Montage.create(MapReducible, {
             ];
             this.dispatchEventNamed("cameraChange", true, true);
         }
+    },
+
+    axisAlignedBoundaries: {
+        get: function () {
+            return [
+                {
+                    min: this.cameraPosition[0],
+                    max: this.cameraPosition[0]
+                },
+                {
+                    min: this.cameraPosition[1],
+                    max: this.cameraPosition[1]
+                },
+                {
+                    min: this.cameraPosition[2],
+                    max: this.cameraPosition[2]
+                }
+            ];
+        }
     }
 
 });

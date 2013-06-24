@@ -74,6 +74,9 @@ POSSIBILITY OF SUCH DAMAGE.
 .flow-Editor-Toolbar-Button-Helix:after {
     background-position: -416px 0;
 }
+.flow-Editor-Toolbar-Button-Zoom-Extends:after {
+    background-position: -384px 0;
+}
 .flow-Editor-Toolbar-Button-Pen:after {
     background-position: 0 0;
 }
@@ -94,9 +97,6 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 .flow-Editor-Toolbar-Button-Camera:after {
     background-position: -160px 0;
-}
-.flow-Editor-Toolbar-Button-ZoomExtents:after {
-    background-position: -100px 0;
 }
 .flow-Editor-Toolbar-Button-Close:after {
     position: absolute;
