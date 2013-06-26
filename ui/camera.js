@@ -36,11 +36,34 @@ var Camera = exports.Camera = Montage.create(MapReducible, {
             ];
             this.dispatchEventNamed("cameraChange", true, true);
         }
+    },
+
+    axisAlignedBoundaries: {
+        get: function () {
+            return [
+                {
+                    min: this.cameraPosition[0],
+                    max: this.cameraPosition[0]
+                },
+                {
+                    min: this.cameraPosition[1],
+                    max: this.cameraPosition[1]
+                },
+                {
+                    min: this.cameraPosition[2],
+                    max: this.cameraPosition[2]
+                }
+            ];
+        }
     }
 
 });
 
 exports.CanvasCamera = Montage.create(CanvasShape, {
+
+    name: {
+        value: "Camera"
+    },
 
     constructor: {
         value: function () {
@@ -68,6 +91,8 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
 
             children.push(this._cameraPosition);
             children.push(this._cameraTargetPoint);
+            this._cameraPosition.name = "Position";
+            this._cameraTargetPoint.name = "Target";
             this._cameraPosition.isVisible = this.isSelected;
             this._cameraTargetPoint.isVisible = this.isSelected;
             return children;

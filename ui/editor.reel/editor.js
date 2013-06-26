@@ -92,7 +92,10 @@ exports.Editor = Montage.create(Component, {
                 }
             }
             canvasGrid.appendMark = CanvasSplineAppendMark.create().initWithData(Vector3.create().initWithCoordinates([0, 0, 0]));
+            canvasGrid.appendMark.isHiddenInInspector = true;
+            canvasGrid.isExpanded = true;
             cross.zIndex = 2;
+            cross.isHiddenInInspector = true;
             this.camera = CanvasCamera.create().initWithData(camera);
             canvasGrid.children = [];
             canvasGrid.children.push(cross);
@@ -109,6 +112,15 @@ exports.Editor = Montage.create(Component, {
             grid.scrollingTransitionDuration =
                 this.object.getObjectProperty("scrollingTransitionDuration") ?
                 this.object.getObjectProperty("scrollingTransitionDuration") : 500;
+            grid.selectedIndexScrollingOffset =
+                this.object.getObjectProperty("selectedIndexScrollingOffset") ?
+                this.object.getObjectProperty("selectedIndexScrollingOffset") : 0;
+            grid.scrollVectorX =
+                this.object.getObjectProperty("linearScrollingVector") ?
+                this.object.getObjectProperty("linearScrollingVector")[0] : -300;
+            grid.scrollVectorY =
+                this.object.getObjectProperty("linearScrollingVector") ?
+                this.object.getObjectProperty("linearScrollingVector")[1] : 0;
             for (j = 0; j < paths.length; j++) {
                 if (!specialPaths[j]) {
                     shape = FlowSpline.create().init();
@@ -219,6 +231,9 @@ exports.Editor = Montage.create(Component, {
             hasSelectedIndexScrolling: true,
             scrollingTransitionDuration: true,
             scrollingTransitionTimingFunction: true,
+            selectedIndexScrollingOffset: true,
+            scrollVectorX: true,
+            scrollVectorY: true,
             paths: true,
             cameraPosition: true,
             cameraTargetPoint: true,
@@ -292,7 +307,12 @@ exports.Editor = Montage.create(Component, {
             this._objectProperties.isSelectionEnabled = this.viewport.scene._data.isSelectionEnabled;
             this._objectProperties.hasSelectedIndexScrolling = this.viewport.scene._data.hasSelectedIndexScrolling;
             this._objectProperties.scrollingTransitionDuration = this.viewport.scene._data.scrollingTransitionDuration;
+            this._objectProperties.selectedIndexScrollingOffset = this.viewport.scene._data.selectedIndexScrollingOffset;
             this._objectProperties.scrollingTransitionTimingFunction = this.viewport.scene._data.scrollingTransitionTimingFunction;
+            this._objectProperties.linearScrollingVector = [
+                this.viewport.scene._data.scrollVectorX,
+                this.viewport.scene._data.scrollVectorY
+            ];
             for (j = 0; j < this.viewport.scene.children.length; j++) {
                 shape = this.viewport.scene.children[j].data;
                 if ((shape.type === "FlowSpline") || (shape.type === "FlowHelix")) {

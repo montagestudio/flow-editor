@@ -431,6 +431,55 @@ exports.CanvasShape = Montage.create(Target, {
                 vY + t * (wY - vY)
             );
         }
+    },
+
+    getRecursiveAxisAlignedBoundaries: {
+        value: function () {
+            if (this.isVisible) {
+                var children = this.children,
+                    length = children.length,
+                    axisAlignedBoundaries,
+                    iBoundaries,
+                    result,
+                    i;
+
+                axisAlignedBoundaries = this._data.axisAlignedBoundaries;
+                if (!axisAlignedBoundaries) {
+                    axisAlignedBoundaries = [
+                        {min: Infinity, max: -Infinity},
+                        {min: Infinity, max: -Infinity},
+                        {min: Infinity, max: -Infinity}
+                    ];
+                }
+                if (length) {
+                    for (i = 0; i < length; i++) {
+                        iBoundaries = children[i].getRecursiveAxisAlignedBoundaries();
+                        if (iBoundaries) {
+                            if (iBoundaries[0].min < axisAlignedBoundaries[0].min) {
+                                axisAlignedBoundaries[0].min = iBoundaries[0].min;
+                            }
+                            if (iBoundaries[1].min < axisAlignedBoundaries[1].min) {
+                                axisAlignedBoundaries[1].min = iBoundaries[1].min;
+                            }
+                            if (iBoundaries[2].min < axisAlignedBoundaries[2].min) {
+                                axisAlignedBoundaries[2].min = iBoundaries[2].min;
+                            }
+                            if (iBoundaries[0].max > axisAlignedBoundaries[0].max) {
+                                axisAlignedBoundaries[0].max = iBoundaries[0].max;
+                            }
+                            if (iBoundaries[1].max > axisAlignedBoundaries[1].max) {
+                                axisAlignedBoundaries[1].max = iBoundaries[1].max;
+                            }
+                            if (iBoundaries[2].max > axisAlignedBoundaries[2].max) {
+                                axisAlignedBoundaries[2].max = iBoundaries[2].max;
+                            }
+                        }
+                    }
+                }
+                return axisAlignedBoundaries;
+            }
+            return null;
+        }
     }
 
 });
