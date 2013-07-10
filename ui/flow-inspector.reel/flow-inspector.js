@@ -29,6 +29,7 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
             this._scene = value;
             if (value) {
                 this._scene._data.addEventListener("selectionChange", this, false);
+                this._scene._data.addEventListener("sceneChange", this, false);
             }
         }
     },
@@ -43,6 +44,12 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
 
     selection: {
         value: null
+    },
+
+    handleSceneChange: {
+        value: function () {
+            this.handleSelectionChange();
+        }
     },
 
     handleSelectionChange: {

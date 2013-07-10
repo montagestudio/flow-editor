@@ -8,34 +8,14 @@ var Camera = exports.Camera = Montage.create(MapReducible, {
 
     type: {
         value: "FlowCamera"
-    },
+    }
 
-    cameraPosition: {
-        value: [0, 0, 800]
-    },
+});
 
-    cameraTargetPoint: {
-        value: [0, 0, 0]
-    },
+exports.CanvasCamera = Montage.create(CanvasShape, {
 
-    cameraFov: {
-        value: 50
-    },
-
-    translate: {
-        value: function (offsetsArray) {
-            this.cameraPosition = [
-                this.cameraPosition[0] + offsetsArray[0],
-                this.cameraPosition[1] + offsetsArray[1],
-                this.cameraPosition[2] + offsetsArray[2]
-            ];
-            this.cameraTargetPoint = [
-                this.cameraTargetPoint[0] + offsetsArray[0],
-                this.cameraTargetPoint[1] + offsetsArray[1],
-                this.cameraTargetPoint[2] + offsetsArray[2]
-            ];
-            this.dispatchEventNamed("cameraChange", true, true);
-        }
+    name: {
+        value: "Camera"
     },
 
     axisAlignedBoundaries: {
@@ -55,47 +35,44 @@ var Camera = exports.Camera = Montage.create(MapReducible, {
                 }
             ];
         }
-    }
-
-});
-
-exports.CanvasCamera = Montage.create(CanvasShape, {
-
-    name: {
-        value: "Camera"
     },
 
-    constructor: {
-        value: function () {
-            CanvasShape.constructor.call(this);
-            this.defineBindings({
-                "cameraPosition": {
-                    "<->": "data.cameraPosition",
-                    source: this
-                },
-                "cameraTargetPoint": {
-                    "<->": "data.cameraTargetPoint",
-                    source: this
-                },
-                "cameraFov": {
-                    "<->": "data.cameraFov",
-                    source: this
-                }
-            });
+    translate: {
+        value: function (offsetsArray) {
+            this.cameraPosition = [
+                this.cameraPosition[0] + offsetsArray[0],
+                this.cameraPosition[1] + offsetsArray[1],
+                this.cameraPosition[2] + offsetsArray[2]
+            ];
+            this.cameraTargetPoint = [
+                this.cameraTargetPoint[0] + offsetsArray[0],
+                this.cameraTargetPoint[1] + offsetsArray[1],
+                this.cameraTargetPoint[2] + offsetsArray[2]
+            ];
+            this.dispatchEventNamed("cameraChange", true, true);
         }
     },
 
-    children: {
+    isSelected: {
         get: function () {
-            var children = [];
-
-            children.push(this._cameraPosition);
-            children.push(this._cameraTargetPoint);
-            this._cameraPosition.name = "Position";
-            this._cameraTargetPoint.name = "Target";
-            this._cameraPosition.isVisible = this.isSelected;
-            this._cameraTargetPoint.isVisible = this.isSelected;
-            return children;
+            if (this._data) {
+                if (typeof this._data._isSelected !== "undefined") {
+                    return this._data._isSelected;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        },
+        set: function (value) {
+            if (this._data && (this._data._isSelected !== value) && this._data.dispatchEventIfNeeded) {
+                this._data._isSelected = value;
+                this._data.dispatchEventIfNeeded("selectionChange");
+                this._cameraPosition.isVisible = value;
+                this._cameraTargetPoint.isVisible = value;
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -112,13 +89,27 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
             }
         },
         set: function (value) {
-            var vector = Vector3.create();
+            if (!this._cameraPosition) {
+                if (value) {
+                    var vector = Vector3.create().init();
 
-            vector._data = value;
-            this._cameraPosition = CanvasVector3.create().initWithData(vector);
-            vector.nextTarget = this._data;
-            this._cameraPosition.color = this.selectedColor;
-            this.needsDraw = true;
+                    vector.x = value[0];
+                    vector.y = value[1];
+                    vector.z = value[2];
+                    this._cameraPosition = CanvasVector3.create().initWithData(vector);
+                    this.appendChild(this._cameraPosition);
+                    vector.nextTarget = this._data;
+                    this._cameraPosition.color = this.selectedColor;
+                    this._cameraPosition.name = "Position";
+                }
+            } else {
+                this._cameraPosition._data.x = value[0];
+                this._cameraPosition._data.y = value[1];
+                this._cameraPosition._data.z = value[2];
+            }
+            if (this._data) {
+                this._data.dispatchEventIfNeeded("cameraChange");
+            }
         }
     },
 
@@ -135,13 +126,27 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
             }
         },
         set: function (value) {
-            var vector = Vector3.create();
+            if (!this._cameraTargetPoint) {
+                if (value) {
+                    var vector = Vector3.create().init();
 
-            vector._data = value;
-            this._cameraTargetPoint = CanvasVector3.create().initWithData(vector);
-            this._cameraTargetPoint.color = this.selectedColor;
-            vector.nextTarget = this._data;
-            this.needsDraw = true;
+                    vector.x = value[0];
+                    vector.y = value[1];
+                    vector.z = value[2];
+                    this._cameraTargetPoint = CanvasVector3.create().initWithData(vector);
+                    this.appendChild(this._cameraTargetPoint);
+                    vector.nextTarget = this._data;
+                    this._cameraTargetPoint.name = "Target";
+                    this._cameraTargetPoint.color = this.selectedColor;
+                }
+            } else {
+                this._cameraTargetPoint._data.x = value[0];
+                this._cameraTargetPoint._data.y = value[1];
+                this._cameraTargetPoint._data.z = value[2];
+            }
+            if (this._data) {
+                this._data.dispatchEventIfNeeded("cameraChange");
+            }
         }
     },
 
@@ -156,7 +161,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
         set: function (value) {
             this._cameraFov = value;
             if (this._data) {
-                this._data.dispatchEventNamed("cameraChange", true, true);
+                this._data.dispatchEventIfNeeded("cameraChange");
             }
             this.needsDraw = true;
         }

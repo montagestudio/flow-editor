@@ -40,6 +40,9 @@ exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# 
                     return result;
                 },
                 editingDocument: {
+                    undoManager: {
+                        register: function () {}
+                    },
                     getOwnedObjectProperties: function (proxy, values) {
                         return proxy.getObjectProperties(values);
                     },

@@ -155,6 +155,13 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
         }
     },
 
+    appendCamera: {
+        value: function (canvasFlowCamera) {
+            this._data.pushShape(canvasFlowCamera._data);
+            this.appendChild(canvasFlowCamera);
+        }
+    },
+
     appendFlowSpline: {
         value: function (flowSpline) {
             var canvasFlowSpline = CanvasFlowSpline.create().initWithData(flowSpline);
@@ -165,11 +172,42 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
         }
     },
 
+    insertFlowSpline: {
+        value: function (flowSpline, position) {
+            var canvasFlowSpline = CanvasFlowSpline.create().initWithData(flowSpline);
+
+            this._data.insertShape(flowSpline, position);
+            this.insertChild(canvasFlowSpline, position);
+            return canvasFlowSpline;
+        }
+    },
+
+    removeCanvasFlowSpline: {
+        value: function (canvasFlowSpline) {
+            this._data.removeShape(canvasFlowSpline._data);
+            canvasFlowSpline.delete();
+        }
+    },
+
     // TODO: remove this and create appendFlowHelix in the same way as appendFlowSpline
     appendCanvasFlowHelix: {
         value: function (canvasFlowHelix) {
             this._data.pushShape(canvasFlowHelix._data);
             this.appendChild(canvasFlowHelix);
+        }
+    },
+
+    insertCanvasFlowHelix: {
+        value: function (canvasFlowHelix, position) {
+            this._data.insertShape(canvasFlowHelix._data, position);
+            this.insertChild(canvasFlowHelix, position);
+        }
+    },
+
+    removeCanvasFlowHelix: {
+        value: function (canvasFlowHelix) {
+            this._data.removeShape(canvasFlowHelix._data);
+            canvasFlowHelix.delete();
         }
     },
 

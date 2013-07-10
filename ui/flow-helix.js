@@ -9,7 +9,6 @@ var Montage = require("montage").Montage,
     BezierCurve = require("ui/pen-tool-math").BezierCurve;
 
 var FlowHelix = exports.FlowHelix = Montage.create(FlowSpline, {
-
     type: {
         value: "FlowHelix"
     }
@@ -161,12 +160,6 @@ exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
         },
         set: function (value) {
             this._data = value;
-        }
-    },
-
-    children: {
-        get: function () {
-            return [];
         }
     }
 

@@ -54,11 +54,11 @@ exports.Viewport = Montage.create(Component, {
         },
         set: function (value) {
             if (this._selectedTool && this._selectedTool.stop) {
-                this._selectedTool.stop(this);
+                this._selectedTool.stop(this, this.editor);
             }
             this._selectedTool = value;
             if (this._selectedTool && this._selectedTool.start) {
-                this._selectedTool.start(this);
+                this._selectedTool.start(this, this.editor);
             }
         }
     },
@@ -191,9 +191,9 @@ exports.Viewport = Montage.create(Component, {
     handleMousedown: {
         value: function (event) {
             if (this._selectedTool) {
-                this.editor.sceneWillChange();
+                //this.editor.sceneWillChange();
                 if (this._selectedTool.handleMousedown) {
-                    this._selectedTool.handleMousedown(event, this);
+                    this._selectedTool.handleMousedown(event, this, this.editor);
                 }
                 document.addEventListener("mousemove", this, false);
                 document.addEventListener("mouseup", this, false);
@@ -206,7 +206,7 @@ exports.Viewport = Montage.create(Component, {
         value: function (event) {
             if (this._selectedTool) {
                 if (this._selectedTool.handleMousemove) {
-                    this._selectedTool.handleMousemove(event, this);
+                    this._selectedTool.handleMousemove(event, this, this.editor);
                 }
             }
         }
@@ -216,12 +216,12 @@ exports.Viewport = Montage.create(Component, {
         value: function (event) {
             if (this._selectedTool) {
                 if (this._selectedTool.handleMouseup) {
-                    this._selectedTool.handleMouseup(event, this);
+                    this._selectedTool.handleMouseup(event, this, this.editor);
                 }
             }
             document.removeEventListener("mousemove", this, false);
             document.removeEventListener("mouseup", this, false);
-            this.editor.sceneDidChange();
+            //this.editor.sceneDidChange();
         }
     },
 
