@@ -100,12 +100,8 @@ exports.FlowSplineInspector = Montage.create(Component, /** @lends module:"ui/fl
 
     handleDeleteAction: {
         value: function () {
-            var path = this.scene.findPathToNode(this.spline),
-                parent = path[path.length - 1],
-                index = parent.hasChild(this.spline)[0];
-
             this.editor.sceneWillChange();
-            parent.deleteChild(index);
+            this.scene.removeCanvasFlowSpline(this.spline);
             this.editor.sceneDidChange();
         }
     }

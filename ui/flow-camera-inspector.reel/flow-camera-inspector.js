@@ -45,7 +45,7 @@ exports.FlowCameraInspector = Montage.create(Component, /** @lends module:"ui/fl
 
             this._x = value;
             if (this.camera && dX) {
-                this.camera._data.translate([dX, 0, 0]);
+                this.camera.translate([dX, 0, 0]);
             }
         }
     },
@@ -65,7 +65,7 @@ exports.FlowCameraInspector = Montage.create(Component, /** @lends module:"ui/fl
 
             this._y= value;
             if (this.camera && dY) {
-                this.camera._data.translate([0, dY, 0]);
+                this.camera.translate([0, dY, 0]);
             }
         }
     },
@@ -85,7 +85,7 @@ exports.FlowCameraInspector = Montage.create(Component, /** @lends module:"ui/fl
 
             this._z = value;
             if (this.camera && dZ) {
-                this.camera._data.translate([0, 0, dZ]);
+                this.camera.translate([0, 0, dZ]);
             }
         }
     }

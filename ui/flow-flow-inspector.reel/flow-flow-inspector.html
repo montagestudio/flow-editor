@@ -24,7 +24,7 @@
                 "element": {"#": "selectionEnabled"}
             },
             "bindings": {
-                "checked": {"<->": "@owner.isSelectionEnabled"}
+                "checked": {"<->": "@owner.isSelectionEnabledInput"}
             }
         },
         "scrollIntoView": {
@@ -33,7 +33,7 @@
                 "element": {"#": "scrollIntoView"}
             },
             "bindings": {
-                "checked": {"<->": "@owner.hasSelectedIndexScrolling"}
+                "checked": {"<->": "@owner.hasSelectedIndexScrollingInput"}
             }
         },
         "offset": {
@@ -42,7 +42,7 @@
                 "element": {"#": "offset"}
             },
             "bindings": {
-                "value": {"<->": "@owner.offset"},
+                "value": {"<->": "@owner.offsetInput"},
                 "editor": {"<-": "@owner.editor"}
             }
         },
@@ -52,7 +52,7 @@
                 "element": {"#": "duration"}
             },
             "bindings": {
-                "value": {"<->": "@owner.duration"},
+                "value": {"<->": "@owner.durationInput"},
                 "editor": {"<-": "@owner.editor"}
             }
         },
@@ -84,7 +84,7 @@
                 ]
             },
             "bindings": {
-                "value": {"<->": "@owner.scrollingTransitionTimingFunction"}
+                "value": {"<->": "@owner.scrollingTransitionTimingFunctionInput"}
             }
         },
         "scrollVectorX": {
@@ -93,7 +93,7 @@
                 "element": {"#": "scrollVectorX"}
             },
             "bindings": {
-                "value": {"<->": "@owner.scrollVectorX"},
+                "value": {"<->": "@owner.scrollVectorXInput"},
                 "editor": {"<-": "@owner.editor"}
             }
         },
@@ -103,7 +103,7 @@
                 "element": {"#": "scrollVectorY"}
             },
             "bindings": {
-                "value": {"<->": "@owner.scrollVectorY"},
+                "value": {"<->": "@owner.scrollVectorYInput"},
                 "editor": {"<-": "@owner.editor"}
             }
         }

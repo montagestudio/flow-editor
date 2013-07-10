@@ -17,13 +17,13 @@ exports.FlowHelixInspector = Montage.create(Component, {
 
     helix: {
         get: function () {
-            return this._knot;
+            return this._helix;
         },
         set: function (value) {
             if (value && (value._data.type === "FlowHelix")) {
-                this._knot = value;
+                this._helix = value;
             } else {
-                this._knot = null;
+                this._helix = null;
             }
         }
     },
@@ -37,13 +37,13 @@ exports.FlowHelixInspector = Montage.create(Component, {
             return this._x;
         },
         set: function (value) {
-            if (!this.knot) return 0;
+            if (!this._helix) return 0;
 
-            var dX = value - this.knot._data.x;
+            var dX = value - this._helix._data.x;
 
             this._x = value;
-            if (this.knot && dX) {
-                this.knot.translate([dX, 0, 0]);
+            if (this._helix && dX) {
+                this._helix.translate([dX, 0, 0]);
             }
         }
     },
@@ -57,13 +57,13 @@ exports.FlowHelixInspector = Montage.create(Component, {
             return this._y;
         },
         set: function (value) {
-            if (!this.knot) return 0;
+            if (!this._helix) return 0;
 
-            var dY = value - this.knot._data.y;
+            var dY = value - this._helix._data.y;
 
             this._y = value;
-            if (this.knot && dY) {
-                this.knot.translate([0, dY, 0]);
+            if (this._helix && dY) {
+                this._helix.translate([0, dY, 0]);
             }
         }
     },
@@ -77,13 +77,13 @@ exports.FlowHelixInspector = Montage.create(Component, {
             return this._z;
         },
         set: function (value) {
-            if (!this.knot) return 0;
+            if (!this._helix) return 0;
 
-            var dZ = value - this.knot._data.z;
+            var dZ = value - this._helix._data.z;
 
             this._z = value;
-            if (this.knot && dZ) {
-                this.knot.translate([0, 0, dZ]);
+            if (this._helix && dZ) {
+                this._helix.translate([0, 0, dZ]);
             }
         }
     },
@@ -168,12 +168,8 @@ exports.FlowHelixInspector = Montage.create(Component, {
 
     handleDeleteAction: {
         value: function () {
-            var path = this.scene.findPathToNode(this.helix),
-                parent = path[path.length - 1],
-                index = parent.hasChild(this.helix)[0];
-
             this.editor.sceneWillChange();
-            parent.deleteChild(index);
+            this.scene.removeCanvasFlowHelix(this.helix);
             this.editor.sceneDidChange();
         }
     }

@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Target = require("montage/core/target").Target;
 
-exports.CanvasShape = Montage.create(Target, {
+var CanvasShape = exports.CanvasShape = Montage.create(Target, {
 
     type: {
         get: function () {
@@ -13,8 +13,99 @@ exports.CanvasShape = Montage.create(Target, {
         }
     },
 
+    parent: {
+        value: null
+    },
+
+    _idCounter: {
+        value: 0
+    },
+
+    _idHash: {
+        value: {}
+    },
+
+    getShapeById: {
+        value: function (id) {
+            return CanvasShape._idHash[id];
+        }
+    },
+
+    _deleteShapeById: {
+        value: function (id) {
+            var shape = this.getShapeById(id),
+                length,
+                i;
+
+            if (shape) {
+                if (shape.children) {
+                    while (shape.children[0]) {
+                        shape._deleteShapeById(shape.children[0].id);
+                    }
+                }
+                if (shape.parent) {
+                    length = shape.parent.children.length;
+                    i = 0;
+                    while ((i < length) && (shape.parent.children[i] !== shape)) {
+                        i++;
+                    }
+                    if (i < length) {
+                        shape.parent.children.splice(i, 1);
+                    }
+                }
+                delete CanvasShape._idHash[id];
+            }
+        }
+    },
+
+    deleteShapeById: {
+        value: function (id) {
+            this._deleteShapeById(id);
+            this._data.dispatchEventIfNeeded("sceneChange");
+            this._data.dispatchEventIfNeeded("selectionChange");
+        }
+    },
+
+    deleteChild: {
+        value: function (index) {
+            this.deleteShapeById(this.children[index].id);
+        }
+    },
+
+    delete: {
+        value: function () {
+            this.deleteShapeById(this.id);
+        }
+    },
+
+    id: {
+        get: function () {
+            return this._id;
+        },
+        set: function (value) {
+            var temp = this.getShapeById(value),
+                previousId = this._id;
+
+            if (value !== previousId) {
+                delete CanvasShape._idHash[this._id];
+                this._id = value;
+                CanvasShape._idHash[this._id] = this;
+                if (temp) {
+                    temp._id = previousId;
+                    CanvasShape._idHash[previousId] = temp;
+                }
+            }
+        }
+    },
+
     constructor: {
         value: function () {
+            while (CanvasShape._idHash[CanvasShape._idCounter]) {
+                CanvasShape._idCounter++;
+            }
+            this._id = CanvasShape._idCounter;
+            CanvasShape._idHash[this._id] = this;
+            CanvasShape._idCounter++;
             this.children = [];
         }
     },
@@ -26,8 +117,19 @@ exports.CanvasShape = Montage.create(Target, {
     appendChild: {
         value: function (canvasShape) {
             this.children.push(canvasShape);
+            canvasShape.parent = this;
             if (this._data) {
-                this._data.dispatchEventNamed("sceneChange");
+                this._data.dispatchEventIfNeeded("sceneChange");
+            }
+        }
+    },
+
+    insertChild: {
+        value: function (canvasShape, position) {
+            this.children.splice(position, 0, canvasShape);
+            canvasShape.parent = this;
+            if (this._data) {
+                this._data.dispatchEventIfNeeded("sceneChange");
             }
         }
     },
@@ -35,17 +137,10 @@ exports.CanvasShape = Montage.create(Target, {
     insertChildAtStart: {
         value: function (canvasShape) {
             this.children.splice(0, 0, canvasShape);
+            canvasShape.parent = this;
             if (this._data) {
-                this._data.dispatchEventNamed("sceneChange");
+                this._data.dispatchEventIfNeeded("sceneChange");
             }
-        }
-    },
-
-    deleteChild: {
-        value: function (index) {
-            this.children.splice(index, 1);
-            this._data.dispatchEventNamed("sceneChange", true, true);
-            this._data.dispatchEventNamed("selectionChange", true, true);
         }
     },
 
@@ -374,8 +469,8 @@ exports.CanvasShape = Montage.create(Target, {
         set: function (value) {
             if (this._isVisible !== value) {
                 this._isVisible = value;
-                if (this._data && this._data.dispatchEventNamed) {
-                    this._data.dispatchEventNamed("visibilityChange", true, true);
+                if (this._data && this._data.dispatchEventIfNeeded) {
+                    this._data.dispatchEventIfNeeded("visibilityChange");
                 }
                 this.needsDraw = true;
             }
@@ -443,7 +538,7 @@ exports.CanvasShape = Montage.create(Target, {
                     result,
                     i;
 
-                axisAlignedBoundaries = this._data.axisAlignedBoundaries;
+                axisAlignedBoundaries = this.axisAlignedBoundaries ? this.axisAlignedBoundaries : this._data.axisAlignedBoundaries;
                 if (!axisAlignedBoundaries) {
                     axisAlignedBoundaries = [
                         {min: Infinity, max: -Infinity},

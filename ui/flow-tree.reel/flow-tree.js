@@ -15,6 +15,7 @@ exports.FlowTree = Montage.create(Component, {
             this._scene = value;
             if (value) {
                 this._scene._data.addEventListener("selectionChange", this, false);
+                this._scene._data.addEventListener("sceneChange", this, false);
             }
             this.needsDraw = true;
         }
@@ -106,6 +107,12 @@ exports.FlowTree = Montage.create(Component, {
         }
     },
 
+    handleSceneChange: {
+        value: function () {
+            this.needsDraw = true;
+        }
+    },
+
     willDraw: {
         value: function () {
             this._width = this.element.offsetWidth;
@@ -147,13 +154,11 @@ exports.FlowTree = Montage.create(Component, {
             } else {
                 switch (node._data.type) {
                     case "FlowSpline":
-                        this._splineCounter++;
-                        node.name = "Spline " + this._splineCounter;
+                        node.name = "Spline";
                         label.textContent = node.name;
                         break;
                     case "FlowHelix":
-                        this._helixCounter++;
-                        node.name = "Helix " + this._helixCounter;
+                        node.name = "Helix";
                         label.textContent = node.name;
                         break;
                     case "Vector3":
@@ -199,11 +204,12 @@ exports.FlowTree = Montage.create(Component, {
                 }, false);
             }
             label.addEventListener("mousedown", function (event) {
-                var path = self.viewport.findPathToNode(node);
+                var path = node;
+
                 self.viewport.unselect();
-                for (i = 0; i < path.length; i++) {
-                    path[i].isSelected = true;
-                }
+                do {
+                    path.isSelected = true;
+                } while (path = path.parent);
             }, false);
         }
     },

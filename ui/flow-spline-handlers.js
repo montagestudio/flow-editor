@@ -108,6 +108,12 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
         }
     },
 
+    knot: {
+        get: function () {
+            return this._data;
+        }
+    },
+
     isFirstKnotOf: {
         value: function (spline) {
             var firstKnot = spline.firstKnot;
