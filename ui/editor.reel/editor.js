@@ -272,11 +272,13 @@ exports.Editor = Montage.create(Component, {
                                     spline.knots[i].knotPosition[1],
                                     spline.knots[i].knotPosition[2]
                                 ]));
-                                canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
-                                    spline.knots[i].nextHandlerPosition[0],
-                                    spline.knots[i].nextHandlerPosition[1],
-                                    spline.knots[i].nextHandlerPosition[2]
-                                ]));
+                                if (spline.knots[i].nextHandlerPosition) {
+                                    canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
+                                        spline.knots[i].nextHandlerPosition[0],
+                                        spline.knots[i].nextHandlerPosition[1],
+                                        spline.knots[i].nextHandlerPosition[2]
+                                    ]));
+                                }
                                 for (k in spline.units) {
                                     if (typeof spline.knots[i][k] !== "undefined") {
                                         knot[k] = spline.knots[i][k];
