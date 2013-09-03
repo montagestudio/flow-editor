@@ -67,7 +67,7 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
     },
 
     isInspectorVisible: {
-        value: true
+        value: false
     },
 
     handleInspectorButtonAction: {
@@ -77,7 +77,7 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
     },
 
     isTreeVisible: {
-        value: true
+        value: false
     },
 
     handleTreeButtonAction: {
