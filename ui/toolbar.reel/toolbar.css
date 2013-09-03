@@ -60,10 +60,15 @@ POSSIBILITY OF SUCH DAMAGE.
     background-position: -224px 0;
     width: 32px;
     height: 32px;
-    opacity: .35;
+    opacity: .5;
+}
+.flow-Editor-Toolbar-Button--selected {
+    border-left: 1px solid #16e;
+    border-right: 1px solid #13b;
+    background: -webkit-gradient(linear, left top, left bottom, from(#16e), to(#14c));
 }
 .flow-Editor-Toolbar-Button--selected:after {
-    opacity: .85;
+    opacity: 1;
 }
 .flow-Editor-Toolbar-Button-Convert:after {
     background-position: -288px 0;
