@@ -162,7 +162,7 @@ exports.FlowTree = Montage.create(Component, {
                         label.textContent = node.name;
                         break;
                     case "Vector3":
-                        label.textContent = "Handler";
+                        label.textContent = "Handle";
                         break;
                     default:
                         label.textContent = node._data.type;
