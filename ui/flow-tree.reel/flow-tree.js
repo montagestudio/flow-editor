@@ -174,7 +174,7 @@ exports.FlowTree = Montage.create(Component, {
             for (i = 0; i < length; i++) {
                 if (!node.children[i].isHiddenInInspector) {
                     if (node.type === "FlowSpline") {
-                        node.children[i].name = "Anchor " + (i + 1);
+                        node.children[i].name = "Control Point " + (i + 1);
                     }
                     if (!list) {
                         list = document.createElement("ul");

@@ -59,7 +59,7 @@ exports.FlowInspector = Montage.create(Component, /** @lends module:"ui/flow-ins
             if (this.selection) {
                 switch (this.type) {
                     case "FlowKnot":
-                        this.titleText = "Anchor";
+                        this.titleText = "Control Point";
                         break;
                     case "FlowSpline":
                         this.titleText = "Spline";
