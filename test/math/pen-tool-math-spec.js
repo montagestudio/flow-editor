@@ -1760,7 +1760,7 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             expect(result[1].max).toBeCloseTo(50, 3);
         });
         it("should return expected value when a curve is not complete", function() {
-            bezierCurve3 = new BezierCurve().init();
+            var bezierCurve3 = new BezierCurve().init();
             bezierCurve3.pushControlPoint(new Vector().initWithCoordinates([100, 100]));
             bezierSpline.pushBezierCurve(bezierCurve3);
 

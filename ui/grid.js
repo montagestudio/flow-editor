@@ -281,7 +281,9 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
                 width = this.canvas.width,
                 height = this.canvas.height,
                 step = 100,
-                i = 0;
+                i = 0,
+                scale,
+                xEnd;
 
             while (!transformMatrix[indices[i]]) {
                 i++;

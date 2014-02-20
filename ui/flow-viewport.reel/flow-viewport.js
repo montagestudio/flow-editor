@@ -45,13 +45,6 @@ exports.FlowViewport = Montage.create(Viewport, {
         }
     },
 
-    findSelectedChild: {
-        value: function (x, y) {
-            // TODO: rename to findCloserVisibleLeaf
-            return this.scene.findSelectedLeaf(x, y, this.matrix);
-        }
-    },
-
     enterDocument: {
         value: function (firstTime) {
             Viewport.enterDocument.call(this);

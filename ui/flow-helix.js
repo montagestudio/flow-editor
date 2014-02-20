@@ -121,7 +121,8 @@ exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
                 radius = this._radius,
                 bezierHandlerLength = 0.130976446,
                 angle, point, tangent,
-                angle2, point2, tangent2;
+                angle2, point2, tangent2,
+                shape;
 
             if (this._shape) {
                 shape = this._shape;

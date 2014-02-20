@@ -203,9 +203,9 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
                             this.data.z * 2 - this._previousHandler.z
                         ];
                     }
-                break;
+                    break;
                 case "smooth":
-                break;
+                    break;
             }
             this._data.dispatchEventNamed("vectorChange", true, true);
         }

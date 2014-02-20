@@ -1268,10 +1268,11 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
         value: function () {
             var order = this.order,
                 length = order >> 1,
-                i;
+                i,
+                tmp;
 
             for (i = 0; i <= length; i++) {
-                tmp = this.getControlPoint(i),
+                tmp = this.getControlPoint(i);
                 this.setControlPoint(i, this.getControlPoint(order - i));
                 this.setControlPoint(order - i, tmp);
             }
@@ -1538,8 +1539,8 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
                     curves = [this.clone()];
                     for (i = 0; i < curves.length; i++) {
                         iBoundaries = curves[i].softAxisAlignedBoundaries;
-                        if (iBoundaries[k].max > boundaries[k].max +.001) {
-                            if (iBoundaries[k].min > boundaries[k].max +.001) {
+                        if (iBoundaries[k].max > boundaries[k].max + 0.001) {
+                            if (iBoundaries[k].min > boundaries[k].max + 0.001) {
                                 boundaries[k].max = iBoundaries[k].min;
                             }
                             if (rightSide = curves[i].split(0.5)) {
@@ -2055,7 +2056,7 @@ var BezierSpline = exports.BezierSpline = MapReducible.specialize({
                 vector: best.vector,
                 index: bestIndex,
                 t: best.t
-            }
+            };
         }
     },
 
@@ -2082,7 +2083,10 @@ var BezierSpline = exports.BezierSpline = MapReducible.specialize({
     transformMatrix3d: {
         value: function (matrix) {
             var length = this._data.length,
-                i;
+                i,
+                j,
+                start,
+                curveLength;
 
             for (i = 0; i < length; i++) {
                 curveLength = this._data[i].length;
