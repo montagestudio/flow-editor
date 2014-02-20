@@ -1,9 +1,9 @@
 var Montage = require("montage").Montage,
-    Vector = require("flow-editor/ui/pen-tool-math").Vector,
-    Vector2 = require("flow-editor/ui/pen-tool-math").Vector2,
-    Vector3 = require("flow-editor/ui/pen-tool-math").Vector3,
-    BezierCurve = require("flow-editor/ui/pen-tool-math").BezierCurve,
-    BezierSpline = require("flow-editor/ui/pen-tool-math").BezierSpline;
+    Vector = require("ui/pen-tool-math").Vector,
+    Vector2 = require("ui/pen-tool-math").Vector2,
+    Vector3 = require("ui/pen-tool-math").Vector3,
+    BezierCurve = require("ui/pen-tool-math").BezierCurve,
+    BezierSpline = require("ui/pen-tool-math").BezierSpline;
 
 /* Vector spec */
 
@@ -11,7 +11,7 @@ describe("pen-tool-math Vector-spec", function() {
     describe("initialization", function() {
         describe("using init", function() {
             it("dimensions should be defined", function() {
-                var vector = Vector.create().init();
+                var vector = new Vector().init();
 
                 expect(vector.dimensions).toBeDefined();
                 // note the value of dimensions after init is not part of Vector's spec
@@ -22,7 +22,7 @@ describe("pen-tool-math Vector-spec", function() {
                 coordinates = [1, 2, 3];
 
             beforeEach(function() {
-                vector = Vector.create().initWithCoordinates(coordinates);
+                vector = new Vector().initWithCoordinates(coordinates);
             });
             it("should return expected dimensions", function() {
                 expect(vector.dimensions).toEqual(3);
@@ -43,7 +43,7 @@ describe("pen-tool-math Vector-spec", function() {
         });
         describe("using init and setCoordinates", function() {
             it("should define expected coordinates", function() {
-                var vector = Vector.create().init();
+                var vector = new Vector().init();
 
                 vector.setCoordinates([1, 2, 3]);
                 expect(vector.getCoordinate(0)).toEqual(1);
@@ -54,14 +54,14 @@ describe("pen-tool-math Vector-spec", function() {
     });
     describe("magnitude", function() {
         it("should return expected value", function() {
-            var vector = Vector.create().initWithCoordinates([5, 6, 7]);
+            var vector = new Vector().initWithCoordinates([5, 6, 7]);
 
             expect(vector.magnitude).toBeCloseTo(10.4880884, 6);
         });
     });
     describe("changing coordinates separetely", function() {
         it("should return expected value", function() {
-            var vector = Vector.create().initWithCoordinates([0, 0, 0, 0]);
+            var vector = new Vector().initWithCoordinates([0, 0, 0, 0]);
 
             vector.x = 1;
             vector.y = 2;
@@ -70,7 +70,7 @@ describe("pen-tool-math Vector-spec", function() {
             expect(vector._data).toEqual([1, 2, 3, 4]);
         });
         it("setCoordinate should return this", function() {
-            var vector = Vector.create().initWithCoordinates([0, 0, 0, 0]);
+            var vector = new Vector().initWithCoordinates([0, 0, 0, 0]);
 
             vector.x = 1;
             vector.y = 2;
@@ -82,8 +82,8 @@ describe("pen-tool-math Vector-spec", function() {
         var vector, vector2;
 
         beforeEach(function() {
-            vector = Vector.create().initWithCoordinates([2, 4, 6]);
-            vector2 = Vector.create().initWithCoordinates([1, 2, 3]);
+            vector = new Vector().initWithCoordinates([2, 4, 6]);
+            vector2 = new Vector().initWithCoordinates([1, 2, 3]);
         });
         describe("normalize", function() {
             it("should define expected coordinates", function() {
@@ -176,8 +176,8 @@ describe("pen-tool-math Vector-spec", function() {
     });
     describe("dot product", function() {
         it("should return expected value", function() {
-            var vector = Vector.create().initWithCoordinates([2, 4, 6]),
-                vector2 = Vector.create().initWithCoordinates([1, 2, 3]);
+            var vector = new Vector().initWithCoordinates([2, 4, 6]),
+                vector2 = new Vector().initWithCoordinates([1, 2, 3]);
 
             expect(vector.dot(vector2)).toEqual(28);
         });
@@ -186,7 +186,7 @@ describe("pen-tool-math Vector-spec", function() {
         var vector, vector2;
 
         beforeEach(function() {
-            vector = Vector.create().initWithCoordinates([1, 2, 3]);
+            vector = new Vector().initWithCoordinates([1, 2, 3]);
             vector2 = vector.clone();
         });
         it("should copy coordinates", function() {
@@ -203,8 +203,8 @@ describe("pen-tool-math Vector-spec", function() {
     describe("outOfPlaceLerp", function() {
         var vector, vector2;
 
-        vector = Vector.create().initWithCoordinates([1, 2, 3]);
-        vector2 = vector.create().initWithCoordinates([2, 3, 4]);
+        vector = new Vector().initWithCoordinates([1, 2, 3]);
+        vector2 = new Vector().initWithCoordinates([2, 3, 4]);
         it("should return expected vector", function() {
             expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25, 3.25]);
         });
@@ -215,8 +215,8 @@ describe("pen-tool-math Vector-spec", function() {
     describe("distanceTo", function() {
         var vector, vector2;
 
-        vector = Vector.create().initWithCoordinates([1, 2]);
-        vector2 = vector.create().initWithCoordinates([5, 5]);
+        vector = new Vector().initWithCoordinates([1, 2]);
+        vector2 = new Vector().initWithCoordinates([5, 5]);
         it("should return expected vector", function() {
             expect(vector.distanceTo(vector2)).toBeCloseTo(5, 6);
         });
@@ -225,7 +225,7 @@ describe("pen-tool-math Vector-spec", function() {
         var vector;
 
         beforeEach(function() {
-            vector = Vector.create().initWithCoordinates([1, 2, 3]);
+            vector = new Vector().initWithCoordinates([1, 2, 3]);
         });
         describe("every", function() {
             it("should work as expected", function() {
@@ -296,7 +296,7 @@ describe("pen-tool-math Vector2-spec", function() {
     describe("initialization", function() {
         describe("using init", function() {
             it("dimensions should be defined", function() {
-                var vector = Vector2.create().init();
+                var vector = new Vector2().init();
 
                 expect(vector.dimensions).toEqual(2);
             });
@@ -306,7 +306,7 @@ describe("pen-tool-math Vector2-spec", function() {
                 coordinates = [1, 2];
 
             beforeEach(function() {
-                vector = Vector2.create().initWithCoordinates(coordinates);
+                vector = new Vector2().initWithCoordinates(coordinates);
             });
             it("_data should be a copy of the initWithCoordinates parameter", function() {
                 expect(vector._data).not.toBe(coordinates);
@@ -322,14 +322,14 @@ describe("pen-tool-math Vector2-spec", function() {
         });
         describe("using init and setCoordinates", function() {
             it("should define expected coordinates", function() {
-                var vector = Vector2.create().init();
+                var vector = new Vector2().init();
 
                 vector.setCoordinates([1, 2]);
                 expect(vector.getCoordinate(0)).toEqual(1);
                 expect(vector.getCoordinate(1)).toEqual(2);
             });
             it("should return this", function() {
-                var vector = Vector2.create().init();
+                var vector = new Vector2().init();
 
                 expect(vector.setCoordinates([1, 2])).toBe(vector);
             });
@@ -337,14 +337,14 @@ describe("pen-tool-math Vector2-spec", function() {
     });
     describe("magnitude", function() {
         it("should return expected value", function() {
-            var vector = Vector2.create().initWithCoordinates([3, 4]);
+            var vector = new Vector2().initWithCoordinates([3, 4]);
 
             expect(vector.magnitude).toBeCloseTo(5, 6);
         });
     });
     describe("changing coordinates separetely", function() {
         it("should return expected value", function() {
-            var vector = Vector2.create().initWithCoordinates([0, 0]);
+            var vector = new Vector2().initWithCoordinates([0, 0]);
 
             vector.x = 1;
             vector.y = 2;
@@ -357,8 +357,8 @@ describe("pen-tool-math Vector2-spec", function() {
         var vector, vector2;
 
         beforeEach(function() {
-            vector = Vector2.create().initWithCoordinates([2, 4]);
-            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            vector = new Vector2().initWithCoordinates([2, 4]);
+            vector2 = new Vector2().initWithCoordinates([1, 2]);
         });
         describe("normalize", function() {
             it("should define expected coordinates", function() {
@@ -462,8 +462,8 @@ describe("pen-tool-math Vector2-spec", function() {
         });
         describe("rotate", function() {
             it("should return expected value", function() {
-                var vector = Vector2.create().initWithCoordinates([2, 4]),
-                    vector2 = Vector2.create().initWithCoordinates([1000, 600]);
+                var vector = new Vector2().initWithCoordinates([2, 4]),
+                    vector2 = new Vector2().initWithCoordinates([1000, 600]);
 
                 vector.rotate(Math.PI / 2);
                 expect(vector.x).toBeCloseTo(-4, 6);
@@ -478,7 +478,7 @@ describe("pen-tool-math Vector2-spec", function() {
         });
         describe("transformMatrix", function() {
             it("should return expected value", function() {
-                var vector = Vector2.create().initWithCoordinates([1000, 600]);
+                var vector = new Vector2().initWithCoordinates([1000, 600]);
 
                 vector.transformMatrix([.5, .2, .7, .8, 300, 140]);
                 expect(vector.x).toBeCloseTo(1220, 2);
@@ -491,8 +491,8 @@ describe("pen-tool-math Vector2-spec", function() {
     });
     describe("dot product", function() {
         it("should return expected value", function() {
-            var vector = Vector2.create().initWithCoordinates([2, 4]),
-                vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            var vector = new Vector2().initWithCoordinates([2, 4]),
+                vector2 = new Vector2().initWithCoordinates([1, 2]);
 
             expect(vector.dot(vector2)).toEqual(10);
         });
@@ -501,7 +501,7 @@ describe("pen-tool-math Vector2-spec", function() {
         var vector, vector2;
 
         beforeEach(function() {
-            vector = Vector2.create().initWithCoordinates([1, 2]);
+            vector = new Vector2().initWithCoordinates([1, 2]);
             vector2 = vector.clone();
         });
         it("should copy coordinates", function() {
@@ -517,13 +517,13 @@ describe("pen-tool-math Vector2-spec", function() {
     describe("outOfPlaceLerp", function() {
         var vector, vector2;
 
-        vector = Vector2.create().initWithCoordinates([1, 2]);
-        vector2 = Vector2.create().initWithCoordinates([2, 3]);
+        vector = new Vector2().initWithCoordinates([1, 2]);
+        vector2 = new Vector2().initWithCoordinates([2, 3]);
         it("should return expected vector", function() {
             expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25]);
         });
         it("should be an instance of Vector2", function() {
-            expect(Object.getPrototypeOf(vector.outOfPlaceLerp(vector2, .25))).toBe(Vector2);
+            expect(vector.outOfPlaceLerp(vector2, .25) instanceof Vector2).toBeTruthy();
         });
         it("should not return this", function() {
             expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
@@ -533,7 +533,7 @@ describe("pen-tool-math Vector2-spec", function() {
         var vector;
 
         beforeEach(function() {
-            vector = Vector2.create().initWithCoordinates([1, 2]);
+            vector = new Vector2().initWithCoordinates([1, 2]);
         });
         describe("every", function() {
             it("should work as expected", function() {
@@ -604,7 +604,7 @@ describe("pen-tool-math Vector3-spec", function() {
     describe("initialization", function() {
         describe("using init", function() {
             it("dimensions should be defined", function() {
-                var vector = Vector3.create().init();
+                var vector = new Vector3().init();
 
                 expect(vector.dimensions).toEqual(3);
             });
@@ -614,7 +614,7 @@ describe("pen-tool-math Vector3-spec", function() {
                 coordinates = [1, 2, 3];
 
             beforeEach(function() {
-                vector = Vector3.create().initWithCoordinates(coordinates);
+                vector = new Vector3().initWithCoordinates(coordinates);
             });
             it("_data should be a copy of the initWithCoordinates parameter", function() {
                 expect(vector._data).not.toBe(coordinates);
@@ -632,7 +632,7 @@ describe("pen-tool-math Vector3-spec", function() {
         });
         describe("using init and setCoordinates", function() {
             it("should define expected coordinates", function() {
-                var vector = Vector3.create().init();
+                var vector = new Vector3().init();
 
                 vector.setCoordinates([1, 2, 3]);
                 expect(vector.getCoordinate(0)).toEqual(1);
@@ -640,7 +640,7 @@ describe("pen-tool-math Vector3-spec", function() {
                 expect(vector.getCoordinate(2)).toEqual(3);
             });
             it("should return this", function() {
-                var vector = Vector3.create().init();
+                var vector = new Vector3().init();
 
                 expect(vector.setCoordinates([1, 2, 3])).toBe(vector);
             });
@@ -648,14 +648,14 @@ describe("pen-tool-math Vector3-spec", function() {
     });
     describe("magnitude", function() {
         it("should return expected value", function() {
-            var vector = Vector3.create().initWithCoordinates([3, 4, 5]);
+            var vector = new Vector3().initWithCoordinates([3, 4, 5]);
 
             expect(vector.magnitude).toBeCloseTo(7.071068, 6);
         });
     });
     describe("changing coordinates separetely", function() {
         it("should return expected value", function() {
-            var vector = Vector3.create().initWithCoordinates([0, 0, 0]);
+            var vector = new Vector3().initWithCoordinates([0, 0, 0]);
 
             vector.x = 1;
             vector.y = 2;
@@ -669,8 +669,8 @@ describe("pen-tool-math Vector3-spec", function() {
         var vector, vector2;
 
         beforeEach(function() {
-            vector = Vector3.create().initWithCoordinates([2, 4, 6]);
-            vector2 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            vector = new Vector3().initWithCoordinates([2, 4, 6]);
+            vector2 = new Vector3().initWithCoordinates([1, 2, 3]);
         });
         describe("normalize", function() {
             it("should define expected coordinates", function() {
@@ -801,7 +801,7 @@ describe("pen-tool-math Vector3-spec", function() {
         });
         describe("rotateX", function() {
             it("should return expected value", function() {
-                var vector = Vector3.create().initWithCoordinates([400, 1000, 600]);
+                var vector = new Vector3().initWithCoordinates([400, 1000, 600]);
 
                 vector.rotateX(.3);
                 expect(vector.y).toBeCloseTo(778.024, 3);
@@ -813,7 +813,7 @@ describe("pen-tool-math Vector3-spec", function() {
         });
         describe("rotateY", function() {
             it("should return expected value", function() {
-                var vector = Vector3.create().initWithCoordinates([1000, 400, 600]);
+                var vector = new Vector3().initWithCoordinates([1000, 400, 600]);
 
                 vector.rotateY(-.3);
                 expect(vector.x).toBeCloseTo(778.024, 3);
@@ -825,7 +825,7 @@ describe("pen-tool-math Vector3-spec", function() {
         });
         describe("rotateZ", function() {
             it("should return expected value", function() {
-                var vector = Vector3.create().initWithCoordinates([1000, 600, 400]);
+                var vector = new Vector3().initWithCoordinates([1000, 600, 400]);
 
                 vector.rotateZ(.3);
                 expect(vector.x).toBeCloseTo(778.024, 3);
@@ -837,7 +837,7 @@ describe("pen-tool-math Vector3-spec", function() {
         });
         describe("multiple rotations", function() {
             it("should return expected value", function() {
-                var vector = Vector3.create().initWithCoordinates([1000, 600, 400]);
+                var vector = new Vector3().initWithCoordinates([1000, 600, 400]);
 
                 vector.rotateX(Math.PI);
                 vector.rotateY(Math.PI);
@@ -849,7 +849,7 @@ describe("pen-tool-math Vector3-spec", function() {
         });
         describe("transformMatrix", function() {
             it("should return expected value", function() {
-                var vector = Vector3.create().initWithCoordinates([1000, 600, 123]);
+                var vector = new Vector3().initWithCoordinates([1000, 600, 123]);
 
                 vector.transformMatrix([.5, .2, .7, .8, 300, 140]);
                 expect(vector.x).toBeCloseTo(1220, 2);
@@ -924,8 +924,8 @@ describe("pen-tool-math Vector3-spec", function() {
     });
     describe("dot product", function() {
         it("should return expected value", function() {
-            var vector = Vector3.create().initWithCoordinates([2, 4, 6]),
-                vector2 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            var vector = new Vector3().initWithCoordinates([2, 4, 6]),
+                vector2 = new Vector3().initWithCoordinates([1, 2, 3]);
 
             expect(vector.dot(vector2)).toEqual(28);
         });
@@ -934,7 +934,7 @@ describe("pen-tool-math Vector3-spec", function() {
         var vector, vector2;
 
         beforeEach(function() {
-            vector = Vector3.create().initWithCoordinates([1, 2, 3]);
+            vector = new Vector3().initWithCoordinates([1, 2, 3]);
             vector2 = vector.clone();
         });
         it("should copy coordinates", function() {
@@ -951,13 +951,13 @@ describe("pen-tool-math Vector3-spec", function() {
     describe("outOfPlaceLerp", function() {
         var vector, vector2;
 
-        vector = Vector3.create().initWithCoordinates([1, 2, 3]);
-        vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
+        vector = new Vector3().initWithCoordinates([1, 2, 3]);
+        vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
         it("should return expected vector", function() {
             expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25, 3.25]);
         });
         it("should be an instance of Vector3", function() {
-            expect(Object.getPrototypeOf(vector.outOfPlaceLerp(vector2, .25))).toBe(Vector3);
+            expect(vector.outOfPlaceLerp(vector2, .25) instanceof Vector3).toBeTruthy();
         });
         it("should not return this", function() {
             expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
@@ -967,7 +967,7 @@ describe("pen-tool-math Vector3-spec", function() {
         var vector;
 
         beforeEach(function() {
-            vector = Vector3.create().initWithCoordinates([1, 2, 3]);
+            vector = new Vector3().initWithCoordinates([1, 2, 3]);
         });
         describe("every", function() {
             it("should work as expected", function() {
@@ -1039,7 +1039,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
 
     describe("initialization using init", function() {
         beforeEach(function() {
-            bezierCurve = BezierCurve.create().init();
+            bezierCurve = new BezierCurve().init();
         });
         it("order should be defined", function() {
             expect(bezierCurve.order).toBeDefined();
@@ -1050,10 +1050,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("adding/removing/getting control points", function() {
         beforeEach(function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1]);
-            vector2 = Vector.create().initWithCoordinates([2]);
-            vector3 = Vector.create().initWithCoordinates([3]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1]);
+            vector2 = new Vector().initWithCoordinates([2]);
+            vector3 = new Vector().initWithCoordinates([3]);
         });
         it("pushControlPoint", function() {
             bezierCurve.pushControlPoint(vector1);
@@ -1084,10 +1084,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("isComplete", function() {
         beforeEach(function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1]);
-            vector2 = Vector.create().initWithCoordinates([2]);
-            vector3 = Vector.create().initWithCoordinates([3]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1]);
+            vector2 = new Vector().initWithCoordinates([2]);
+            vector3 = new Vector().initWithCoordinates([3]);
         });
         it("should return expected values", function() {
             expect(bezierCurve.isComplete).toBeFalsy();
@@ -1101,10 +1101,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("length", function() {
         beforeEach(function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1]);
-            vector2 = Vector.create().initWithCoordinates([2]);
-            vector3 = Vector.create().initWithCoordinates([3]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1]);
+            vector2 = new Vector().initWithCoordinates([2]);
+            vector3 = new Vector().initWithCoordinates([3]);
         });
         it("should return expected values", function() {
             expect(bezierCurve.length).toEqual(0);
@@ -1118,14 +1118,14 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("getCloserPointTo", function() {
         beforeEach(function() {
-            bezierCurve = BezierCurve.create().init();
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([0, 0]));
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([1, 0]));
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([2, 0]));
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([3, 0]));
+            bezierCurve = new BezierCurve().init();
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([0, 0]));
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([1, 0]));
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([2, 0]));
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([3, 0]));
         });
         it("should return expected values", function() {
-            var result = bezierCurve.getCloserPointTo(Vector.create().initWithCoordinates([1.5, 1]));
+            var result = bezierCurve.getCloserPointTo(new Vector().initWithCoordinates([1.5, 1]));
 
             expect(result.distance).toBeCloseTo(1, 3);
             expect(result.vector.x).toBeCloseTo(1.5, 3);
@@ -1136,9 +1136,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     describe("value", function() {
         describe("for linear Bézier Curve", function() {
             it("should return expected result", function() {
-                bezierCurve = BezierCurve.create().init();
-                vector1 = Vector.create().initWithCoordinates([1]);
-                vector2 = Vector.create().initWithCoordinates([2]);
+                bezierCurve = new BezierCurve().init();
+                vector1 = new Vector().initWithCoordinates([1]);
+                vector2 = new Vector().initWithCoordinates([2]);
                 bezierCurve.pushControlPoint(vector1);
                 bezierCurve.pushControlPoint(vector2);
                 var value = bezierCurve.value(.4);
@@ -1148,10 +1148,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         });
         describe("for quadratic Bézier Curve", function() {
             it("should return expected result", function() {
-                bezierCurve = BezierCurve.create().init();
-                vector1 = Vector.create().initWithCoordinates([1, 3, 7]);
-                vector2 = Vector.create().initWithCoordinates([2, 5, 11]);
-                vector3 = Vector.create().initWithCoordinates([3, 13, 17]);
+                bezierCurve = new BezierCurve().init();
+                vector1 = new Vector().initWithCoordinates([1, 3, 7]);
+                vector2 = new Vector().initWithCoordinates([2, 5, 11]);
+                vector3 = new Vector().initWithCoordinates([3, 13, 17]);
                 bezierCurve.pushControlPoint(vector1);
                 bezierCurve.pushControlPoint(vector2);
                 bezierCurve.pushControlPoint(vector3);
@@ -1174,11 +1174,11 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         });
         describe("for cubic Bézier Curve", function() {
             it("should return expected result", function() {
-                bezierCurve = BezierCurve.create().init();
-                vector1 = Vector.create().initWithCoordinates([1]);
-                vector2 = Vector.create().initWithCoordinates([2]);
-                vector3 = Vector.create().initWithCoordinates([3]);
-                vector4 = Vector.create().initWithCoordinates([4]);
+                bezierCurve = new BezierCurve().init();
+                vector1 = new Vector().initWithCoordinates([1]);
+                vector2 = new Vector().initWithCoordinates([2]);
+                vector3 = new Vector().initWithCoordinates([3]);
+                vector4 = new Vector().initWithCoordinates([4]);
                 bezierCurve.pushControlPoint(vector1);
                 bezierCurve.pushControlPoint(vector2);
                 bezierCurve.pushControlPoint(vector3);
@@ -1191,10 +1191,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("translate", function() {
         it("should produce expected result", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1, 2]);
-            vector2 = Vector.create().initWithCoordinates([2, 3]);
-            vector3 = Vector.create().initWithCoordinates([3, 4]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1, 2]);
+            vector2 = new Vector().initWithCoordinates([2, 3]);
+            vector3 = new Vector().initWithCoordinates([3, 4]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1204,10 +1204,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2)._data).toEqual([4,6]);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1, 2]);
-            vector2 = Vector.create().initWithCoordinates([2, 3]);
-            vector3 = Vector.create().initWithCoordinates([3, 4]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1, 2]);
+            vector2 = new Vector().initWithCoordinates([2, 3]);
+            vector3 = new Vector().initWithCoordinates([3, 4]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1216,10 +1216,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("scale", function() {
         it("should produce expected result", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1, 2]);
-            vector2 = Vector.create().initWithCoordinates([2, 3]);
-            vector3 = Vector.create().initWithCoordinates([3, 4]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1, 2]);
+            vector2 = new Vector().initWithCoordinates([2, 3]);
+            vector3 = new Vector().initWithCoordinates([3, 4]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1229,10 +1229,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2)._data).toEqual([6,12]);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1, 2]);
-            vector2 = Vector.create().initWithCoordinates([2, 3]);
-            vector3 = Vector.create().initWithCoordinates([3, 4]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1, 2]);
+            vector2 = new Vector().initWithCoordinates([2, 3]);
+            vector3 = new Vector().initWithCoordinates([3, 4]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1241,10 +1241,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("rotate", function() {
         it("should produce expected result", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector2.create().initWithCoordinates([1, 2]);
-            vector2 = Vector2.create().initWithCoordinates([2, 3]);
-            vector3 = Vector2.create().initWithCoordinates([3, 4]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector2().initWithCoordinates([1, 2]);
+            vector2 = new Vector2().initWithCoordinates([2, 3]);
+            vector3 = new Vector2().initWithCoordinates([3, 4]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1257,10 +1257,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2).y).toBeCloseTo(3, 6);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector2.create().initWithCoordinates([1, 2]);
-            vector2 = Vector2.create().initWithCoordinates([2, 3]);
-            vector3 = Vector2.create().initWithCoordinates([3, 4]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector2().initWithCoordinates([1, 2]);
+            vector2 = new Vector2().initWithCoordinates([2, 3]);
+            vector3 = new Vector2().initWithCoordinates([3, 4]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1269,10 +1269,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("rotateX", function() {
         it("should produce expected result", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
-            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
-            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1, 2, 3]);
+            vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
+            vector3 = new Vector3().initWithCoordinates([3, 4, 5]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1288,10 +1288,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2).z).toBeCloseTo(4, 6);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
-            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
-            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1, 2, 3]);
+            vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
+            vector3 = new Vector3().initWithCoordinates([3, 4, 5]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1300,10 +1300,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("rotateY", function() {
         it("should produce expected result", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
-            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
-            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1, 2, 3]);
+            vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
+            vector3 = new Vector3().initWithCoordinates([3, 4, 5]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1319,10 +1319,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2).z).toBeCloseTo(-3, 6);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
-            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
-            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1, 2, 3]);
+            vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
+            vector3 = new Vector3().initWithCoordinates([3, 4, 5]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1331,10 +1331,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("rotateZ", function() {
         it("should produce expected result", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
-            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
-            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1, 2, 3]);
+            vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
+            vector3 = new Vector3().initWithCoordinates([3, 4, 5]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1350,10 +1350,10 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(2).z).toBeCloseTo(5, 6);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1, 2, 3]);
-            vector2 = Vector3.create().initWithCoordinates([2, 3, 4]);
-            vector3 = Vector3.create().initWithCoordinates([3, 4, 5]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1, 2, 3]);
+            vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
+            vector3 = new Vector3().initWithCoordinates([3, 4, 5]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1362,9 +1362,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("transformMatrix", function() {
         it("should return expected value", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1000, 600, 123]);
-            vector2 = Vector3.create().initWithCoordinates([2000, 1200, 246]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1000, 600, 123]);
+            vector2 = new Vector3().initWithCoordinates([2000, 1200, 246]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.transformMatrix([.5, .2, .7, .8, 300, 140]);
@@ -1376,9 +1376,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).z).toEqual(246);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([1000, 600, 123]);
-            vector2 = Vector3.create().initWithCoordinates([2000, 1200, 246]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([1000, 600, 123]);
+            vector2 = new Vector3().initWithCoordinates([2000, 1200, 246]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             expect(bezierCurve.transformMatrix([.5, .2, .7, .8, 300, 140])).toBe(bezierCurve);
@@ -1386,9 +1386,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("transformMatrix3d", function() {
         it("should return expected value", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([2, 4, 6]);
-            vector2 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([2, 4, 6]);
+            vector2 = new Vector3().initWithCoordinates([1, 2, 3]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.transformMatrix3d([
@@ -1405,9 +1405,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).z).toBeCloseTo(10 * 1 + 2 * 11 + 3 * 12 + 13, 5);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector3.create().initWithCoordinates([2, 4, 6]);
-            vector2 = Vector3.create().initWithCoordinates([1, 2, 3]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector3().initWithCoordinates([2, 4, 6]);
+            vector2 = new Vector3().initWithCoordinates([1, 2, 3]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             expect(bezierCurve.transformMatrix3d([
@@ -1420,9 +1420,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("skewX", function() {
         it("should return expected value", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector2.create().initWithCoordinates([2, 4]);
-            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector2().initWithCoordinates([2, 4]);
+            vector2 = new Vector2().initWithCoordinates([1, 2]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.skewX(45 * Math.PI * 2 / 360);
@@ -1432,9 +1432,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).y).toBeCloseTo(2, 5);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector2.create().initWithCoordinates([2, 4]);
-            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector2().initWithCoordinates([2, 4]);
+            vector2 = new Vector2().initWithCoordinates([1, 2]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             expect(bezierCurve.skewX(45 * Math.PI * 2 / 360)).toBe(bezierCurve);
@@ -1442,9 +1442,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
     });
     describe("skewY", function() {
         it("should return expected value", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector2.create().initWithCoordinates([2, 4]);
-            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector2().initWithCoordinates([2, 4]);
+            vector2 = new Vector2().initWithCoordinates([1, 2]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.skewY(45 * Math.PI * 2 / 360);
@@ -1454,9 +1454,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).y).toBeCloseTo(3, 5);
         });
         it("should return this", function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector2.create().initWithCoordinates([2, 4]);
-            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector2().initWithCoordinates([2, 4]);
+            vector2 = new Vector2().initWithCoordinates([1, 2]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             expect(bezierCurve.skewY(45 * Math.PI * 2 / 360)).toBe(bezierCurve);
@@ -1466,9 +1466,9 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         var bezierCurve, bezierCurve2, vector1, vector2;
 
         beforeEach(function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector2.create().initWithCoordinates([2, 4]);
-            vector2 = Vector2.create().initWithCoordinates([1, 2]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector2().initWithCoordinates([2, 4]);
+            vector2 = new Vector2().initWithCoordinates([1, 2]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve2 = bezierCurve.clone();
@@ -1486,14 +1486,14 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         });
     });
     describe("split", function() {
-        var bezierCurve = BezierCurve.create().init(),
+        var bezierCurve = new BezierCurve().init(),
             rightPart,
             leftPart;
 
-        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
-        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2, 4]));
-        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([4, -4]));
-        bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([6, 0]));
+        bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([0, 0]));
+        bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([2, 4]));
+        bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([4, -4]));
+        bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([6, 0]));
         rightPart = bezierCurve.split(.25);
         leftPart = bezierCurve;
         it("left part control points should be the expected", function() {
@@ -1521,11 +1521,11 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         });
     });
     describe("reverse", function() {
-        var bezierCurve = BezierCurve.create().init();
+        var bezierCurve = new BezierCurve().init();
 
         beforeEach(function() {
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([0]));
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([1]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([0]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([1]));
         });
         it("even number of control points should be reversed", function() {
             bezierCurve.reverse();
@@ -1533,7 +1533,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.getControlPoint(1).x).toEqual(0);
         });
         it("odd number of control points should be reversed", function() {
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([2]));
             bezierCurve.reverse();
             expect(bezierCurve.getControlPoint(0).x).toEqual(2);
             expect(bezierCurve.getControlPoint(1).x).toEqual(1);
@@ -1544,11 +1544,11 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         });
     });
     describe("softAxisAlignedBoundaries", function() {
-        var bezierCurve = BezierCurve.create().init();
+        var bezierCurve = new BezierCurve().init();
 
         beforeEach(function() {
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([0, 1]));
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2, 3]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([0, 1]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([2, 3]));
         });
         it("should return expected results", function() {
             var boundaries = bezierCurve.softAxisAlignedBoundaries;
@@ -1559,13 +1559,13 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         });
     });
     describe("hardAxisAlignedBoundaries", function() {
-        var bezierCurve = BezierCurve.create().init();
+        var bezierCurve = new BezierCurve().init();
 
         beforeEach(function() {
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([1, 0]));
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([2, 3]));
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([7, 6]));
-            bezierCurve.pushControlPoint(Vector2.create().initWithCoordinates([4, 5]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([1, 0]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([2, 3]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([7, 6]));
+            bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([4, 5]));
         });
         it("should return expected results", function() {
             var boundaries = bezierCurve.hardAxisAlignedBoundaries;
@@ -1579,11 +1579,11 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         var bezierCurve;
 
         beforeEach(function() {
-            bezierCurve = BezierCurve.create().init();
-            vector1 = Vector.create().initWithCoordinates([1]);
-            vector2 = Vector.create().initWithCoordinates([2]);
-            vector3 = Vector.create().initWithCoordinates([3]);
-            vector4 = Vector.create().initWithCoordinates([4]);
+            bezierCurve = new BezierCurve().init();
+            vector1 = new Vector().initWithCoordinates([1]);
+            vector2 = new Vector().initWithCoordinates([2]);
+            vector3 = new Vector().initWithCoordinates([3]);
+            vector4 = new Vector().initWithCoordinates([4]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
             bezierCurve.pushControlPoint(vector3);
@@ -1661,7 +1661,7 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
 
     describe("initialization using init", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
+            bezierSpline = new BezierSpline().init();
         });
         it("length should be defined", function() {
             expect(bezierSpline.length).toBeDefined();
@@ -1672,17 +1672,17 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
     });
     describe("adding/removing/getting Bezier curves", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
-            bezierCurve1 = BezierCurve.create().init();
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([1]));
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([2]));
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([3]));
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([4]));
-            bezierCurve2 = BezierCurve.create().init();
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([5]));
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([6]));
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([7]));
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([8]));
+            bezierSpline = new BezierSpline().init();
+            bezierCurve1 = new BezierCurve().init();
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([1]));
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([2]));
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([3]));
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([4]));
+            bezierCurve2 = new BezierCurve().init();
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([5]));
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([6]));
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([7]));
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([8]));
             bezierSpline.pushBezierCurve(bezierCurve1);
             bezierSpline.pushBezierCurve(bezierCurve2);
         });
@@ -1724,13 +1724,13 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             expect(bezierSpline.getBezierCurve(0).getControlPoint(0).x).toEqual(1);
         });
         it("removeBezierCurve at an index in the middle should work as expected", function() {
-            var bezierCurve = BezierCurve.create().init(),
+            var bezierCurve = new BezierCurve().init(),
                 rightSide;
 
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([9]));
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([10]));
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([11]));
-            bezierCurve.pushControlPoint(Vector.create().initWithCoordinates([12]));
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([9]));
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([10]));
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([11]));
+            bezierCurve.pushControlPoint(new Vector().initWithCoordinates([12]));
             bezierSpline.pushBezierCurve(bezierCurve);
             rightSide = bezierSpline.removeBezierCurve(1);
             expect(rightSide.length).toEqual(1);
@@ -1741,13 +1741,13 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
     });
     describe("axisAlignedBoundaries", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
-            bezierCurve1 = BezierCurve.create().init();
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([0, 0]));
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([10, -50]));
-            bezierCurve2 = BezierCurve.create().init();
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([10, -50]));
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([-20, 50]));
+            bezierSpline = new BezierSpline().init();
+            bezierCurve1 = new BezierCurve().init();
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([10, -50]));
+            bezierCurve2 = new BezierCurve().init();
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([10, -50]));
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([-20, 50]));
             bezierSpline.pushBezierCurve(bezierCurve1);
             bezierSpline.pushBezierCurve(bezierCurve2);
         });
@@ -1760,8 +1760,8 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             expect(result[1].max).toBeCloseTo(50, 3);
         });
         it("should return expected value when a curve is not complete", function() {
-            bezierCurve3 = BezierCurve.create().init();
-            bezierCurve3.pushControlPoint(Vector.create().initWithCoordinates([100, 100]));
+            bezierCurve3 = new BezierCurve().init();
+            bezierCurve3.pushControlPoint(new Vector().initWithCoordinates([100, 100]));
             bezierSpline.pushBezierCurve(bezierCurve3);
 
             var result = bezierSpline.axisAlignedBoundaries;
@@ -1774,25 +1774,25 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
     });
     describe("getCloserPointTo", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
-            bezierCurve1 = BezierCurve.create().init();
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([0, 0]));
-            bezierCurve1.pushControlPoint(Vector.create().initWithCoordinates([10, 0]));
-            bezierCurve2 = BezierCurve.create().init();
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([10, 0]));
-            bezierCurve2.pushControlPoint(Vector.create().initWithCoordinates([10, 10]));
+            bezierSpline = new BezierSpline().init();
+            bezierCurve1 = new BezierCurve().init();
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(new Vector().initWithCoordinates([10, 0]));
+            bezierCurve2 = new BezierCurve().init();
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(new Vector().initWithCoordinates([10, 10]));
             bezierSpline.pushBezierCurve(bezierCurve1);
             bezierSpline.pushBezierCurve(bezierCurve2);
         });
         it("should return expected value", function() {
-            var result = bezierSpline.getCloserPointTo(Vector.create().initWithCoordinates([5, -1]));
+            var result = bezierSpline.getCloserPointTo(new Vector().initWithCoordinates([5, -1]));
 
             expect(result.distance).toBeCloseTo(1, 3);
             expect(result.vector.x).toBeCloseTo(5, 3);
             expect(result.vector.y).toBeCloseTo(0, 3);
             expect(result.t).toBeCloseTo(.5, 3);
             expect(result.index).toEqual(0);
-            result = bezierSpline.getCloserPointTo(Vector.create().initWithCoordinates([11, 5]));
+            result = bezierSpline.getCloserPointTo(new Vector().initWithCoordinates([11, 5]));
             expect(result.distance).toBeCloseTo(1, 3);
             expect(result.vector.x).toBeCloseTo(10, 3);
             expect(result.vector.y).toBeCloseTo(5, 3);
@@ -1802,13 +1802,13 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
     });
     describe("rotate", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
-            bezierCurve1 = BezierCurve.create().init();
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2 = BezierCurve.create().init();
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline = new BezierSpline().init();
+            bezierCurve1 = new BezierCurve().init();
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2 = new BezierCurve().init();
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 10]));
             bezierSpline.pushBezierCurve(bezierCurve1);
             bezierSpline.pushBezierCurve(bezierCurve2);
         });
@@ -1827,13 +1827,13 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
     });
     describe("scale", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
-            bezierCurve1 = BezierCurve.create().init();
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2 = BezierCurve.create().init();
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline = new BezierSpline().init();
+            bezierCurve1 = new BezierCurve().init();
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2 = new BezierCurve().init();
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 10]));
             bezierSpline.pushBezierCurve(bezierCurve1);
             bezierSpline.pushBezierCurve(bezierCurve2);
         });
@@ -1852,13 +1852,13 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
     });
     describe("translate", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
-            bezierCurve1 = BezierCurve.create().init();
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2 = BezierCurve.create().init();
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline = new BezierSpline().init();
+            bezierCurve1 = new BezierCurve().init();
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2 = new BezierCurve().init();
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 10]));
             bezierSpline.pushBezierCurve(bezierCurve1);
             bezierSpline.pushBezierCurve(bezierCurve2);
         });
@@ -1877,13 +1877,13 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
     });
     describe("splitCurveAtPosition", function() {
         beforeEach(function() {
-            bezierSpline = BezierSpline.create().init();
-            bezierCurve1 = BezierCurve.create().init();
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([0, 0]));
-            bezierCurve1.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2 = BezierCurve.create().init();
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 0]));
-            bezierCurve2.pushControlPoint(Vector2.create().initWithCoordinates([10, 10]));
+            bezierSpline = new BezierSpline().init();
+            bezierCurve1 = new BezierCurve().init();
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([0, 0]));
+            bezierCurve1.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2 = new BezierCurve().init();
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 0]));
+            bezierCurve2.pushControlPoint(new Vector2().initWithCoordinates([10, 10]));
             bezierSpline.pushBezierCurve(bezierCurve1);
             bezierSpline.pushBezierCurve(bezierCurve2);
         });

@@ -1,7 +1,13 @@
 var Montage = require("montage").Montage,
     Target = require("montage/core/target").Target;
 
-var MapReducible = exports.MapReducible = Montage.create(Target, {
+var MapReducible = exports.MapReducible = Target.specialize({
+
+    constructor: {
+        value: function MapReducible () {
+            this.super();
+        }
+    },
 
     init: {
         value: function () {
@@ -90,7 +96,13 @@ var MapReducible = exports.MapReducible = Montage.create(Target, {
 
 });
 
-var Vector = exports.Vector = Montage.create(MapReducible, {
+var Vector = exports.Vector = MapReducible.specialize({
+
+    constructor: {
+        value: function Vector () {
+            this.super();
+        }
+    },
 
     type: {
         serializable: false,
@@ -310,7 +322,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     */
     clone: {
         value: function () {
-            return Montage.create(Object.getPrototypeOf(this)).initWithCoordinates(this._data);
+            return  new this.constructor().initWithCoordinates(this._data);
         }
     },
 
@@ -352,7 +364,7 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     */
     outOfPlaceLerp: {
         value: function (vector, interpolant) {
-            var result = Montage.create(Object.getPrototypeOf(this)).init(),
+            var result = new this.constructor().init(),
                 dimensions = this.dimensions,
                 iCoordinate,
                 i;
@@ -376,7 +388,13 @@ var Vector = exports.Vector = Montage.create(MapReducible, {
     }
 });
 
-var Vector2 = exports.Vector2 = Montage.create(Vector, {
+var Vector2 = exports.Vector2 = Vector.specialize({
+
+    constructor: {
+        value: function Vector2 () {
+            this.super();
+        }
+    },
 
     type: {
         serializable: false,
@@ -624,7 +642,13 @@ var Vector2 = exports.Vector2 = Montage.create(Vector, {
     }
 });
 
-var Vector3 = exports.Vector3 = Montage.create(Vector, {
+var Vector3 = exports.Vector3 = Vector2.specialize({
+
+    constructor: {
+        value: function Vector3 () {
+            this.super();
+        }
+    },
 
     type: {
         serializable: false,
@@ -1039,7 +1063,13 @@ var Vector3 = exports.Vector3 = Montage.create(Vector, {
     // TODO: skewXZ / YZ / ZX / ZY, translateX / Y / Z, rotate3d (very low priority)
 });
 
-var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
+var BezierCurve = exports.BezierCurve = MapReducible.specialize({
+
+    constructor: {
+        value: function BezierCurve () {
+            this.super();
+        }
+    },
 
     type: {
         serializable: false,
@@ -1177,7 +1207,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                         }
                     }
                 }
-                return Montage.create(Object.getPrototypeOf(this.getControlPoint(0))).initWithCoordinates(
+                return new (this.getControlPoint(0).constructor)().initWithCoordinates(
                     intermediateValues.slice(0, dimensions)
                 );
             } else {
@@ -1198,7 +1228,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
                 dimensions = this.dimensions,
                 currentPoint,
                 nextPoint = this.getControlPoint(0),
-                rightSide = Montage.create(Object.getPrototypeOf(this)).init(),
+                rightSide = new this.constructor().init(),
                 i, j, n = 2;
 
             if (order) {
@@ -1423,7 +1453,7 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     */
     clone: {
         value: function () {
-            var clone = Montage.create(Object.getPrototypeOf(this)).init(),
+            var clone = new this.constructor().init(),
                 length = this._data.length,
                 i;
 
@@ -1571,7 +1601,13 @@ var BezierCurve = exports.BezierCurve = Montage.create(MapReducible, {
     }
 });
 
-var CubicBezierCurve = exports.CubicBezierCurve = Montage.create(BezierCurve, {
+var CubicBezierCurve = exports.CubicBezierCurve = BezierCurve.specialize({
+
+    constructor: {
+        value: function CubicBezierCurve () {
+            this.super();
+        }
+    },
 
     type: {
         serializable: false,
@@ -1671,7 +1707,13 @@ var CubicBezierCurve = exports.CubicBezierCurve = Montage.create(BezierCurve, {
     }
 });
 
-var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
+var BezierSpline = exports.BezierSpline = MapReducible.specialize({
+
+    constructor: {
+        value: function BezierSpline () {
+            this.super();
+        }
+    },
 
     type: {
         serializable: false,
@@ -1795,7 +1837,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
     */
     removeBezierCurve: {
         value: function (index) {
-            var rightSide = BezierSpline.create().init(),
+            var rightSide = new BezierSpline().init(),
                 i;
 
             if (index) {
@@ -1903,7 +1945,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
 
     reverse: {
         value: function () {
-            var reversedSpline = Montage.create(Object.getPrototypeOf(this)).init(),
+            var reversedSpline = new this.constructor().init(),
                 length = this._data.length,
                 i;
 
@@ -2022,7 +2064,7 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
     */
     clone: {
         value: function () {
-            var clone = Montage.create(Object.getPrototypeOf(this)).init(),
+            var clone = new this.constructor().init(),
                 length = this._data.length,
                 i;
 
@@ -2061,7 +2103,13 @@ var BezierSpline = exports.BezierSpline = Montage.create(MapReducible, {
     }
 });
 
-var Scene = exports.Scene = Montage.create(MapReducible, {
+var Scene = exports.Scene = MapReducible.specialize({
+
+    constructor: {
+        value: function Scene () {
+            this.super();
+        }
+    },
 
     length: {
         get: function () {
