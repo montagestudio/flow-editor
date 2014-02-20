@@ -119,7 +119,7 @@ exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
             var i, bezier,
                 knot,
                 radius = this._radius,
-                bezierHandlerLength = .130976446,
+                bezierHandlerLength = 0.130976446,
                 angle, point, tangent,
                 angle2, point2, tangent2;
 

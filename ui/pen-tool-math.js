@@ -1525,11 +1525,11 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
                     curves = [this.clone()];
                     for (i = 0; i < curves.length; i++) {
                         iBoundaries = curves[i].softAxisAlignedBoundaries;
-                        if (iBoundaries[k].min < boundaries[k].min -.001) {
-                            if (iBoundaries[k].max < boundaries[k].min -.001) {
+                        if (iBoundaries[k].min < boundaries[k].min -0.001) {
+                            if (iBoundaries[k].max < boundaries[k].min -0.001) {
                                 boundaries[k].min = iBoundaries[k].max;
                             }
-                            if (rightSide = curves[i].split(.5)) {
+                            if (rightSide = curves[i].split(0.5)) {
                                 curves.push(rightSide);
                             }
                             i--;
@@ -1542,7 +1542,7 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
                             if (iBoundaries[k].min > boundaries[k].max +.001) {
                                 boundaries[k].max = iBoundaries[k].min;
                             }
-                            if (rightSide = curves[i].split(.5)) {
+                            if (rightSide = curves[i].split(0.5)) {
                                 curves.push(rightSide);
                             }
                             i--;
@@ -1582,7 +1582,7 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
 
             // TODO: Enhance this naif algorithm
 
-            for (i = 0; i < 1; i += .001) {
+            for (i = 0; i < 1; i += 0.001) {
                 iPoint = this.value(i);
                 if (iPoint !== null) {
                     distance = iPoint.distanceTo(vector);

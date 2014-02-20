@@ -158,7 +158,7 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
                 return false;
             } else {
                 relativeDifference -= 1;
-                return (relativeDifference < .00001);
+                return (relativeDifference < 0.00001);
             }
         }
     },
@@ -334,12 +334,12 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
                         break;
                     case "symmetric":
                         this._context.beginPath();
-                        this._context.arc(s.x + .5, s.y + .5, 4, 0 , 2 * Math.PI, false);
+                        this._context.arc(s.x + 0.5, s.y + 0.5, 4, 0 , 2 * Math.PI, false);
                         this._context.fill();
                         if (!this.isSelected) {
                             this._context.beginPath();
                             this._context.fillStyle = "white";
-                            this._context.arc(s.x + .5, s.y + .5, 3, 0 , 2 * Math.PI, false);
+                            this._context.arc(s.x + 0.5, s.y + 0.5, 3, 0 , 2 * Math.PI, false);
                             this._context.fill();
                         }
                         break;

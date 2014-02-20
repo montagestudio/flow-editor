@@ -92,7 +92,7 @@ exports.FlowViewport = Montage.create(Viewport, {
 
                     for (i = 0; i < 2; i++) {
                         self._context.lineWidth = i?1:7;
-                        self._context.strokeStyle = i?"red":"rgba(255,255,255,.15)";
+                        self._context.strokeStyle = i?"red":"rgba(255,255,255,0.15)";
                         if (bezier.getControlPoint(0) && bezier.getControlPoint(1)) {
                             self._context.beginPath();
                             self._context.moveTo(
@@ -198,7 +198,7 @@ exports.FlowViewport = Montage.create(Viewport, {
                     self = this,
                     needsFill = false;
 
-                this._context.globalAlpha = .7;
+                this._context.globalAlpha = 0.7;
                 this._context.strokeStyle = "cyan";
                 this._context.fillStyle = this.selection[0].fillColor;
                 this._context.lineWidth = 1;

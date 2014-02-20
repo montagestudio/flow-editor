@@ -88,9 +88,9 @@ describe("pen-tool-math Vector-spec", function() {
         describe("normalize", function() {
             it("should define expected coordinates", function() {
                 vector.normalize();
-                expect(vector.getCoordinate(0)).toBeCloseTo(.26726, 5);
-                expect(vector.getCoordinate(1)).toBeCloseTo(.53452, 5);
-                expect(vector.getCoordinate(2)).toBeCloseTo(.80178, 5);
+                expect(vector.getCoordinate(0)).toBeCloseTo(0.26726, 5);
+                expect(vector.getCoordinate(1)).toBeCloseTo(0.53452, 5);
+                expect(vector.getCoordinate(2)).toBeCloseTo(0.80178, 5);
             });
             it("should return this", function() {
                 expect(vector.normalize()).toBe(vector);
@@ -206,10 +206,10 @@ describe("pen-tool-math Vector-spec", function() {
         vector = new Vector().initWithCoordinates([1, 2, 3]);
         vector2 = new Vector().initWithCoordinates([2, 3, 4]);
         it("should return expected vector", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25, 3.25]);
+            expect(vector.outOfPlaceLerp(vector2, 0.25)._data).toEqual([1.25, 2.25, 3.25]);
         });
         it("should not return this", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
+            expect(vector.outOfPlaceLerp(vector2, 0.25)).not.toBe(vector);
         });
     });
     describe("distanceTo", function() {
@@ -363,8 +363,8 @@ describe("pen-tool-math Vector2-spec", function() {
         describe("normalize", function() {
             it("should define expected coordinates", function() {
                 vector.normalize();
-                expect(vector.getCoordinate(0)).toBeCloseTo(.44721, 5);
-                expect(vector.getCoordinate(1)).toBeCloseTo(.89443, 5);
+                expect(vector.getCoordinate(0)).toBeCloseTo(0.44721, 5);
+                expect(vector.getCoordinate(1)).toBeCloseTo(0.89443, 5);
             });
             it("should return this", function() {
                 expect(vector.normalize()).toBe(vector);
@@ -468,24 +468,24 @@ describe("pen-tool-math Vector2-spec", function() {
                 vector.rotate(Math.PI / 2);
                 expect(vector.x).toBeCloseTo(-4, 6);
                 expect(vector.y).toBeCloseTo(2, 6);
-                vector2.rotate(.3);
+                vector2.rotate(0.3);
                 expect(vector2.x).toBeCloseTo(778.024, 3);
                 expect(vector2.y).toBeCloseTo(868.722, 3);
             });
             it("should return this", function() {
-                expect(vector2.rotate(.3)).toBe(vector2);
+                expect(vector2.rotate(0.3)).toBe(vector2);
             });
         });
         describe("transformMatrix", function() {
             it("should return expected value", function() {
                 var vector = new Vector2().initWithCoordinates([1000, 600]);
 
-                vector.transformMatrix([.5, .2, .7, .8, 300, 140]);
+                vector.transformMatrix([0.5, 0.2, 0.7, 0.8, 300, 140]);
                 expect(vector.x).toBeCloseTo(1220, 2);
                 expect(vector.y).toBeCloseTo(820, 2);
             });
             it("should return this", function() {
-                expect(vector.transformMatrix([.5, .2, .7, .8, 300, 140])).toBe(vector);
+                expect(vector.transformMatrix([0.5, 0.2, 0.7, 0.8, 300, 140])).toBe(vector);
             });
         });
     });
@@ -520,13 +520,13 @@ describe("pen-tool-math Vector2-spec", function() {
         vector = new Vector2().initWithCoordinates([1, 2]);
         vector2 = new Vector2().initWithCoordinates([2, 3]);
         it("should return expected vector", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25]);
+            expect(vector.outOfPlaceLerp(vector2, 0.25)._data).toEqual([1.25, 2.25]);
         });
         it("should be an instance of Vector2", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25) instanceof Vector2).toBeTruthy();
+            expect(vector.outOfPlaceLerp(vector2, 0.25) instanceof Vector2).toBeTruthy();
         });
         it("should not return this", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
+            expect(vector.outOfPlaceLerp(vector2, 0.25)).not.toBe(vector);
         });
     });
     describe("MapReducible functions", function() {
@@ -675,9 +675,9 @@ describe("pen-tool-math Vector3-spec", function() {
         describe("normalize", function() {
             it("should define expected coordinates", function() {
                 vector.normalize();
-                expect(vector.getCoordinate(0)).toBeCloseTo(.26726, 5);
-                expect(vector.getCoordinate(1)).toBeCloseTo(.53452, 5);
-                expect(vector.getCoordinate(2)).toBeCloseTo(.80178, 5);
+                expect(vector.getCoordinate(0)).toBeCloseTo(0.26726, 5);
+                expect(vector.getCoordinate(1)).toBeCloseTo(0.53452, 5);
+                expect(vector.getCoordinate(2)).toBeCloseTo(0.80178, 5);
             });
             it("should return this", function() {
                 expect(vector.normalize()).toBe(vector);
@@ -803,36 +803,36 @@ describe("pen-tool-math Vector3-spec", function() {
             it("should return expected value", function() {
                 var vector = new Vector3().initWithCoordinates([400, 1000, 600]);
 
-                vector.rotateX(.3);
+                vector.rotateX(0.3);
                 expect(vector.y).toBeCloseTo(778.024, 3);
                 expect(vector.z).toBeCloseTo(868.722, 3);
             });
             it("should return this", function() {
-                expect(vector.rotateX(.3)).toBe(vector);
+                expect(vector.rotateX(0.3)).toBe(vector);
             });
         });
         describe("rotateY", function() {
             it("should return expected value", function() {
                 var vector = new Vector3().initWithCoordinates([1000, 400, 600]);
 
-                vector.rotateY(-.3);
+                vector.rotateY(-0.3);
                 expect(vector.x).toBeCloseTo(778.024, 3);
                 expect(vector.z).toBeCloseTo(868.722, 3);
             });
             it("should return this", function() {
-                expect(vector.rotateY(-.3)).toBe(vector);
+                expect(vector.rotateY(-0.3)).toBe(vector);
             });
         });
         describe("rotateZ", function() {
             it("should return expected value", function() {
                 var vector = new Vector3().initWithCoordinates([1000, 600, 400]);
 
-                vector.rotateZ(.3);
+                vector.rotateZ(0.3);
                 expect(vector.x).toBeCloseTo(778.024, 3);
                 expect(vector.y).toBeCloseTo(868.722, 3);
             });
             it("should return this", function() {
-                expect(vector.rotateZ(.3)).toBe(vector);
+                expect(vector.rotateZ(0.3)).toBe(vector);
             });
         });
         describe("multiple rotations", function() {
@@ -851,13 +851,13 @@ describe("pen-tool-math Vector3-spec", function() {
             it("should return expected value", function() {
                 var vector = new Vector3().initWithCoordinates([1000, 600, 123]);
 
-                vector.transformMatrix([.5, .2, .7, .8, 300, 140]);
+                vector.transformMatrix([0.5, 0.2, 0.7, 0.8, 300, 140]);
                 expect(vector.x).toBeCloseTo(1220, 2);
                 expect(vector.y).toBeCloseTo(820, 2);
                 expect(vector.z).toEqual(123);
             });
             it("should return this", function() {
-                expect(vector.transformMatrix([.5, .2, .7, .8, 300, 140])).toBe(vector);
+                expect(vector.transformMatrix([0.5, 0.2, 0.7, 0.8, 300, 140])).toBe(vector);
             });
         });
         describe("transformMatrix3d", function() {
@@ -954,13 +954,13 @@ describe("pen-tool-math Vector3-spec", function() {
         vector = new Vector3().initWithCoordinates([1, 2, 3]);
         vector2 = new Vector3().initWithCoordinates([2, 3, 4]);
         it("should return expected vector", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25)._data).toEqual([1.25, 2.25, 3.25]);
+            expect(vector.outOfPlaceLerp(vector2, 0.25)._data).toEqual([1.25, 2.25, 3.25]);
         });
         it("should be an instance of Vector3", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25) instanceof Vector3).toBeTruthy();
+            expect(vector.outOfPlaceLerp(vector2, 0.25) instanceof Vector3).toBeTruthy();
         });
         it("should not return this", function() {
-            expect(vector.outOfPlaceLerp(vector2, .25)).not.toBe(vector);
+            expect(vector.outOfPlaceLerp(vector2, 0.25)).not.toBe(vector);
         });
     });
     describe("MapReducible functions", function() {
@@ -1130,7 +1130,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(result.distance).toBeCloseTo(1, 3);
             expect(result.vector.x).toBeCloseTo(1.5, 3);
             expect(result.vector.y).toBeCloseTo(0, 3);
-            expect(result.t).toBeCloseTo(.5, 3);
+            expect(result.t).toBeCloseTo(0.5, 3);
         });
     });
     describe("value", function() {
@@ -1141,7 +1141,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
                 vector2 = new Vector().initWithCoordinates([2]);
                 bezierCurve.pushControlPoint(vector1);
                 bezierCurve.pushControlPoint(vector2);
-                var value = bezierCurve.value(.4);
+                var value = bezierCurve.value(0.4);
 
                 expect(value.x).toBeCloseTo(1.4, 6);
             });
@@ -1155,7 +1155,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
                 bezierCurve.pushControlPoint(vector1);
                 bezierCurve.pushControlPoint(vector2);
                 bezierCurve.pushControlPoint(vector3);
-                var value = bezierCurve.value(.5);
+                var value = bezierCurve.value(0.5);
 
                 expect(value.x).toBeCloseTo(2, 6);
                 expect(value.y).toBeCloseTo(6.5, 6);
@@ -1168,7 +1168,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
                 expect(value.x).toBeCloseTo(3, 6);
                 expect(value.y).toBeCloseTo(13, 6);
                 expect(value.z).toBeCloseTo(17, 6);
-                value = bezierCurve.value(.25);
+                value = bezierCurve.value(0.25);
                 expect(value.x).toBeCloseTo(1.5, 6);
             });
         });
@@ -1183,7 +1183,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
                 bezierCurve.pushControlPoint(vector2);
                 bezierCurve.pushControlPoint(vector3);
                 bezierCurve.pushControlPoint(vector4);
-                var value = bezierCurve.value(.4);
+                var value = bezierCurve.value(0.4);
 
                 expect(value.x).toBeCloseTo(2.2, 6);
             });
@@ -1367,7 +1367,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             vector2 = new Vector3().initWithCoordinates([2000, 1200, 246]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
-            bezierCurve.transformMatrix([.5, .2, .7, .8, 300, 140]);
+            bezierCurve.transformMatrix([0.5, 0.2, 0.7, 0.8, 300, 140]);
             expect(bezierCurve.getControlPoint(0).x).toBeCloseTo(1220, 2);
             expect(bezierCurve.getControlPoint(0).y).toBeCloseTo(820, 2);
             expect(bezierCurve.getControlPoint(0).z).toEqual(123);
@@ -1381,7 +1381,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             vector2 = new Vector3().initWithCoordinates([2000, 1200, 246]);
             bezierCurve.pushControlPoint(vector1);
             bezierCurve.pushControlPoint(vector2);
-            expect(bezierCurve.transformMatrix([.5, .2, .7, .8, 300, 140])).toBe(bezierCurve);
+            expect(bezierCurve.transformMatrix([0.5, 0.2, 0.7, 0.8, 300, 140])).toBe(bezierCurve);
         });
     });
     describe("transformMatrix3d", function() {
@@ -1494,12 +1494,12 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
         bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([2, 4]));
         bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([4, -4]));
         bezierCurve.pushControlPoint(new Vector2().initWithCoordinates([6, 0]));
-        rightPart = bezierCurve.split(.25);
+        rightPart = bezierCurve.split(0.25);
         leftPart = bezierCurve;
         it("left part control points should be the expected", function() {
             expect(leftPart.getControlPoint(0).x).toBeCloseTo(0, 5);
             expect(leftPart.getControlPoint(0).y).toBeCloseTo(0, 5);
-            expect(leftPart.getControlPoint(1).x).toBeCloseTo(.5, 5);
+            expect(leftPart.getControlPoint(1).x).toBeCloseTo(0.5, 5);
             expect(leftPart.getControlPoint(1).y).toBeCloseTo(1, 5);
             expect(leftPart.getControlPoint(2).x).toBeCloseTo(1, 5);
             expect(leftPart.getControlPoint(2).y).toBeCloseTo(1.25, 5);
@@ -1510,7 +1510,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(rightPart.getControlPoint(0).x).toBeCloseTo(1.5, 5);
             expect(rightPart.getControlPoint(0).y).toBeCloseTo(1.125, 5);
             expect(rightPart.getControlPoint(1).x).toBeCloseTo(3, 5);
-            expect(rightPart.getControlPoint(1).y).toBeCloseTo(.75, 5);
+            expect(rightPart.getControlPoint(1).y).toBeCloseTo(0.75, 5);
             expect(rightPart.getControlPoint(2).x).toBeCloseTo(4.5, 5);
             expect(rightPart.getControlPoint(2).y).toBeCloseTo(-3, 5);
             expect(rightPart.getControlPoint(3).x).toBeCloseTo(6, 5);
@@ -1790,13 +1790,13 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             expect(result.distance).toBeCloseTo(1, 3);
             expect(result.vector.x).toBeCloseTo(5, 3);
             expect(result.vector.y).toBeCloseTo(0, 3);
-            expect(result.t).toBeCloseTo(.5, 3);
+            expect(result.t).toBeCloseTo(0.5, 3);
             expect(result.index).toEqual(0);
             result = bezierSpline.getCloserPointTo(new Vector().initWithCoordinates([11, 5]));
             expect(result.distance).toBeCloseTo(1, 3);
             expect(result.vector.x).toBeCloseTo(10, 3);
             expect(result.vector.y).toBeCloseTo(5, 3);
-            expect(result.t).toBeCloseTo(.5, 3);
+            expect(result.t).toBeCloseTo(0.5, 3);
             expect(result.index).toEqual(1);
         });
     });
@@ -1888,7 +1888,7 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             bezierSpline.pushBezierCurve(bezierCurve2);
         });
         it("should return expected value", function() {
-            var result = bezierSpline.splitCurveAtPosition(1, .5);
+            var result = bezierSpline.splitCurveAtPosition(1, 0.5);
             expect(result.getBezierCurve(0).getControlPoint(0).x).toBeCloseTo(0, 5);
             expect(result.getBezierCurve(0).getControlPoint(0).y).toBeCloseTo(0, 5);
             expect(result.getBezierCurve(0).getControlPoint(1).x).toBeCloseTo(10, 5);
