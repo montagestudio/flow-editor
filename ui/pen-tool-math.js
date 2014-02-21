@@ -5,7 +5,6 @@ var MapReducible = exports.MapReducible = Target.specialize({
 
     constructor: {
         value: function MapReducible () {
-            this.super();
         }
     },
 
@@ -100,7 +99,6 @@ var Vector = exports.Vector = MapReducible.specialize({
 
     constructor: {
         value: function Vector () {
-            this.super();
         }
     },
 
@@ -364,7 +362,7 @@ var Vector = exports.Vector = MapReducible.specialize({
     */
     outOfPlaceLerp: {
         value: function (vector, interpolant) {
-            var result = new this.constructor().init(),
+            var result = (new this.constructor()).init(),
                 dimensions = this.dimensions,
                 iCoordinate,
                 i;
@@ -392,7 +390,6 @@ var Vector2 = exports.Vector2 = Vector.specialize({
 
     constructor: {
         value: function Vector2 () {
-            this.super();
         }
     },
 
@@ -646,7 +643,6 @@ var Vector3 = exports.Vector3 = Vector2.specialize({
 
     constructor: {
         value: function Vector3 () {
-            this.super();
         }
     },
 
@@ -1067,7 +1063,6 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
 
     constructor: {
         value: function BezierCurve () {
-            this.super();
         }
     },
 
@@ -1228,7 +1223,7 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
                 dimensions = this.dimensions,
                 currentPoint,
                 nextPoint = this.getControlPoint(0),
-                rightSide = new this.constructor().init(),
+                rightSide = (new this.constructor()).init(),
                 i, j, n = 2;
 
             if (order) {
@@ -1606,7 +1601,6 @@ var CubicBezierCurve = exports.CubicBezierCurve = BezierCurve.specialize({
 
     constructor: {
         value: function CubicBezierCurve () {
-            this.super();
         }
     },
 
@@ -1712,7 +1706,6 @@ var BezierSpline = exports.BezierSpline = MapReducible.specialize({
 
     constructor: {
         value: function BezierSpline () {
-            this.super();
         }
     },
 
@@ -1838,7 +1831,7 @@ var BezierSpline = exports.BezierSpline = MapReducible.specialize({
     */
     removeBezierCurve: {
         value: function (index) {
-            var rightSide = new BezierSpline().init(),
+            var rightSide = (new BezierSpline()).init(),
                 i;
 
             if (index) {
@@ -1946,7 +1939,7 @@ var BezierSpline = exports.BezierSpline = MapReducible.specialize({
 
     reverse: {
         value: function () {
-            var reversedSpline = new this.constructor().init(),
+            var reversedSpline = (new this.constructor()).init(),
                 length = this._data.length,
                 i;
 
@@ -2111,7 +2104,6 @@ var Scene = exports.Scene = MapReducible.specialize({
 
     constructor: {
         value: function Scene () {
-            this.super();
         }
     },
 

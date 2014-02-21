@@ -3,7 +3,12 @@ var Montage = require("montage").Montage,
     Vector3 = require("ui/pen-tool-math").Vector3,
     CanvasVector3 = require("ui/canvas-vector3").CanvasVector3;
 
-exports.FlowKnot = Montage.create(Vector3, {
+exports.FlowKnot = Vector3.specialize({
+
+    constructor: {
+        value: function FlowKnot () {
+        }
+    },
 
     type: {
         value: "FlowKnot"
