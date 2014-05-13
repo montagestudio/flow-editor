@@ -1,0 +1,17 @@
+.FlowStage {
+    background-color: hsl(0, 0%, 96%);
+    flex: 1;
+}
+
+.slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    font-family: sans-serif;
+    font-size: 38px;
+    background: hsl(0, 0%, 38%);
+    color: #fff;
+    border-radius: 4px;
+}
