@@ -1,4 +1,5 @@
 .FlowStage {
+    position: relative;
     background-color: hsl(0, 0%, 96%);
     flex: 1;
 }
