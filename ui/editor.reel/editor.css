@@ -24,13 +24,6 @@
     z-index: 2;
 }
 
-.viewport {
-    -webkit-flex: 1;
-    flex: 1;
-    background: #eee;
-    border-bottom: 1px solid #1D1D1D;
-}
-
 .viewport2 {
     border-bottom: none;
 }

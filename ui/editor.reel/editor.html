@@ -18,12 +18,7 @@
             "prototype": "ui/flow-viewport.reel",
             "properties": {
                 "element": {"#": "viewport"},
-                "matrix": [
-                    0.1, 0, 0, 0,
-                    0, 0.1, 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
-                ],
+                "type": "front",
                 "camera": {"@": "camera"},
                 "editor": {"@": "owner"}
             },
@@ -35,12 +30,7 @@
             "prototype": "ui/flow-viewport.reel",
             "properties": {
                 "element": {"#": "viewport2"},
-                "matrix": [
-                    0.1, 0, 0, 0,
-                    0, 0, 1, 0,
-                    0, 0.1, 0, 0,
-                    0, 0, 0, 1
-                ],
+                "type": "top",
                 "camera": {"@": "camera"},
                 "editor": {"@": "owner"}
             },
@@ -102,8 +92,8 @@
         </section>
 
         <section class="FlowEditorColumn FlowEditorColumn-inspector">
-            <div data-montage-id="viewport2" class="viewport"></div>
-            <div data-montage-id="viewport" class="viewport viewport2"></div>
+            <div data-montage-id="viewport2"></div>
+            <div data-montage-id="viewport" class="viewport2"></div>
             <div data-montage-id="toolbar" class="toolbar"></div>
         </section>
 
