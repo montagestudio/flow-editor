@@ -1,5 +1,6 @@
 .FlowEditor {
     -webkit-user-select: none;
+    display: -webkit-flex;
     display: flex;
     position: absolute;
     width: 100%;
@@ -7,19 +8,24 @@
 }
 
 .FlowEditorColumn {
+    display: -webkit-flex;
     display: flex;
+    -webkit-flex: 1;
     flex: 1;
+    -webkit-flex-direction: column;
     flex-direction: column;
 }
 
 .FlowEditorColumn-inspector {
-    max-width: 500px;
+    -webkit-flex: 0 0 500px;
+    flex: 0 0 500px;
     border-left: 1px solid #1D1D1D;
     position: relative;
     z-index: 2;
 }
 
 .viewport {
+    -webkit-flex: 1;
     flex: 1;
     background: #eee;
     border-bottom: 1px solid #1D1D1D;
