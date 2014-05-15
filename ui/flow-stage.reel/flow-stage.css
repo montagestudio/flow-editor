@@ -1,12 +1,16 @@
 .FlowStage {
     position: relative;
     background-color: hsl(0, 0%, 96%);
+    -webkit-flex: 1;
     flex: 1;
 }
 
 .slide {
+    display: -webkit-flex;
     display: flex;
+    -webkit-align-items: center;
     align-items: center;
+    -webkit-justify-content: center;
     justify-content: center;
     width: 100px;
     height: 100px;
