@@ -11,7 +11,7 @@ var Component = require("montage/ui/component").Component,
         'slotContent'
     ],
 
-    TIME_BEFORE_REFRESHING = 350;
+    TIME_BEFORE_REFRESHING = 150;
 
 /**
  * @class FlowStage
