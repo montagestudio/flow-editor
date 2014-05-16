@@ -59,7 +59,7 @@ exports.FlowViewport = Montage.create(Viewport, {
 
     types: {
         get: function () {
-            return Object.keys(VIEW_PORT_TYPES);
+            return Object.keys(VIEW_PORT_TYPES).slice(0);
         }
     },
 
