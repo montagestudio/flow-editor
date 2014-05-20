@@ -9,9 +9,7 @@ var Component = require("montage/ui/component").Component,
         'element',
         'flowEditorMetadata',
         'slotContent'
-    ],
-
-    TIME_BEFORE_REFRESHING = 150;
+    ];
 
 /**
  * @class FlowStage
@@ -22,47 +20,6 @@ exports.FlowStage = Component.specialize(/** @lends FlowStage# */ {
     constructor: {
         value: function FlowStage() {
             this.super();
-        }
-    },
-
-    _timeoutRefreshID: {
-        value: null
-    },
-
-    _needRefresh: {
-        value: null
-    },
-
-    needRefresh: {
-        set: function (bool) {
-            if (!!bool) {
-                if (this._timeoutRefreshID) {
-                    clearTimeout(this._timeoutRefreshID);
-                    this._timeoutRefreshID = null;
-                }
-
-                var self = this;
-                this._needRefresh = true;
-
-                this._timeoutRefreshID = setTimeout(function () {
-                    if (self._needRefresh) {
-                        self.refreshStage();
-                        self._needRefresh = false;
-                    }
-
-                }, TIME_BEFORE_REFRESHING);
-
-            } else {
-                if (this._timeoutRefreshID) {
-                    clearTimeout(this._timeoutRefreshID);
-                    this._timeoutRefreshID = null;
-                }
-
-                this._needRefresh = false;
-            }
-        },
-        get: function () {
-            return this._needRefresh;
         }
     },
 
@@ -93,7 +50,7 @@ exports.FlowStage = Component.specialize(/** @lends FlowStage# */ {
             var detail = event.detail;
 
             if (detail && detail.proxy && /montage\/ui\/flow.reel/.test(detail.proxy.exportId)) {
-                this.needRefresh = true;
+                this.refreshStage();
             }
         }
     },
