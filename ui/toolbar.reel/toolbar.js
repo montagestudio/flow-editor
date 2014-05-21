@@ -14,7 +14,7 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
     },
 
     _tools: {
-        value: {}
+        value: null
     },
 
     handleClick: {
@@ -28,9 +28,11 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
                     for (i = 0; i < elements.length; i++) {
                         elements[i].classList.remove("flow-Editor-Toolbar-Button--selected");
                     }
+
                     event.target.classList.add("flow-Editor-Toolbar-Button--selected");
                     this.selectedTool = this._tools[event.target.getAttribute("data-tool")];
                 }
+
                 event.preventDefault();
             }
         }
@@ -46,6 +48,7 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
                     "add": PenTools.AddTool.create(),
                     "helix": PenTools.HelixTool.create()
                 };
+
                 this.selectedTool = this._tools.convert;
             }
         }
@@ -88,12 +91,9 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
     handleZoomExtendsAction: {
         value: function () {
             var boundaries = this.viewport.scene.getRecursiveAxisAlignedBoundaries(),
-                x = boundaries[0].max - boundaries[0].min,
-                y = boundaries[1].max - boundaries[1].min,
-                z = boundaries[2].max - boundaries[2].min,
-                scaleX = this.viewport._width / x,
-                scaleY = this.viewport._height / y,
-                scaleZ = this.viewport._height / z,
+                scaleX = this.viewport._width / (boundaries[0].max - boundaries[0].min),
+                scaleY = this.viewport._height / (boundaries[1].max - boundaries[1].min),
+                scaleZ = this.viewport._height / (boundaries[2].max - boundaries[2].min),
                 scale = Math.min(scaleX, scaleY, scaleZ) * 0.8,
                 center = {
                     x: (boundaries[0].max + boundaries[0].min) / 2,
