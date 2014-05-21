@@ -8,7 +8,9 @@ var Component = require("montage/ui/component").Component,
     PROPERTIES_NOT_REQUIRED = [
         'element',
         'flowEditorMetadata',
-        'slotContent'
+        'slotContent',
+        'contentController',
+        'content'
     ];
 
 /**
