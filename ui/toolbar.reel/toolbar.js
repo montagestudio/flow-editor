@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
+    ViewPortConfig = require("core/configuration").FlowEditorConfig.viewPort,
     PenTools = require("ui/pen-tools");
 
 /**
@@ -113,17 +114,17 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
         value: function (viewport, scale, center) {
            switch (viewport.type) {
 
-               case "front":
+               case ViewPortConfig.types.front:
                    viewport.translateX = (viewport._width / 2) - (center.x * scale);
                    viewport.translateY = (viewport._height / 2) - (center.y * scale);
                    break;
 
-               case "top":
+               case ViewPortConfig.types.top:
                    viewport.translateX = (viewport._width / 2) - (center.x * scale);
                    viewport.translateY = (viewport._height / 2) - (center.z * scale);
                    break;
 
-               case "profile":
+               case ViewPortConfig.types.profile:
                    viewport.translateX = (viewport._width / 2) - (center.z * scale);
                    viewport.translateY = (viewport._height / 2) - (center.y * scale);
                    break;
