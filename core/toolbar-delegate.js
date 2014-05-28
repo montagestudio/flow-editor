@@ -27,7 +27,7 @@ exports.ToolBarDelegate = Target.specialize({
         }
     },
 
-    handleZoomExtendsAction: {
+    handleZoomExtentsAction: {
         value: function () {
             var boundaries = this.source.viewport.scene.getRecursiveAxisAlignedBoundaries(),
                 scaleX = this.source.viewport._width / (boundaries[0].max - boundaries[0].min),

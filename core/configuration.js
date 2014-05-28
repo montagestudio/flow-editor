@@ -73,8 +73,8 @@ var FlowEditorConfig = {
                 children: null
             },
             {
-                id: "zoomExtends",
-                title: "Zoom Extends Tool",
+                id: "zoomExtents",
+                title: "Zoom Extents Tool",
                 canBeSelected: false,
                 cssRules:{
                     class: [
