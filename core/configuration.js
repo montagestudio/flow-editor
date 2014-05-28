@@ -125,11 +125,11 @@ Object.defineProperty(FlowEditorConfig.viewPort, "types", {
     configurable: false,
     get: function () {
         if (this._types === null) {
-            var types = this._types = {};
+            this._types = Object.keys(FlowEditorConfig.viewPort.matrix).reduce(function(previous, current) {
+                previous[current] = current;
 
-            Object.keys(FlowEditorConfig.viewPort.matrix).forEach(function (key) {
-                types[key] = key
-            });
+                return previous;
+            }, {});
         }
 
         return this._types;
