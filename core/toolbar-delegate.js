@@ -20,7 +20,6 @@ exports.ToolBarDelegate = Target.specialize({
         }
     },
 
-
     handleTreeAction: {
         value: function () {
             this.source.isTreeVisible = !this.source.isTreeVisible;
