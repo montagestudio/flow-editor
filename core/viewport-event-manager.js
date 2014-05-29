@@ -27,7 +27,6 @@ exports.ViewPortEventManager = Target.specialize({
                         viewPort.scene._data.addEventListener("bezierSplineChange", updated, false);
                         viewPort.scene._data.addEventListener("cameraChange", updated, false);
                         viewPort.scene._data.addEventListener("sceneChange", updated, false);
-                        viewport.scene._data.addEventListener("selectionChange", updated, false);
                     }
 
                     viewPort.element.addEventListener("mousedown", self, true);
