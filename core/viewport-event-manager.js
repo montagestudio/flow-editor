@@ -21,6 +21,8 @@ exports.ViewPortEventManager = Target.specialize({
                     updated = function (event) { self.handleViewportChange(event);};
 
                 viewPorts.forEach(function (viewPort, index) {
+
+                    // viewports share the same scene, so just need to add listeners on the first viewport
                     if (index === 0) {
                         viewPort.scene._data.addEventListener("vectorChange", updated, false);
                         viewPort.scene._data.addEventListener("bezierCurveChange", updated, false);
