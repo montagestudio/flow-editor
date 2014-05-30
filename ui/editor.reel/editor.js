@@ -17,6 +17,8 @@ var Montage = require("montage").Montage,
     CanvasCamera = require("ui/camera").CanvasCamera,
     Cross = require("ui/cross").Cross,
     CanvasCross = require("ui/cross").CanvasCross,
+    ViewPortEventManager = require("core/viewport-event-manager").ViewPortEventManager,
+    Application = require("montage/core/application").application,
     CanvasSplineAppendMark = require("ui/canvas-spline-append-mark").CanvasSplineAppendMark,
     Promise = require("montage/core/promise").Promise;
 
@@ -26,58 +28,8 @@ exports.Editor = Montage.create(Component, {
         value: 0.1
     },
 
-    _isBlockingSceneUpdateHandling: {
-        value: false
-    },
-
     object: {
-        get: function () {
-            return this.flow;
-        },
-        set: function (value) {
-            var self = this,
-                foo;
-
-            foo = function () {
-                if (!self._isSceneUpdating && !self._isBlockingSceneUpdateHandling) {
-                    self._isBlockingSceneUpdateHandling = true;
-                    window.setTimeout(function () {
-                        self.convertFlowToShape();
-                        window.setTimeout(function () {
-                            self._isBlockingSceneUpdateHandling = false;
-                        }, 0);
-                    }, 0);
-                }
-            };
-            this.flow = value;
-            Montage.addPathChangeListener.call(value, "properties.get('paths')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('cameraPosition')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('cameraTargetPoint')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('cameraFov')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('isSelectionEnabled')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('hasSelectedIndexScrolling')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('scrollingTransitionTimingFunction')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('scrollingTransitionDuration')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('selectedIndexScrollingOffset')", foo);
-            Montage.addPathChangeListener.call(value, "properties.get('linearScrollingVector')", foo);
-        }
-    },
-
-    _flow: {
         value: null
-    },
-
-    flow: {
-        get: function () {
-            return this._flow;
-        },
-        set: function (value) {
-            this._cameraPosition = value.cameraPosition;
-            this._cameraTargetPoint = value.cameraTargetPoint;
-            this._cameraRoll = value.cameraRoll;
-            this._cameraFov = value.cameraFov;
-            this._flow = value;
-        }
     },
 
     hasSplineUpdated: {
@@ -88,12 +40,32 @@ exports.Editor = Montage.create(Component, {
         value: null
     },
 
+    stage: {
+        value: null
+    },
+
+    editingDocument: {
+        value: null
+    },
+
     _splineCounter: {
         value: 0
     },
 
     _helixCounter: {
         value: 0
+    },
+
+    _isEditing: {
+        value: null
+    },
+
+    _isChangeDetected: {
+        value: null
+    },
+
+    _blockHandleDidSetOwnedObjectProperties: {
+        value: null
     },
 
     convertFlowToShape: {
@@ -374,17 +346,9 @@ exports.Editor = Montage.create(Component, {
                     }
                 }
             }
-            if (!this.viewport.scene) {
-                self = this;
-                updated = function (event) {self.handleSceneUpdated(event);};
 
+            if (!this.viewport.scene) {
                 this.viewport.scene = canvasGrid;
-                this.viewport.scene._data.addEventListener("vectorChange", updated, false);
-                this.viewport.scene._data.addEventListener("bezierCurveChange", updated, false);
-                this.viewport.scene._data.addEventListener("bezierSplineChange", updated, false);
-                this.viewport.scene._data.addEventListener("cameraChange", updated, false);
-                this.viewport.scene._data.addEventListener("sceneChange", updated, false);
-                this.viewport.scene._data.addEventListener("selectionChange", updated, false);
                 this.camera.translate([0, 0, 0]);
             }
         }
@@ -403,57 +367,8 @@ exports.Editor = Montage.create(Component, {
             paths: true,
             cameraPosition: true,
             cameraTargetPoint: true,
-            cameraFov: true
-        }
-    },
-
-    _isSceneChanging: {
-        value: 0
-    },
-
-    _deferredSceneChangeCompletion: {
-        value: null
-    },
-
-    sceneWillChange: {
-        value: function () {
-            this._isSceneUpdating = true;
-            if (!this._isSceneChanging) {
-                this._previousValues = this.object.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties);
-            }
-            this._isSceneChanging++;
-        }
-    },
-
-    sceneDidChange: {
-        value: function () {
-            this._isSceneChanging--;
-            if (!this._isSceneChanging) {
-                var self = this;
-
-                window.setTimeout(function () {
-                    if (JSON.stringify(self._previousValues) !== JSON.stringify(self.object.editingDocument.getOwnedObjectProperties(self.object, self._objectProperties))) {
-                        self._deferredSceneChangeCompletion = Promise.defer();
-                        self.object.editingDocument.undoManager.register("Set Properties", self._deferredSceneChangeCompletion.promise);
-                        self._deferredSceneChangeCompletion.resolve([self.object.editingDocument.setOwnedObjectProperties, self.object.editingDocument, self.object, self._previousValues]);
-                        self._deferredSceneChangeCompletion = null;
-
-                    }
-                    self._isSceneUpdating = false;
-                }, 0);
-            }
-        }
-    },
-
-    _isSceneUpdating: {
-        value: true
-    },
-
-    handleSceneUpdated: {
-        value: function () {
-            if (!this._isBlockingSceneUpdateHandling) {
-                this.convertShapeToFlow();
-            }
+            cameraFov: true,
+            linearScrollingVector: true
         }
     },
 
@@ -617,12 +532,11 @@ exports.Editor = Montage.create(Component, {
                     k++;
                 }
             }
+
             this._objectProperties.paths = paths;
             this._objectProperties.cameraPosition = this.camera.cameraPosition.slice(0);
             this._objectProperties.cameraTargetPoint = this.camera.cameraTargetPoint.slice(0);
             this._objectProperties.cameraFov = this.camera.cameraFov;
-            this.object.setObjectProperties(this._objectProperties);
-            this.object.editingDocument._dispatchDidSetOwnedObjectProperties(this.object, this._objectProperties);
         }
     },
 
@@ -630,8 +544,117 @@ exports.Editor = Montage.create(Component, {
         enumerable: false,
         value: function (firstTime) {
             if (firstTime) {
+                Application.addEventListener("didSetOwnedObjectProperties", this, false);
+                Application.addEventListener("exitModalEditor", this, true);
+                Application.addEventListener("closeDocument", this, true);
+
                 this.convertFlowToShape();
+                this.stage.refresh();
             }
+        }
+    },
+
+    prepareForActivationEvents: {
+        value: function () {
+            var viewports = [this.viewport, this.templateObjects.viewport2];
+
+            this.viewPortEventManager = ViewPortEventManager.create().initWithViewPorts(viewports);
+
+            Application.addEventListener("viewportChangeStart", this, false);
+            Application.addEventListener("viewportChange", this, false);
+            Application.addEventListener("viewportChangeEnd", this, false);
+            Application.addEventListener("viewportChangeCancel", this, false);
+        }
+    },
+
+    _removeListeners: {
+        value: function () {
+            Application.removeEventListener("didSetOwnedObjectProperties", this, false);
+            Application.removeEventListener("closeDocument", this, true);
+            Application.removeEventListener("exitModalEditor", this, true);
+            Application.removeEventListener("viewportChangeStart", this, false);
+            Application.removeEventListener("viewportChange", this, false);
+            Application.removeEventListener("viewportChangeEnd", this, false);
+            Application.removeEventListener("viewportChangeCancel", this, false);
+        }
+    },
+
+    captureCloseDocument: {
+        value: function () {
+            this._removeListeners();
+        }
+    },
+
+    captureExitModalEditor: {
+        value: function () {
+            this._removeListeners();
+        }
+    },
+
+    handleDidSetOwnedObjectProperties: {
+        value: function (event) {
+            var detail = event.detail;
+
+            if (detail) {
+                var proxy = detail.proxy;
+
+                if (proxy && /montage\/ui\/flow.reel/.test(proxy.exportId) && proxy.uuid === this.object.uuid) {
+                    if (!this._blockHandleDidSetOwnedObjectProperties) {
+                        this.convertFlowToShape();
+                        this.stage.refresh();
+                    } else {
+                        this._blockHandleDidSetOwnedObjectProperties = false;
+                    }
+                }
+            }
+        }
+    },
+
+    handleViewportChangeStart: {
+        value: function (event) {
+            this._isEditing = true;
+        }
+    },
+
+    handleViewportChange: {
+        value: function (event) {
+            if (this._isEditing) {
+                this.convertShapeToFlow();
+                this.stage.refresh(this._objectProperties);
+                this._isChangeDetected = true;
+            }
+        }
+    },
+
+    handleViewportChangeEnd: {
+        value: function (event) {
+            if (this._isEditing) {
+                this.convertShapeToFlow();
+
+                if (this._isChangeDetected) {
+                    var newSettings = JSON.stringify(this._objectProperties),
+                        oldSettings = JSON.stringify(this.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties));
+
+                    if (newSettings !== oldSettings) {
+                        // fixme: (temporary fix)
+                        // Find why the convertShapeToFlow function breaks the editing of the viewport, when the add tool is selected.
+                        // (Moreover, that should explain why it's impossible to re-use the add tool after undo operations)
+                        this._blockHandleDidSetOwnedObjectProperties = true;
+
+                        this.editingDocument.setOwnedObjectProperties(this.object, this._objectProperties);
+                    }
+
+                    this._isChangeDetected = false;
+                }
+
+                this._isEditing = false;
+            }
+        }
+    },
+
+    handleViewportChangeCancel: {
+        value: function (event) {
+            this._isEditing = false;
         }
     },
 
