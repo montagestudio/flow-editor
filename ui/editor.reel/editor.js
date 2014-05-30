@@ -64,6 +64,10 @@ exports.Editor = Montage.create(Component, {
         value: null
     },
 
+    _blockHandleDidSetOwnedObjectProperties: {
+        value: null
+    },
+
     convertFlowToShape: {
         value: function () {
             var shape, spline, i, k, j, n, knot,
@@ -595,8 +599,12 @@ exports.Editor = Montage.create(Component, {
                 var proxy = detail.proxy;
 
                 if (proxy && /montage\/ui\/flow.reel/.test(proxy.exportId) && proxy.uuid === this.object.uuid) {
-                    this.convertFlowToShape();
-                    this.stage.refresh();
+                    if (!this._blockHandleDidSetOwnedObjectProperties) {
+                        this.convertFlowToShape();
+                        this.stage.refresh();
+                    } else {
+                        this._blockHandleDidSetOwnedObjectProperties = false;
+                    }
                 }
             }
         }
@@ -624,7 +632,18 @@ exports.Editor = Montage.create(Component, {
                 this.convertShapeToFlow();
 
                 if (this._isChangeDetected) {
-                    this.editingDocument.setOwnedObjectProperties(this.object, this._objectProperties);
+                    var newSettings = JSON.stringify(this._objectProperties),
+                        oldSettings = JSON.stringify(this.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties));
+
+                    if (newSettings !== oldSettings) {
+                        // fixme: (temporary fix)
+                        // Find why the convertShapeToFlow function breaks the editing of the viewport, when the add tool is selected.
+                        // (Moreover, that should explain why it's impossible to re-use the add tool after undo operations)
+                        this._blockHandleDidSetOwnedObjectProperties = true;
+
+                        this.editingDocument.setOwnedObjectProperties(this.object, this._objectProperties);
+                    }
+
                     this._isChangeDetected = false;
                 }
 
