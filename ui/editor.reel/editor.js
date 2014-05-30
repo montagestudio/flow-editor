@@ -363,7 +363,8 @@ exports.Editor = Montage.create(Component, {
             paths: true,
             cameraPosition: true,
             cameraTargetPoint: true,
-            cameraFov: true
+            cameraFov: true,
+            linearScrollingVector: true
         }
     },
 
