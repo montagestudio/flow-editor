@@ -48,6 +48,14 @@ exports.Editor = Montage.create(Component, {
         value: null
     },
 
+    viewPortShared: {
+        value: null
+    },
+
+    viewPorts: {
+        value: null
+    },
+
     _splineCounter: {
         value: 0
     },
@@ -113,8 +121,8 @@ exports.Editor = Montage.create(Component, {
                 // else, Could not parse metadata from newer versions of Flow Editor
 
             }
-            if (this.viewport.scene) {
-                canvasGrid = this.viewport.scene;
+            if (this.viewPortShared.scene) {
+                canvasGrid = this.viewPortShared.scene;
                 grid = canvasGrid._data;
                 camera = this.camera._data;
                 for (i = 0; i < canvasGrid.children.length; i++) {
@@ -185,7 +193,7 @@ exports.Editor = Montage.create(Component, {
                 splineExists = false;
                 if (!specialPaths[j]) {
                     spline = paths[j];
-                    if (!(this.viewport.scene && (canvasSpline = this.viewport.scene.getShapeById(ids[j])))) {
+                    if (!(this.viewPortShared.scene && (canvasSpline = this.viewPortShared.scene.getShapeById(ids[j])))) {
                         shape = FlowSpline.create().init();
                         canvasSpline = canvasGrid.insertFlowSpline(shape, j + 3);
                         canvasSpline.id = ids[j];
@@ -302,7 +310,7 @@ exports.Editor = Montage.create(Component, {
                 } else {
                     switch (specialPaths[j].type) {
                         case "FlowHelix":
-                            if (!(this.viewport.scene && (canvasHelix = this.viewport.scene.getShapeById(ids[j])))) {
+                            if (!(this.viewPortShared.scene && (canvasHelix = this.viewPortShared.scene.getShapeById(ids[j])))) {
                                 canvasHelix = CanvasFlowHelix.create();
                                 canvasHelix.id = ids[j];
                             } else {
@@ -347,8 +355,8 @@ exports.Editor = Montage.create(Component, {
                 }
             }
 
-            if (!this.viewport.scene) {
-                this.viewport.scene = canvasGrid;
+            if (!this.viewPortShared.scene) {
+                this.viewPortShared.scene = canvasGrid;
                 this.camera.translate([0, 0, 0]);
             }
         }
@@ -374,7 +382,7 @@ exports.Editor = Montage.create(Component, {
 
     /*getTree: {
         value: function (node) {
-            var n = node ? node : this.viewport.scene,
+            var n = node ? node : this.viewPortShared.scene,
                 children = [],
                 length = n.children ? n.children.length: 0, i;
 
@@ -400,8 +408,8 @@ exports.Editor = Montage.create(Component, {
                 flowEditorVersion: this.flowEditorVersion,
                 shapes: []
             };
-            for (j = 0; j < this.viewport.scene.children.length; j++) {
-                shape = this.viewport.scene.children[j];
+            for (j = 0; j < this.viewPortShared.scene.children.length; j++) {
+                shape = this.viewPortShared.scene.children[j];
                 switch (shape.type) {
                     case "FlowHelix":
                         this._objectProperties.flowEditorMetadata.shapes.push({
@@ -438,17 +446,17 @@ exports.Editor = Montage.create(Component, {
                 this._objectProperties.flowEditorMetadata.selected = selected;
             }
             paths = [];
-            this._objectProperties.isSelectionEnabled = this.viewport.scene._data.isSelectionEnabled;
-            this._objectProperties.hasSelectedIndexScrolling = this.viewport.scene._data.hasSelectedIndexScrolling;
-            this._objectProperties.scrollingTransitionDuration = this.viewport.scene._data.scrollingTransitionDuration;
-            this._objectProperties.selectedIndexScrollingOffset = this.viewport.scene._data.selectedIndexScrollingOffset;
-            this._objectProperties.scrollingTransitionTimingFunction = this.viewport.scene._data.scrollingTransitionTimingFunction;
+            this._objectProperties.isSelectionEnabled = this.viewPortShared.scene._data.isSelectionEnabled;
+            this._objectProperties.hasSelectedIndexScrolling = this.viewPortShared.scene._data.hasSelectedIndexScrolling;
+            this._objectProperties.scrollingTransitionDuration = this.viewPortShared.scene._data.scrollingTransitionDuration;
+            this._objectProperties.selectedIndexScrollingOffset = this.viewPortShared.scene._data.selectedIndexScrollingOffset;
+            this._objectProperties.scrollingTransitionTimingFunction = this.viewPortShared.scene._data.scrollingTransitionTimingFunction;
             this._objectProperties.linearScrollingVector = [
-                this.viewport.scene._data.scrollVectorX,
-                this.viewport.scene._data.scrollVectorY
+                this.viewPortShared.scene._data.scrollVectorX,
+                this.viewPortShared.scene._data.scrollVectorY
             ];
-            for (j = 0; j < this.viewport.scene.children.length; j++) {
-                shape = this.viewport.scene.children[j].data;
+            for (j = 0; j < this.viewPortShared.scene.children.length; j++) {
+                shape = this.viewPortShared.scene.children[j].data;
                 if ((shape.type === "FlowSpline") || (shape.type === "FlowHelix")) {
                     paths.push({
                         knots: [],
@@ -556,9 +564,7 @@ exports.Editor = Montage.create(Component, {
 
     prepareForActivationEvents: {
         value: function () {
-            var viewports = [this.viewport, this.templateObjects.viewport2];
-
-            this.viewPortEventManager = ViewPortEventManager.create().initWithViewPorts(viewports);
+            this.viewPortSharedEventManager = ViewPortEventManager.create().initWithViewPorts(this.viewPorts);
 
             Application.addEventListener("viewportChangeStart", this, false);
             Application.addEventListener("viewportChange", this, false);
