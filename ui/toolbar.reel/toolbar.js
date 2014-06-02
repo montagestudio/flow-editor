@@ -74,7 +74,10 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
                     var buttonID = source.object.id;
 
                     if (source.object.canBeSelected) {
-                        this.selectedCell.buttonElement.classList.remove("flow-Editor-Toolbar-Button--selected");
+                        if (this.selectedCell) {
+                            this.selectedCell.buttonElement.classList.remove("flow-Editor-Toolbar-Button--selected");
+                        }
+
                         this.selectedCell = source;
                         this.selectedTool = this._tools[buttonID];
 
