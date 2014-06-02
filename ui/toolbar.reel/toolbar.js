@@ -85,7 +85,7 @@ exports.Toolbar = Montage.create(Component, /** @lends module:"ui/toolbar.reel".
                         var handlerName = "handle" + buttonID[0].toUpperCase() + buttonID.slice(1) + "Action";
 
                         if (handlerName && typeof this._delegate[handlerName] === "function") {
-                            this._delegate[handlerName](event);
+                            this._delegate[handlerName](event, this.viewPorts);
                         }
                     }
                 }

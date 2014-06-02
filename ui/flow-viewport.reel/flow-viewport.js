@@ -88,17 +88,10 @@ exports.FlowViewport = Montage.create(Viewport, {
                 this.translateX = this._width / 2;
                 this.translateY = this._height / 2;
                 this._context = viewPortElement.getContext("2d");
-                this.templateObjects.selectViewPort.contentController.select(this._type);
 
                 viewPortElement.addEventListener("mousedown", this, true);
                 window.addEventListener("resize", this, false);
             }
-        }
-    },
-
-    handleSelectViewPortAction: {
-        value: function (event) {
-            this.type = this.templateObjects.selectViewPort.contentController.selection.one();
         }
     },
 
@@ -326,12 +319,11 @@ exports.FlowViewport = Montage.create(Viewport, {
     draw: {
         value: function () {
             var length = this.scene.length,
-                viewPortElement = this.viewPort._element,
                 i;
 
-            viewPortElement.width = this._width;
-            viewPortElement.height = this._height;
-            this.scene.canvas = viewPortElement;
+            this._element.width = this._width;
+            this._element.height = this._height;
+            this.scene.canvas = this._element;
             this.scene.draw(this.matrix);
             /*this.scene._data.sort(function (a, b) {
                 return a.zIndex - b.zIndex;
