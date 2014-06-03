@@ -96,44 +96,38 @@ exports.Editor = Montage.create(Component, {
                 splineExists,
                 updated;
 
-            if (metadata) {
-                if (metadata.flowEditorVersion <= this.flowEditorVersion) {
-                    if (metadata.shapes) {
-                        for (i = 0; i < metadata.shapes.length; i++) {
-                            iShape = metadata.shapes[i];
-                            switch (iShape.type) {
-                                case "FlowHelix":
-                                    if (typeof iShape.pathIndex !== "undefined") {
-                                        specialPaths[iShape.pathIndex] = metadata.shapes[i];
-                                    }
-                                    break;
-                            }
-                            if ((typeof iShape.name !== "undefined") && (typeof iShape.pathIndex !== "undefined")) {
-                                names[iShape.pathIndex] = iShape.name;
-                            }
-                            if ((typeof iShape.id !== "undefined") && (typeof iShape.pathIndex !== "undefined")) {
-                                ids[iShape.pathIndex] = iShape.id;
-                                idHash[iShape.id] = true;
-                            }
-                        }
+            if (metadata && metadata.flowEditorVersion <= this.flowEditorVersion && metadata.shapes) {
+                for (i = 0; i < metadata.shapes.length; i++) {
+                    iShape = metadata.shapes[i];
+
+                    if (iShape.type === "FlowHelix" && typeof iShape.pathIndex !== "undefined") {
+                        specialPaths[iShape.pathIndex] = metadata.shapes[i];
+                    }
+
+                    if (typeof iShape.name !== "undefined" && typeof iShape.pathIndex !== "undefined") {
+                        names[iShape.pathIndex] = iShape.name;
+                    }
+
+                    if (typeof iShape.id !== "undefined" && typeof iShape.pathIndex !== "undefined") {
+                        ids[iShape.pathIndex] = iShape.id;
+                        idHash[iShape.id] = true;
                     }
                 }
-                // else, Could not parse metadata from newer versions of Flow Editor
+            } // else, Could not parse metadata from newer versions of Flow Editor
 
-            }
             if (this.viewPortShared.scene) {
                 canvasGrid = this.viewPortShared.scene;
                 grid = canvasGrid._data;
                 camera = this.camera._data;
+
                 for (i = 0; i < canvasGrid.children.length; i++) {
-                    if (!idHash[canvasGrid.children[i].id]) {
-                        switch (canvasGrid.children[i].data.type) {
-                            case "FlowSpline":
-                                canvasGrid.removeCanvasFlowSpline(canvasGrid.children[i]);
-                                break;
-                            case "FlowHelix":
-                                canvasGrid.removeCanvasFlowHelix(canvasGrid.children[i]);
-                                break;
+                    var child = canvasGrid.children[i];
+
+                    if (!idHash[child.id]) {
+                        if (child.data.type === "FlowSpline") {
+                            canvasGrid.removeCanvasFlowSpline(child);
+                        } else if (child.data.type === "FlowHelix") {
+                            canvasGrid.removeCanvasFlowHelix(child);
                         }
                     }
                 }
@@ -155,21 +149,25 @@ exports.Editor = Montage.create(Component, {
                 canvasGrid.appendChild(canvasGrid.appendMark);
                 canvasGrid._data.pushShape(canvasGrid.appendMark._data);
             }
+
             if (typeof this.object.getObjectProperty("cameraPosition") !== "undefined") {
                 this.camera.cameraPosition = this.object.getObjectProperty("cameraPosition").slice(0);
             } else {
                 this.camera.cameraPosition = Object.clone(Flow._cameraPosition);
             }
+
             if (typeof this.object.getObjectProperty("cameraTargetPoint") !== "undefined") {
                 this.camera.cameraTargetPoint = this.object.getObjectProperty("cameraTargetPoint").slice(0);
             } else {
                 this.camera.cameraTargetPoint = Object.clone(Flow._cameraTargetPoint);
             }
+
             if (typeof this.object.getObjectProperty("cameraFov") !== "undefined") {
                 this.camera.cameraFov = this.object.getObjectProperty("cameraFov");
             } else {
                 this.camera.cameraFov = Object.clone(Flow._cameraFov);
             }
+
             grid.isSelectionEnabled =
                 this.object.getObjectProperty("isSelectionEnabled") ? true : false;
             grid.hasSelectedIndexScrolling =
@@ -189,10 +187,13 @@ exports.Editor = Montage.create(Component, {
             grid.scrollVectorY =
                 this.object.getObjectProperty("linearScrollingVector") ?
                 this.object.getObjectProperty("linearScrollingVector")[1] : 0;
+
             for (j = 0; j < paths.length; j++) {
                 splineExists = false;
+
                 if (!specialPaths[j]) {
                     spline = paths[j];
+
                     if (!(this.viewPortShared.scene && (canvasSpline = this.viewPortShared.scene.getShapeById(ids[j])))) {
                         shape = FlowSpline.create().init();
                         canvasSpline = canvasGrid.insertFlowSpline(shape, j + 3);
@@ -201,24 +202,31 @@ exports.Editor = Montage.create(Component, {
                         shape = canvasSpline._data;
                         splineExists = true;
                     }
+
                     shape.headOffset = spline.headOffset;
                     shape.tailOffset = spline.tailOffset;
+
                     if (names[j]) {
                         canvasSpline.name = names[j];
                     } else {
                         this._splineCounter++;
                         canvasSpline.name = "Spline " + this._splineCounter;
                     }
+
                     if (spline.knots.length !== canvasSpline.children.length) {
                         while (canvasSpline.children.length) {
                             canvasSpline.children[0].delete();
                         }
+
                         canvasSpline.children = [];
+
                         while (canvasSpline._data._data.length) {
                             canvasSpline._data.popBezierCurve();
                         }
+
                         canvasSpline._data._data = [];
                     }
+
                     for (i = 0; i < spline.knots.length; i++) {
                         if (i >= canvasSpline.children.length) {
                             if (!i) {
@@ -228,16 +236,19 @@ exports.Editor = Montage.create(Component, {
                                         spline.knots[i].knotPosition[1],
                                         spline.knots[i].knotPosition[2]
                                     ]));
+
                                     canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
                                         spline.knots[i].nextHandlerPosition[0],
                                         spline.knots[i].nextHandlerPosition[1],
                                         spline.knots[i].nextHandlerPosition[2]
                                     ]));
+
                                     for (k in spline.units) {
                                         if (typeof spline.knots[i][k] !== "undefined") {
                                             knot[k] = spline.knots[i][k];
                                         }
                                     }
+
                                     if (typeof spline.knots[i].previousDensity !== "undefined") {
                                         knot.density = spline.knots[i].previousDensity;
                                     }
@@ -248,11 +259,13 @@ exports.Editor = Montage.create(Component, {
                                     spline.knots[i].previousHandlerPosition[1],
                                     spline.knots[i].previousHandlerPosition[2]
                                 ]));
+
                                 canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
                                     spline.knots[i].knotPosition[0],
                                     spline.knots[i].knotPosition[1],
                                     spline.knots[i].knotPosition[2]
                                 ]));
+
                                 if (spline.knots[i].nextHandlerPosition) {
                                     canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
                                         spline.knots[i].nextHandlerPosition[0],
@@ -260,11 +273,13 @@ exports.Editor = Montage.create(Component, {
                                         spline.knots[i].nextHandlerPosition[2]
                                     ]));
                                 }
+
                                 for (k in spline.units) {
                                     if (typeof spline.knots[i][k] !== "undefined") {
                                         knot[k] = spline.knots[i][k];
                                     }
                                 }
+
                                 if (typeof spline.knots[i].previousDensity !== "undefined") {
                                     knot.density = spline.knots[i].previousDensity;
                                 }
@@ -277,22 +292,26 @@ exports.Editor = Montage.create(Component, {
                                         canvasSpline.children[n].knot.y = spline.knots[n].knotPosition[1];
                                         canvasSpline.children[n].knot.z = spline.knots[n].knotPosition[2];
                                     }
+
                                     if (canvasSpline.children[n].nextHandler && spline.knots[n].nextHandlerPosition) {
                                         canvasSpline.children[n].nextHandler.x = spline.knots[n].nextHandlerPosition[0];
                                         canvasSpline.children[n].nextHandler.y = spline.knots[n].nextHandlerPosition[1];
                                         canvasSpline.children[n].nextHandler.z = spline.knots[n].nextHandlerPosition[2];
                                     }
+
                                     if (canvasSpline.children[n].previousHandler && spline.knots[n].previousHandlerPosition) {
                                         canvasSpline.children[n].previousHandler.x = spline.knots[n].previousHandlerPosition[0];
                                         canvasSpline.children[n].previousHandler.y = spline.knots[n].previousHandlerPosition[1];
                                         canvasSpline.children[n].previousHandler.z = spline.knots[n].previousHandlerPosition[2];
                                     }
+
                                     if (canvasSpline.children[n].knot) {
                                         for (k in spline.units) {
                                             if (typeof spline.knots[n][k] !== "undefined") {
                                                 canvasSpline.children[n].knot[k] = spline.knots[n][k];
                                             }
                                         }
+
                                         if (typeof spline.knots[n].previousDensity !== "undefined") {
                                             canvasSpline.children[n].knot.density = spline.knots[n].previousDensity;
                                         }
@@ -301,12 +320,14 @@ exports.Editor = Montage.create(Component, {
                             }
                         }
                     }
+
                     if (metadata && metadata.selected === j) {
                         canvasSpline.isSelected = true;
                         this.camera.isSelected = false;
                     } else {
                         canvasSpline.isSelected = false;
                     }
+
                 } else {
                     switch (specialPaths[j].type) {
                         case "FlowHelix":
@@ -408,43 +429,49 @@ exports.Editor = Montage.create(Component, {
                 flowEditorVersion: this.flowEditorVersion,
                 shapes: []
             };
+
             for (j = 0; j < this.viewPortShared.scene.children.length; j++) {
                 shape = this.viewPortShared.scene.children[j];
-                switch (shape.type) {
-                    case "FlowHelix":
-                        this._objectProperties.flowEditorMetadata.shapes.push({
-                            type: "FlowHelix",
-                            name: shape.name,
-                            pathIndex: pathIndex,
-                            axisOriginPosition: [shape._x, shape._y, shape._z],
-                            radius: shape.radius,
-                            pitch: shape.pitch,
-                            density: shape.density,
-                            segments: shape.segments,
-                            id: shape.id
-                        });
-                        if (shape.isSelected) {
-                            selected = pathIndex;
-                        }
-                        pathIndex++;
-                        break;
-                    case "FlowSpline":
-                        this._objectProperties.flowEditorMetadata.shapes.push({
-                            type: "FlowSpline",
-                            name: shape.name,
-                            pathIndex: pathIndex,
-                            id: shape.id
-                        });
-                        if (shape.isSelected) {
-                            selected = pathIndex;
-                        }
-                        pathIndex++;
-                        break;
+
+                if (shape.type === "FlowHelix") {
+                    this._objectProperties.flowEditorMetadata.shapes.push({
+                        type: "FlowHelix",
+                        name: shape.name,
+                        pathIndex: pathIndex,
+                        axisOriginPosition: [shape._x, shape._y, shape._z],
+                        radius: shape.radius,
+                        pitch: shape.pitch,
+                        density: shape.density,
+                        segments: shape.segments,
+                        id: shape.id
+                    });
+
+                    if (shape.isSelected) {
+                        selected = pathIndex;
+                    }
+
+                    pathIndex++;
+
+                } else if (shape.type === "FlowSpline") {
+                    this._objectProperties.flowEditorMetadata.shapes.push({
+                        type: "FlowSpline",
+                        name: shape.name,
+                        pathIndex: pathIndex,
+                        id: shape.id
+                    });
+
+                    if (shape.isSelected) {
+                        selected = pathIndex;
+                    }
+
+                    pathIndex++;
                 }
             }
+
             if (selected !== null) {
                 this._objectProperties.flowEditorMetadata.selected = selected;
             }
+
             paths = [];
             this._objectProperties.isSelectionEnabled = this.viewPortShared.scene._data.isSelectionEnabled;
             this._objectProperties.hasSelectedIndexScrolling = this.viewPortShared.scene._data.hasSelectedIndexScrolling;
@@ -455,13 +482,16 @@ exports.Editor = Montage.create(Component, {
                 this.viewPortShared.scene._data.scrollVectorX,
                 this.viewPortShared.scene._data.scrollVectorY
             ];
+
             for (j = 0; j < this.viewPortShared.scene.children.length; j++) {
                 shape = this.viewPortShared.scene.children[j].data;
-                if ((shape.type === "FlowSpline") || (shape.type === "FlowHelix")) {
+
+                if (shape.type === "FlowSpline" || shape.type === "FlowHelix") {
                     paths.push({
                         knots: [],
                         units: {}
                     });
+
                     spline = paths[k];
                     spline.units.rotateX = "";
                     spline.units.rotateY = "";
@@ -470,25 +500,32 @@ exports.Editor = Montage.create(Component, {
                     spline.headOffset = shape.headOffset;
                     spline.tailOffset = shape.tailOffset;
                     n = 0;
+
                     for (i = 0; i < shape.length; i++) {
                         bezier = shape.getBezierCurve(i);
+
                         if (bezier.getControlPoint(0)) {
                             if (!spline.knots[n]) {
                                 spline.knots[n] = {};
                             }
+
                             if (!spline.knots[n].previousHandlerPosition) {
                                 spline.knots[n].previousHandlerPosition = [];
                             }
+
                             if (!spline.knots[n].nextDensity) {
                                 spline.knots[n].nextDensity = 10;
                             }
+
                             if (!spline.knots[n].previousDensity) {
                                 spline.knots[n].previousDensity = 10;
                             }
+
                             if (bezier.getControlPoint(0)) {
                                 if (!spline.knots[n].knotPosition) {
                                     spline.knots[n].knotPosition = [];
                                 }
+
                                 spline.knots[n].knotPosition[0] = bezier.getControlPoint(0).x;
                                 spline.knots[n].knotPosition[1] = bezier.getControlPoint(0).y;
                                 spline.knots[n].knotPosition[2] = bezier.getControlPoint(0).z;
@@ -499,14 +536,17 @@ exports.Editor = Montage.create(Component, {
                                 spline.knots[n].nextDensity = bezier.getControlPoint(0).density;
                                 spline.knots[n].previousDensity = bezier.getControlPoint(0).density;
                             }
+
                             if (bezier.getControlPoint(1)) {
                                 if (!spline.knots[n].nextHandlerPosition) {
                                     spline.knots[n].nextHandlerPosition = [];
                                 }
+
                                 spline.knots[n].nextHandlerPosition[0] = bezier.getControlPoint(1).x;
                                 spline.knots[n].nextHandlerPosition[1] = bezier.getControlPoint(1).y;
                                 spline.knots[n].nextHandlerPosition[2] = bezier.getControlPoint(1).z;
                             }
+
                             if (bezier.getControlPoint(2) || bezier.getControlPoint(3)) {
                                 if (!spline.knots[n + 1]) {
                                     spline.knots[n + 1] = {
@@ -518,11 +558,13 @@ exports.Editor = Montage.create(Component, {
                                     };
                                 }
                             }
+
                             if (bezier.getControlPoint(2)) {
                                 spline.knots[n + 1].previousHandlerPosition[0] = (bezier.getControlPoint(2).x);
                                 spline.knots[n + 1].previousHandlerPosition[1] = (bezier.getControlPoint(2).y);
                                 spline.knots[n + 1].previousHandlerPosition[2] = (bezier.getControlPoint(2).z);
                             }
+
                             if (bezier.getControlPoint(3)) {
                                 spline.knots[n + 1].knotPosition[0] = (bezier.getControlPoint(3).x);
                                 spline.knots[n + 1].knotPosition[1] = (bezier.getControlPoint(3).y);
@@ -534,9 +576,11 @@ exports.Editor = Montage.create(Component, {
                                 spline.knots[n + 1].nextDensity = bezier.getControlPoint(3).density;
                                 spline.knots[n + 1].previousDensity = bezier.getControlPoint(3).density;
                             }
+
                             n++;
                         }
                     }
+
                     k++;
                 }
             }
