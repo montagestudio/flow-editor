@@ -4,8 +4,7 @@
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component,
-    Vector3 = require("ui/pen-tool-math").Vector3;
+    Component = require("montage/ui/component").Component;
 
 /**
     Description TODO
@@ -14,19 +13,8 @@ var Montage = require("montage").Montage,
 */
 exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow-knot-inspector.reel".FlowKnotInspector# */ {
 
-    _type: {
-        value: null
-    },
-
     type: {
-        get: function () {
-            return this._type;
-        },
-        set: function (value) {
-            if (value) {
-                this._type = value;
-            }
-        }
+        value: null
     },
 
     _knot: {
@@ -65,9 +53,6 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
             if (this.knot && dX) {
                 this.knot.translate([dX, 0, 0]);
             }
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
-            }
         }
     },
 
@@ -89,9 +74,6 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
             this._y = value;
             if (this.knot && dY) {
                 this.knot.translate([0, dY, 0]);
-            }
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
             }
         }
     },
@@ -115,90 +97,27 @@ exports.FlowKnotInspector = Montage.create(Component, /** @lends module:"ui/flow
             if (this.knot && dZ) {
                 this.knot.translate([0, 0, dZ]);
             }
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
-            }
         }
-    },
-
-    _rotateX: {
-        value: null
     },
 
     rotateX: {
-        get: function () {
-            return this._rotateX;
-        },
-        set: function (value) {
-            this._rotateX = value;
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
-            }
-        }
-    },
-
-    _rotateY: {
         value: null
     },
 
     rotateY: {
-        get: function () {
-            return this._rotateY;
-        },
-        set: function (value) {
-            this._rotateY = value;
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
-            }
-        }
-    },
-
-    _rotateZ: {
         value: null
     },
 
     rotateZ: {
-        get: function () {
-            return this._rotateZ;
-        },
-        set: function (value) {
-            this._rotateZ = value;
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
-            }
-        }
-    },
-
-    _opacity: {
         value: null
     },
 
     opacity: {
-        get: function () {
-            return this._opacity;
-        },
-        set: function (value) {
-            this._opacity = value;
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
-            }
-        }
-    },
-
-    _density: {
         value: null
     },
 
     density: {
-        get: function () {
-            return this._density;
-        },
-        set: function (value) {
-            this._density = value;
-            if (this.scene) {
-                //this.scene.dispatchEventNamed("sceneUpdated", true, true);
-            }
-        }
+        value: null
     }
 
 });
