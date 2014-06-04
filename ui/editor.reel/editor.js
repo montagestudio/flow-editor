@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
     CanvasCamera = require("ui/camera").CanvasCamera,
     Cross = require("ui/cross").Cross,
     CanvasCross = require("ui/cross").CanvasCross,
-    ViewPortEventManager = require("core/viewport-event-manager").ViewPortEventManager,
+    EventHandler = require("core/event-handler").EventHandler,
     Application = require("montage/core/application").application,
     CanvasSplineAppendMark = require("ui/canvas-spline-append-mark").CanvasSplineAppendMark,
     Promise = require("montage/core/promise").Promise;
@@ -64,15 +64,11 @@ exports.Editor = Montage.create(Component, {
         value: 0
     },
 
-    _isEditing: {
-        value: null
-    },
-
-    _isChangeDetected: {
-        value: null
-    },
-
     _blockHandleDidSetOwnedObjectProperties: {
+        value: null
+    },
+
+    _eventHandler: {
         value: null
     },
 
@@ -608,12 +604,7 @@ exports.Editor = Montage.create(Component, {
 
     prepareForActivationEvents: {
         value: function () {
-            this.viewPortSharedEventManager = ViewPortEventManager.create().initWithViewPorts(this.viewPorts);
-
-            Application.addEventListener("viewportChangeStart", this, false);
-            Application.addEventListener("viewportChange", this, false);
-            Application.addEventListener("viewportChangeEnd", this, false);
-            Application.addEventListener("viewportChangeCancel", this, false);
+            this._eventHandler = EventHandler.create().initWithDelegateAndViewPorts(this, this.viewPorts);
         }
     },
 
@@ -622,10 +613,6 @@ exports.Editor = Montage.create(Component, {
             Application.removeEventListener("didSetOwnedObjectProperties", this, false);
             Application.removeEventListener("closeDocument", this, true);
             Application.removeEventListener("exitModalEditor", this, true);
-            Application.removeEventListener("viewportChangeStart", this, false);
-            Application.removeEventListener("viewportChange", this, false);
-            Application.removeEventListener("viewportChangeEnd", this, false);
-            Application.removeEventListener("viewportChangeCancel", this, false);
         }
     },
 
@@ -660,51 +647,28 @@ exports.Editor = Montage.create(Component, {
         }
     },
 
-    handleViewportChangeStart: {
+    handleFlowEditing: {
         value: function (event) {
-            this._isEditing = true;
+            this.convertShapeToFlow();
+            this.stage.refresh(this._objectProperties);
         }
     },
 
-    handleViewportChange: {
+    handleFlowEditingEnd: {
         value: function (event) {
-            if (this._isEditing) {
-                this.convertShapeToFlow();
-                this.stage.refresh(this._objectProperties);
-                this._isChangeDetected = true;
+            this.convertShapeToFlow();
+
+            var newSettings = JSON.stringify(this._objectProperties),
+                oldSettings = JSON.stringify(this.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties));
+
+            if (newSettings !== oldSettings) {
+                // fixme: (temporary fix)
+                // Find why the convertShapeToFlow function breaks the editing of the viewport, when the add tool is selected.
+                // (Moreover, that should explain why it's impossible to re-use the add tool after undo operations)
+                this._blockHandleDidSetOwnedObjectProperties = true;
+
+                this.editingDocument.setOwnedObjectProperties(this.object, this._objectProperties);
             }
-        }
-    },
-
-    handleViewportChangeEnd: {
-        value: function (event) {
-            if (this._isEditing) {
-                this.convertShapeToFlow();
-
-                if (this._isChangeDetected) {
-                    var newSettings = JSON.stringify(this._objectProperties),
-                        oldSettings = JSON.stringify(this.editingDocument.getOwnedObjectProperties(this.object, this._objectProperties));
-
-                    if (newSettings !== oldSettings) {
-                        // fixme: (temporary fix)
-                        // Find why the convertShapeToFlow function breaks the editing of the viewport, when the add tool is selected.
-                        // (Moreover, that should explain why it's impossible to re-use the add tool after undo operations)
-                        this._blockHandleDidSetOwnedObjectProperties = true;
-
-                        this.editingDocument.setOwnedObjectProperties(this.object, this._objectProperties);
-                    }
-
-                    this._isChangeDetected = false;
-                }
-
-                this._isEditing = false;
-            }
-        }
-    },
-
-    handleViewportChangeCancel: {
-        value: function (event) {
-            this._isEditing = false;
         }
     },
 
