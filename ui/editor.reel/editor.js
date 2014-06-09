@@ -122,8 +122,10 @@ exports.Editor = Montage.create(Component, {
                     if (!idHash[child.id]) {
                         if (child.data.type === "FlowSpline") {
                             canvasGrid.removeCanvasFlowSpline(child);
+                            i--;
                         } else if (child.data.type === "FlowHelix") {
                             canvasGrid.removeCanvasFlowHelix(child);
+                            i--;
                         }
                     }
                 }
