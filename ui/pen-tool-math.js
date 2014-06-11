@@ -1724,44 +1724,6 @@ var BezierSpline = exports.BezierSpline = MapReducible.specialize({
     },
 
     /**
-        Returns the first knot of the bezier
-    */
-    firstKnot: {
-        get: function () {
-            var curve = this.getBezierCurve(0);
-
-            if (curve) {
-                if (curve.getControlPoint(0)) {
-                    return curve.getControlPoint(0);
-                } else {
-                    return curve.getControlPoint(3);
-                }
-            } else {
-                return null;
-            }
-        }
-    },
-
-    /**
-        Returns the last knot of the bezier
-    */
-    lastKnot: {
-        get: function () {
-            var curve = this.getBezierCurve(this.length - 1);
-
-            if (curve) {
-                if (curve.isComplete) {
-                    return curve.getControlPoint(curve.order);
-                } else {
-                    return curve.getControlPoint(0);
-                }
-            } else {
-                return null;
-            }
-        }
-    },
-
-    /**
         Inserts the provided Bézier curve at the end of the spline and if there is
         a previous Bézier curve, it sets the first control point of the inserted
         Bézier curve to be the last control point of the previous Bézier curve (if any)
@@ -2110,6 +2072,96 @@ var CubicBezierSpline = exports.CubicBezierSpline = BezierSpline.specialize({
     type: {
         serializable: false,
         value: "CubicBezierSpline"
+    },
+
+    /**
+        Returns the first knot of the bezier
+    */
+    firstKnot: {
+        get: function () {
+            var curve = this.getBezierCurve(0);
+
+            if (curve) {
+                if (curve.getControlPoint(0)) {
+                    return curve.getControlPoint(0);
+                } else {
+                    return curve.getControlPoint(3);
+                }
+            } else {
+                return null;
+            }
+        }
+    },
+
+    /**
+        Returns the last knot of the bezier
+    */
+    lastKnot: {
+        get: function () {
+            var curve = this.getBezierCurve(this.length - 1);
+
+            if (curve) {
+                if (curve.getControlPoint(3)) {
+                    return curve.getControlPoint(3);
+                } else {
+                    return curve.getControlPoint(0);
+                }
+            } else {
+                return null;
+            }
+        }
+    },
+
+    /**
+        Returns knot at the given index
+    */
+    getKnot: {
+        value: function (index) {
+            var curve = this.getBezierCurve(0);
+
+            if (curve) {
+                if (curve.getControlPoint(0)) {
+                    if ((index < this.length) && (curve = this.getBezierCurve(index))) {
+                        return curve.getControlPoint(0);
+                    } else {
+                        if ((index === this.length) && (curve = this.getBezierCurve(index - 1))) {
+                            return curve.getControlPoint(3);
+                        }
+                    }
+                } else {
+                    if (curve = this.getBezierCurve(index)) {
+                        return curve.getControlPoint(3);
+                    }
+                }
+            }
+            return null;
+        }
+    },
+
+    /**
+        Returns the number of knots in the bezier
+    */
+    knotsLength: {
+        get: function () {
+            var curve = this.getBezierCurve(0);
+
+            if (curve) {
+                if (curve.getControlPoint(0)) {
+                    if (this.getBezierCurve(this.length - 1).getControlPoint(3)) {
+                        return this.length + 1;
+                    } else {
+                        return this.length;
+                    }
+                } else {
+                    if (this.getBezierCurve(this.length - 1).getControlPoint(3)) {
+                        return this.length;
+                    } else {
+                        return this.length - 1;
+                    }
+                }
+            }
+            return 0;
+        }
     }
 });
 
