@@ -1082,6 +1082,15 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.order).toEqual(0);
             expect(bezierCurve.getControlPoint(0)).toBe(vector1);
         });
+        it("removeControlPoint", function() {
+            bezierCurve.pushControlPoint(vector1);
+            bezierCurve.pushControlPoint(vector2);
+            expect(bezierCurve.isComplete).toBeTruthy();
+            bezierCurve.removeControlPoint(0);
+            expect(bezierCurve.isComplete).toBeFalsy();
+            expect(bezierCurve.getControlPoint(0)).toBeUndefined();
+            expect(bezierCurve.getControlPoint(1)).toBe(vector2);
+        });
     });
     describe("isComplete", function() {
         beforeEach(function() {

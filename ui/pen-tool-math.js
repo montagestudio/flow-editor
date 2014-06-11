@@ -1176,6 +1176,21 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
     },
 
     /**
+        Removes control point at the given index
+    */
+    removeControlPoint: {
+        value: function (index) {
+            var controlPoint = this.getControlPoint(index);
+
+            if (controlPoint) {
+                controlPoint.nextTarget = null;
+                delete this._data[index];
+            }
+            this.dispatchEventIfNeeded("bezierCurveChange");
+        }
+    },
+
+    /**
         Evaluates Bezier curve at t with De Casteljau's algorithm
         and returns a vector with the resulting coordinates
     */
