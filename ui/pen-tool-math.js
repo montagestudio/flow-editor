@@ -1106,13 +1106,21 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
     },
 
     /**
-        Returns false if the number of control points is lower than 2 or if the number of
-        control points is lower than the expected for the curve's order
+        Returns false if the number of control points is lower than 2, if the number of
+        control points is lower than the expected for the curve's order or if there are
+        undefined control points
     */
     isComplete: {
         get: function () {
+            var i;
+
             if (this.length < 2) {
                 return false;
+            }
+            for (i = 0; i < this.length; i++) {
+                if (!this.getControlPoint(i)) {
+                    return false;
+                }
             }
             return this.length > this.order;
         }
