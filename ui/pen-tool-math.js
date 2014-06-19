@@ -2185,6 +2185,32 @@ var CubicBezierSpline = exports.CubicBezierSpline = BezierSpline.specialize({
             }
             return 0;
         }
+    },
+
+    /**
+        Returns the index within the spline of a given knot or null
+        if the knot is not part of the spline
+    */
+    getIndexForKnot: {
+        value: function (knot) {
+            var length, i;
+
+            if (knot === this.firstKnot) {
+                return 0;
+            }
+            length = this.knotsLength - 1;
+            if (knot === this.lastKnot) {
+                return length;
+            }
+            i = 1;
+            while ((i < length) && (this.getKnot(i) !== knot)) {
+                i++;
+            }
+            if (i < length) {
+                return i;
+            }
+            return null;
+        }
     }
 });
 

@@ -1937,8 +1937,9 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
 /* Cubic Bézier Spline spec */
 
 describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
-    var cubicBezierSpline;
-    var cubicBezierCurve1, cubicBezierCurve2, cubicBezierCurve3, cubicBezierCurve4;
+    var cubicBezierSpline,
+        cubicBezierCurve1, cubicBezierCurve2, cubicBezierCurve3, cubicBezierCurve4,
+        knot1, knot2, knot3, knot4, knot5, knot6;
 
 
     describe("initialization using init", function() {
@@ -1957,25 +1958,26 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
             cubicBezierCurve1 = new BezierCurve().init();
-            cubicBezierCurve1.setControlPoint(0, new Vector().initWithCoordinates([1]));
+            cubicBezierCurve1.setControlPoint(0, knot1 = new Vector().initWithCoordinates([1]));
             cubicBezierCurve1.setControlPoint(1, new Vector().initWithCoordinates([2]));
             cubicBezierCurve1.setControlPoint(2, new Vector().initWithCoordinates([3]));
-            cubicBezierCurve1.setControlPoint(3, new Vector().initWithCoordinates([4]));
+            cubicBezierCurve1.setControlPoint(3, knot2 = new Vector().initWithCoordinates([4]));
             cubicBezierCurve2 = new BezierCurve().init();
             cubicBezierCurve2.setControlPoint(0, new Vector().initWithCoordinates([5]));
             cubicBezierCurve2.setControlPoint(1, new Vector().initWithCoordinates([6]));
             cubicBezierCurve2.setControlPoint(2, new Vector().initWithCoordinates([7]));
-            cubicBezierCurve2.setControlPoint(3, new Vector().initWithCoordinates([8]));
+            cubicBezierCurve2.setControlPoint(3, knot3 = new Vector().initWithCoordinates([8]));
             cubicBezierCurve3 = new BezierCurve().init();
             cubicBezierCurve3.setControlPoint(0, new Vector().initWithCoordinates([9]));
             cubicBezierCurve3.setControlPoint(1, new Vector().initWithCoordinates([10]));
             cubicBezierCurve3.setControlPoint(2, new Vector().initWithCoordinates([11]));
-            cubicBezierCurve3.setControlPoint(3, new Vector().initWithCoordinates([12]));
+            cubicBezierCurve3.setControlPoint(3, knot4 = new Vector().initWithCoordinates([12]));
             cubicBezierCurve4 = new BezierCurve().init();
             cubicBezierCurve4.setControlPoint(0, new Vector().initWithCoordinates([13]));
             cubicBezierCurve4.setControlPoint(1, new Vector().initWithCoordinates([14]));
             cubicBezierCurve4.setControlPoint(2, new Vector().initWithCoordinates([15]));
-            cubicBezierCurve4.setControlPoint(3, new Vector().initWithCoordinates([16]));
+            cubicBezierCurve4.setControlPoint(3, knot5 = new Vector().initWithCoordinates([16]));
+            knot6 = new Vector().initWithCoordinates([0]);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve1);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve2);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve3);
@@ -2007,28 +2009,37 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(5);
         });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(0);
+            expect(cubicBezierSpline.getIndexForKnot(knot2)).toEqual(1);
+            expect(cubicBezierSpline.getIndexForKnot(knot3)).toEqual(2);
+            expect(cubicBezierSpline.getIndexForKnot(knot4)).toEqual(3);
+            expect(cubicBezierSpline.getIndexForKnot(knot5)).toEqual(4);
+            expect(cubicBezierSpline.getIndexForKnot(knot6)).toEqual(null);
+        });
     });
     describe("knot operations in incomplete splines by the left", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
             cubicBezierCurve1 = new BezierCurve().init();
             cubicBezierCurve1.setControlPoint(2, new Vector().initWithCoordinates([3]));
-            cubicBezierCurve1.setControlPoint(3, new Vector().initWithCoordinates([4]));
+            cubicBezierCurve1.setControlPoint(3, knot1 = new Vector().initWithCoordinates([4]));
             cubicBezierCurve2 = new BezierCurve().init();
             cubicBezierCurve2.setControlPoint(0, new Vector().initWithCoordinates([5]));
             cubicBezierCurve2.setControlPoint(1, new Vector().initWithCoordinates([6]));
             cubicBezierCurve2.setControlPoint(2, new Vector().initWithCoordinates([7]));
-            cubicBezierCurve2.setControlPoint(3, new Vector().initWithCoordinates([8]));
+            cubicBezierCurve2.setControlPoint(3, knot2 = new Vector().initWithCoordinates([8]));
             cubicBezierCurve3 = new BezierCurve().init();
             cubicBezierCurve3.setControlPoint(0, new Vector().initWithCoordinates([9]));
             cubicBezierCurve3.setControlPoint(1, new Vector().initWithCoordinates([10]));
             cubicBezierCurve3.setControlPoint(2, new Vector().initWithCoordinates([11]));
-            cubicBezierCurve3.setControlPoint(3, new Vector().initWithCoordinates([12]));
+            cubicBezierCurve3.setControlPoint(3, knot3 = new Vector().initWithCoordinates([12]));
             cubicBezierCurve4 = new BezierCurve().init();
             cubicBezierCurve4.setControlPoint(0, new Vector().initWithCoordinates([13]));
             cubicBezierCurve4.setControlPoint(1, new Vector().initWithCoordinates([14]));
             cubicBezierCurve4.setControlPoint(2, new Vector().initWithCoordinates([15]));
-            cubicBezierCurve4.setControlPoint(3, new Vector().initWithCoordinates([16]));
+            cubicBezierCurve4.setControlPoint(3, knot4 = new Vector().initWithCoordinates([16]));
+            knot5 = new Vector().initWithCoordinates([0]);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve1);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve2);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve3);
@@ -2059,28 +2070,36 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(4);
         });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(0);
+            expect(cubicBezierSpline.getIndexForKnot(knot2)).toEqual(1);
+            expect(cubicBezierSpline.getIndexForKnot(knot3)).toEqual(2);
+            expect(cubicBezierSpline.getIndexForKnot(knot4)).toEqual(3);
+            expect(cubicBezierSpline.getIndexForKnot(knot5)).toEqual(null);
+        });
     });
     describe("knot operations in incomplete splines by the right", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
             cubicBezierCurve1 = new BezierCurve().init();
-            cubicBezierCurve1.setControlPoint(0, new Vector().initWithCoordinates([1]));
+            cubicBezierCurve1.setControlPoint(0, knot1 = new Vector().initWithCoordinates([1]));
             cubicBezierCurve1.setControlPoint(1, new Vector().initWithCoordinates([2]));
             cubicBezierCurve1.setControlPoint(2, new Vector().initWithCoordinates([3]));
-            cubicBezierCurve1.setControlPoint(3, new Vector().initWithCoordinates([4]));
+            cubicBezierCurve1.setControlPoint(3, knot2 = new Vector().initWithCoordinates([4]));
             cubicBezierCurve2 = new BezierCurve().init();
             cubicBezierCurve2.setControlPoint(0, new Vector().initWithCoordinates([5]));
             cubicBezierCurve2.setControlPoint(1, new Vector().initWithCoordinates([6]));
             cubicBezierCurve2.setControlPoint(2, new Vector().initWithCoordinates([7]));
-            cubicBezierCurve2.setControlPoint(3, new Vector().initWithCoordinates([8]));
+            cubicBezierCurve2.setControlPoint(3, knot3 = new Vector().initWithCoordinates([8]));
             cubicBezierCurve3 = new BezierCurve().init();
             cubicBezierCurve3.setControlPoint(0, new Vector().initWithCoordinates([9]));
             cubicBezierCurve3.setControlPoint(1, new Vector().initWithCoordinates([10]));
             cubicBezierCurve3.setControlPoint(2, new Vector().initWithCoordinates([11]));
-            cubicBezierCurve3.setControlPoint(3, new Vector().initWithCoordinates([12]));
+            cubicBezierCurve3.setControlPoint(3, knot4 = new Vector().initWithCoordinates([12]));
             cubicBezierCurve4 = new BezierCurve().init();
             cubicBezierCurve4.setControlPoint(0, new Vector().initWithCoordinates([13]));
             cubicBezierCurve4.setControlPoint(1, new Vector().initWithCoordinates([14]));
+            knot5 = new Vector().initWithCoordinates([0]);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve1);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve2);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve3);
@@ -2111,26 +2130,34 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(4);
         });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(0);
+            expect(cubicBezierSpline.getIndexForKnot(knot2)).toEqual(1);
+            expect(cubicBezierSpline.getIndexForKnot(knot3)).toEqual(2);
+            expect(cubicBezierSpline.getIndexForKnot(knot4)).toEqual(3);
+            expect(cubicBezierSpline.getIndexForKnot(knot5)).toEqual(null);
+        });
     });
     describe("knot operations in incomplete splines in both sides", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
             cubicBezierCurve1 = new BezierCurve().init();
             cubicBezierCurve1.setControlPoint(2, new Vector().initWithCoordinates([3]));
-            cubicBezierCurve1.setControlPoint(3, new Vector().initWithCoordinates([4]));
+            cubicBezierCurve1.setControlPoint(3, knot1 = new Vector().initWithCoordinates([4]));
             cubicBezierCurve2 = new BezierCurve().init();
             cubicBezierCurve2.setControlPoint(0, new Vector().initWithCoordinates([5]));
             cubicBezierCurve2.setControlPoint(1, new Vector().initWithCoordinates([6]));
             cubicBezierCurve2.setControlPoint(2, new Vector().initWithCoordinates([7]));
-            cubicBezierCurve2.setControlPoint(3, new Vector().initWithCoordinates([8]));
+            cubicBezierCurve2.setControlPoint(3, knot2 = new Vector().initWithCoordinates([8]));
             cubicBezierCurve3 = new BezierCurve().init();
             cubicBezierCurve3.setControlPoint(0, new Vector().initWithCoordinates([9]));
             cubicBezierCurve3.setControlPoint(1, new Vector().initWithCoordinates([10]));
             cubicBezierCurve3.setControlPoint(2, new Vector().initWithCoordinates([11]));
-            cubicBezierCurve3.setControlPoint(3, new Vector().initWithCoordinates([12]));
+            cubicBezierCurve3.setControlPoint(3, knot3 = new Vector().initWithCoordinates([12]));
             cubicBezierCurve4 = new BezierCurve().init();
             cubicBezierCurve4.setControlPoint(0, new Vector().initWithCoordinates([13]));
             cubicBezierCurve4.setControlPoint(1, new Vector().initWithCoordinates([14]));
+            knot4 = new Vector().initWithCoordinates([0]);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve1);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve2);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve3);
@@ -2160,10 +2187,17 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(3);
         });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(0);
+            expect(cubicBezierSpline.getIndexForKnot(knot2)).toEqual(1);
+            expect(cubicBezierSpline.getIndexForKnot(knot3)).toEqual(2);
+            expect(cubicBezierSpline.getIndexForKnot(knot4)).toEqual(null);
+        });
     });
     describe("knot operations in empty splines", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
+            knot1 = new Vector().initWithCoordinates([0]);
         });
         it("spline should be properly initialized", function() {
             expect(cubicBezierSpline.length).toEqual(0);
@@ -2181,15 +2215,19 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(0);
         });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(null);
+        });
     });
     describe("knot operations in spline width single complete curve", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
             cubicBezierCurve1 = new BezierCurve().init();
-            cubicBezierCurve1.setControlPoint(0, new Vector().initWithCoordinates([1]));
+            cubicBezierCurve1.setControlPoint(0, knot1 = new Vector().initWithCoordinates([1]));
             cubicBezierCurve1.setControlPoint(1, new Vector().initWithCoordinates([2]));
             cubicBezierCurve1.setControlPoint(2, new Vector().initWithCoordinates([3]));
-            cubicBezierCurve1.setControlPoint(3, new Vector().initWithCoordinates([4]));
+            cubicBezierCurve1.setControlPoint(3, knot2 = new Vector().initWithCoordinates([4]));
+            knot3 = new Vector().initWithCoordinates([0]);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve1);
         });
         it("spline should be properly initialized", function() {
@@ -2209,13 +2247,19 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(2);
         });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(0);
+            expect(cubicBezierSpline.getIndexForKnot(knot2)).toEqual(1);
+            expect(cubicBezierSpline.getIndexForKnot(knot3)).toEqual(null);
+        });
     });
     describe("knot operations in spline width single incomplete curve by the left", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
             cubicBezierCurve1 = new BezierCurve().init();
             cubicBezierCurve1.setControlPoint(2, new Vector().initWithCoordinates([3]));
-            cubicBezierCurve1.setControlPoint(3, new Vector().initWithCoordinates([4]));
+            cubicBezierCurve1.setControlPoint(3, knot1 = new Vector().initWithCoordinates([4]));
+            knot2 = new Vector().initWithCoordinates([0]);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve1);
         });
         it("spline should be properly initialized", function() {
@@ -2234,13 +2278,18 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(1);
         });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(0);
+            expect(cubicBezierSpline.getIndexForKnot(knot2)).toEqual(null);
+        });
     });
     describe("knot operations in spline width single incomplete curve by the right", function() {
         beforeEach(function() {
             cubicBezierSpline = new CubicBezierSpline().init();
             cubicBezierCurve1 = new BezierCurve().init();
-            cubicBezierCurve1.setControlPoint(0, new Vector().initWithCoordinates([1]));
+            cubicBezierCurve1.setControlPoint(0, knot1 = new Vector().initWithCoordinates([1]));
             cubicBezierCurve1.setControlPoint(1, new Vector().initWithCoordinates([2]));
+            knot2 = new Vector().initWithCoordinates([0]);
             cubicBezierSpline.pushBezierCurve(cubicBezierCurve1);
         });
         it("spline should be properly initialized", function() {
@@ -2258,6 +2307,10 @@ describe("pen-tool-math Cubic-Bezier-Spline-spec", function() {
         });
         it("knotsLength should return expected results", function () {
             expect(cubicBezierSpline.knotsLength).toEqual(1);
+        });
+        it("getIndexForKnot should return expected results", function () {
+            expect(cubicBezierSpline.getIndexForKnot(knot1)).toEqual(0);
+            expect(cubicBezierSpline.getIndexForKnot(knot2)).toEqual(null);
         });
     });
 });
