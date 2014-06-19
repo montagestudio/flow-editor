@@ -80,6 +80,10 @@ exports.Editor = Montage.create(Component, {
         value: null
     },
 
+    _isEditing: {
+        value: null
+    },
+
     convertFlowToShape: {
         value: function () {
             var shape, spline, i, k, j, n, knot,
@@ -652,7 +656,7 @@ exports.Editor = Montage.create(Component, {
         value: function (event) {
             var detail = event.detail;
 
-            if (detail) {
+            if (detail && !this._isEditing) {
                 var proxy = detail.proxy;
 
                 if (proxy && /montage\/ui\/flow.reel/.test(proxy.exportId) && proxy.uuid === this.object.uuid) {
@@ -670,12 +674,20 @@ exports.Editor = Montage.create(Component, {
         value: function (event) {
             this.convertShapeToFlow();
             this.stage.refresh(this._objectProperties);
+            this._isEditing = true;
+
+            this.editingDocument.dispatchEventNamed("didSetOwnedObjectProperties", true, false, {
+                proxy: this.object,
+                values: this._objectProperties
+            });
         }
     },
 
     handleFlowEditingEnd: {
         value: function (event) {
             this.convertShapeToFlow();
+            this._isEditing = false;
+
             var newSettings = JSON.stringify(this._objectProperties);
 
             if (newSettings !== this._currentObjectPropertiesSnap) {
