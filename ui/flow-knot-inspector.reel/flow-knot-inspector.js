@@ -124,6 +124,14 @@ exports.FlowKnotInspector = Component.specialize( /** @lends module:"ui/flow-kno
         value: function () {
             this.dispatchEventNamed("flowPropertyChangeSet", true, true);
         }
+    },
+
+    handleDeleteAction: {
+        value: function () {
+            console.log("DELETE!");
+            /*this.scene.removeCanvasFlowSpline(this.spline);
+            this.dispatchEventNamed("flowPropertyChangeSet", true, true);*/
+        }
     }
 
 });
