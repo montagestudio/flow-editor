@@ -2211,6 +2211,72 @@ var CubicBezierSpline = exports.CubicBezierSpline = BezierSpline.specialize({
             }
             return null;
         }
+    },
+
+    /**
+        Removes a given knot from the bezier and returns true if the operation was
+        sucessful or false if the given knot was not part of the bezier
+    */
+    removeKnot: {
+        value: function (knot) {
+            var index = this.getIndexForKnot(knot),
+                curve, curve2;
+
+            if (index !== null) {
+                if (knot === this.firstKnot) {
+                    if (knot === this.lastKnot) {
+                        this.removeBezierCurve(0);
+                        this.dispatchEventIfNeeded("bezierSplineChange");
+                        return true;
+                    } else {
+                        curve = this.getBezierCurve(0);
+                        if (curve.getControlPoint(0)) {
+                            curve.removeControlPoint(0);
+                            this.dispatchEventIfNeeded("bezierSplineChange");
+                            return true;
+                        } else {
+                            this.removeBezierCurve(0);
+                            curve = this.getBezierCurve(0);
+                            curve.removeControlPoint(0);
+                            this.dispatchEventIfNeeded("bezierSplineChange");
+                            return true;
+                        }
+                    }
+                }
+                if (knot === this.lastKnot) {
+                    curve = this.getBezierCurve(this.length - 1);
+                    if (curve.getControlPoint(3)) {
+                        curve.removeControlPoint(3);
+                        this.dispatchEventIfNeeded("bezierSplineChange");
+                        return true;
+                    } else {
+                        this.removeBezierCurve(this.length - 1);
+                        curve = this.getBezierCurve(this.length - 1);
+                        curve.removeControlPoint(3);
+                        this.dispatchEventIfNeeded("bezierSplineChange");
+                        return true;
+                    }
+                }
+                curve = this.getBezierCurve(0);
+                if (curve.getControlPoint(0)) {
+                    curve = this.getBezierCurve(index - 1);
+                    curve2 = this.getBezierCurve(index);
+                    curve.setControlPoint(2, curve2.getControlPoint(2));
+                    curve.setControlPoint(3, curve2.getControlPoint(3));
+                    this._data.splice(index, 1);
+                    this.dispatchEventIfNeeded("bezierSplineChange");
+                } else {
+                    curve = this.getBezierCurve(index);
+                    curve2 = this.getBezierCurve(index + 1);
+                    curve.setControlPoint(2, curve2.getControlPoint(2));
+                    curve.setControlPoint(3, curve2.getControlPoint(3));
+                    this._data.splice(index + 1, 1);
+                    this.dispatchEventIfNeeded("bezierSplineChange");
+                }
+                return true;
+            }
+            return false;
+        }
     }
 });
 
