@@ -584,3 +584,75 @@ exports.HelixTool = Montage.create(Montage, {
     }
 
 });
+
+exports.ZoomInTool = Montage.create(Montage, {
+
+    start: {
+        value: function (viewport) {
+            viewport.classList.add("FlowViewPort-Zoom-In");
+        }
+    },
+
+    stop: {
+        value: function (viewport) {
+            viewport.classList.remove("FlowViewPort-Zoom-In");
+        }
+    },
+
+    _pointerX: {
+        value: null
+    },
+
+    _pointerY: {
+        value: null
+    },
+
+    handleMousedown: {
+        value: function (event, viewPort, editor) {
+            var x = event.offsetX - viewPort.translateX,
+                y = event.offsetY - viewPort.translateY;
+
+            viewPort.translateX -= x * 0.1;
+            viewPort.translateY -= y * 0.1;
+
+            viewPort.scale *= 1.1;
+        }
+    }
+});
+
+exports.ZoomOutTool = Montage.create(Montage, {
+
+    start: {
+        value: function (viewport) {
+            viewport.classList.add("FlowViewPort-Zoom-Out");
+        }
+    },
+
+    stop: {
+        value: function (viewport) {
+            viewport.classList.remove("FlowViewPort-Zoom-Out");
+        }
+    },
+
+    _pointerX: {
+        value: null
+    },
+
+    _pointerY: {
+        value: null
+    },
+
+    handleMousedown: {
+        value: function (event, viewPort, editor) {
+            var x = event.offsetX - viewPort.translateX,
+                y = event.offsetY - viewPort.translateY;
+
+            viewPort.translateX -= x * -0.1;
+            viewPort.translateY -= y * -0.1;
+
+            viewPort.scale /= 1.1;
+        }
+    }
+
+});
+

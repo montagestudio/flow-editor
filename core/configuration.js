@@ -72,8 +72,7 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Convert"
                         ]
-                    },
-                    children: null
+                    }
                 },
                 {
                     id: "pen",
@@ -83,8 +82,7 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Pen"
                         ]
-                    },
-                    children: null
+                    }
                 },
                 {
                     id: "add",
@@ -94,8 +92,7 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Add"
                         ]
-                    },
-                    children: null
+                    }
                 },
                 {
                     id: "helix",
@@ -105,8 +102,27 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Helix"
                         ]
-                    },
-                    children: null
+                    }
+                },
+                {
+                    id: "zoomIn",
+                    title: "Zoom In Tool",
+                    canBeSelected: true,
+                    cssRules:{
+                        class: [
+                            "flow-Editor-Toolbar-Button-Zoom-In"
+                        ]
+                    }
+                },
+                {
+                    id: "zoomOut",
+                    title: "Zoom Out Tool",
+                    canBeSelected: true,
+                    cssRules:{
+                        class: [
+                            "flow-Editor-Toolbar-Button-Zoom-Out"
+                        ]
+                    }
                 },
                 {
                     id: "zoomExtents",
@@ -116,8 +132,7 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Zoom-Extends"
                         ]
-                    },
-                    children: null
+                    }
                 },
                 {
                     id: "inspector",
@@ -127,8 +142,7 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Inspector"
                         ]
-                    },
-                    children: null
+                    }
                 },
                 {
                     id: "tree",
@@ -138,8 +152,7 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Tree"
                         ]
-                    },
-                    children: null
+                    }
                 },
                 {
                     id: "close",
@@ -149,12 +162,10 @@ var PREDEFINED_COLORS = {
                         class: [
                             "flow-Editor-Toolbar-Button-Close"
                         ]
-                    },
-                    children: null
+                    }
                 }
             ]
         }
-
     };
 
 Object.defineProperty(FlowEditorConfig.viewPort, "types", {
