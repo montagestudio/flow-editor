@@ -660,6 +660,7 @@ exports.RemoveTool = Montage.create(Montage, {
 
     start: {
         value: function (viewport) {
+            viewport.unselect();
         }
     },
 
@@ -676,13 +677,30 @@ exports.RemoveTool = Montage.create(Montage, {
         value: null
     },
 
+    _shapeHighlighted: {
+        value: null
+    },
+
+    handleHover: {
+        value: function (event, viewport) {
+            this._shapeHighlighted = viewport.findCloserShapeType("FlowSpline", event.offsetX, event.offsetY);
+
+            viewport.unselect();
+
+            if (this._shapeHighlighted) {
+                this._shapeHighlighted.isSelected = true;
+            }
+        }
+    },
+
     handleMousedown: {
         value: function (event, viewport, editor) {
             var selectedChild = viewport.findSelectedChild(event.offsetX, event.offsetY);
 
             if (selectedChild) {
                 if (selectedChild.data.type === "FlowKnot") {
-                    // missing function removeKnot
+                    viewport.scene.removeCanvasFlowKnot(selectedChild);
+                    viewport.dispatchEventNamed("flowPropertyChangeSet", true, true);
 
                 } else if (selectedChild.data.type === "FlowHelix") {
                     viewport.scene.removeCanvasFlowHelix(selectedChild);
