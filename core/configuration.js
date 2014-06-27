@@ -95,6 +95,16 @@ var PREDEFINED_COLORS = {
                     }
                 },
                 {
+                    id: "remove",
+                    title: "Pen Remove Tool",
+                    canBeSelected: true,
+                    cssRules:{
+                        class: [
+                            "flow-Editor-Toolbar-Button-Remove"
+                        ]
+                    }
+                },
+                {
                     id: "helix",
                     title: "Helix Tool",
                     canBeSelected: true,

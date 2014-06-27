@@ -656,3 +656,44 @@ exports.ZoomOutTool = Montage.create(Montage, {
 
 });
 
+exports.RemoveTool = Montage.create(Montage, {
+
+    start: {
+        value: function (viewport) {
+        }
+    },
+
+    stop: {
+        value: function (viewport) {
+        }
+    },
+
+    _pointerX: {
+        value: null
+    },
+
+    _pointerY: {
+        value: null
+    },
+
+    handleMousedown: {
+        value: function (event, viewport, editor) {
+            var selectedChild = viewport.findSelectedChild(event.offsetX, event.offsetY);
+
+            if (selectedChild) {
+                if (selectedChild.data.type === "FlowKnot") {
+                    // missing function removeKnot
+
+                } else if (selectedChild.data.type === "FlowHelix") {
+                    viewport.scene.removeCanvasFlowHelix(selectedChild);
+                    viewport.dispatchEventNamed("flowPropertyChangeSet", true, true);
+
+                } else if (selectedChild.data.type === "FlowSpline") {
+                    viewport.scene.removeCanvasFlowSpline(selectedChild);
+                    viewport.dispatchEventNamed("flowPropertyChangeSet", true, true);
+                }
+            }
+        }
+    }
+
+});
