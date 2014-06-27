@@ -124,6 +124,27 @@ exports.FlowKnotInspector = Component.specialize( /** @lends module:"ui/flow-kno
         value: function () {
             this.dispatchEventNamed("flowPropertyChangeSet", true, true);
         }
+    },
+
+    handleDeleteAction: {
+        value: function () {
+            var spline = this.knot.parent,
+                i;
+
+            if (spline._data.knotsLength <= 2) {
+                this.scene.removeCanvasFlowSpline(spline);
+            } else {
+                i = 0;
+                while ((i < spline.children.length) && (spline.children[i] !== this.knot)) {
+                    i++;
+                }
+                if (i < spline.children.length) {
+                    spline._data.removeKnot(spline._data.getKnot(i));
+                    this.knot.delete();
+                    this.dispatchEventNamed("flowPropertyChangeSet", true, true);
+                }
+            }
+        }
     }
 
 });
