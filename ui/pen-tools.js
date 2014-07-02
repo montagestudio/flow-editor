@@ -701,14 +701,6 @@ exports.RemoveTool = Montage.create(Montage, {
                 if (selectedChild.data.type === "FlowKnot") {
                     viewport.scene.removeCanvasFlowKnot(selectedChild);
                     viewport.dispatchEventNamed("flowPropertyChangeSet", true, true);
-
-                } else if (selectedChild.data.type === "FlowHelix") {
-                    viewport.scene.removeCanvasFlowHelix(selectedChild);
-                    viewport.dispatchEventNamed("flowPropertyChangeSet", true, true);
-
-                } else if (selectedChild.data.type === "FlowSpline") {
-                    viewport.scene.removeCanvasFlowSpline(selectedChild);
-                    viewport.dispatchEventNamed("flowPropertyChangeSet", true, true);
                 }
             }
         }
