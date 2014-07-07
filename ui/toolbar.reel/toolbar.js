@@ -62,7 +62,8 @@ exports.Toolbar = Component.specialize( /** @lends module:"ui/toolbar.reel".Tool
                     "add": PenTools.AddTool.create(),
                     "helix": PenTools.HelixTool.create(),
                     "zoomOut": PenTools.ZoomOutTool.create(),
-                    "zoomIn": PenTools.ZoomInTool.create()
+                    "zoomIn": PenTools.ZoomInTool.create(),
+                    "remove": PenTools.RemoveTool.create()
                 }; // Todo: create them lazily
 
                 this.addPathChangeListener("templateObjects.flowEditorToolbarItemList._completedFirstDraw", this, "_handleToolItemsCompletedFirstDraw");
