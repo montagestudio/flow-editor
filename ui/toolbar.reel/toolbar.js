@@ -66,9 +66,23 @@ exports.Toolbar = Component.specialize( /** @lends module:"ui/toolbar.reel".Tool
                     "remove": PenTools.RemoveTool.create()
                 }; // Todo: create them lazily
 
-                this.addPathChangeListener("templateObjects.flowEditorToolbarItemList._completedFirstDraw", this, "_handleToolItemsCompletedFirstDraw");
                 this.toolsOverlay.delegate = this;
             }
+        }
+    },
+
+    handleFlowEditorToolbarItemListFirstDraw: {
+        value: function () {
+            var cells = this.templateObjects.flowEditorToolbarItemList.childComponents,
+                self = this;
+
+            cells.some(function (cell) {
+                if (cell.object.id === ToolBarConfig.initialToolSelected) {
+                    self._selectCellTool(cell);
+
+                    return true;
+                }
+            });
         }
     },
 
@@ -113,25 +127,6 @@ exports.Toolbar = Component.specialize( /** @lends module:"ui/toolbar.reel".Tool
             if (toolSelected && toolSelected.object) {
                 toolCell.object = toolSelected.object;
                 this._selectCellTool(toolCell);
-            }
-        }
-    },
-
-    _handleToolItemsCompletedFirstDraw: {
-        value: function (completed) {
-            if (completed) {
-                var cells = this.templateObjects.flowEditorToolbarItemList.childComponents,
-                    self = this;
-
-                this.removePathChangeListener("templateObjects.flowEditorToolbarItemList._completedFirstDraw", this);
-
-                var rep = cells.some(function (cell) {
-                    if (cell.object.id === ToolBarConfig.initialToolSelected) {
-                        self._selectCellTool(cell);
-
-                        return true;
-                    }
-                });
             }
         }
     },
