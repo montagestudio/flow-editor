@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Vector3 = require("ui/pen-tool-math").Vector3;
 
 exports.Viewport = Montage.create(Component, {
 
@@ -107,6 +108,20 @@ exports.Viewport = Montage.create(Component, {
                 matrix[14] * inverse[10];
 
             return inverse;
+        }
+    },
+
+    getCoordinatesForMouseEvent: {
+        value: function (event) {
+            var vector = Vector3.create().
+                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
+                    transformMatrix3d(this.inverseTransformMatrix(this.matrix));
+
+            return [
+                vector.getCoordinate(0),
+                vector.getCoordinate(1),
+                vector.getCoordinate(2)
+            ];
         }
     },
 
