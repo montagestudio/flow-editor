@@ -1,10 +1,17 @@
 var PREDEFINED_COLORS = {
-        GRID_RED: "rgba(255,0,0,0.5)",
-        GRID_GREEN: "rgba(0,128,0,0.5)",
-        GRID_BLUE: "rgba(0,0,255,0.5)"
+        GRID_RED: "rgba(255,0,0,0.8)",
+        GRID_GREEN: "rgba(0,128,0,0.8)",
+        GRID_BLUE: "rgba(0,0,255,0.8)"
     },
 
     FlowEditorConfig = {
+
+        cross: {
+            xColor: PREDEFINED_COLORS.GRID_RED,
+            yColor: PREDEFINED_COLORS.GRID_GREEN,
+            zColor: PREDEFINED_COLORS.GRID_BLUE,
+            font: "8px Arial"
+        },
 
         viewPort: {
             _types: null,
