@@ -89,6 +89,10 @@ exports.ConvertTool = Montage.create(Montage, {
         value: null
     },
 
+    _startCoordinates: {
+        value: null
+    },
+
     handleMousedown: {
         value: function (event, viewport, editor) {
             var path,
@@ -102,33 +106,31 @@ exports.ConvertTool = Montage.create(Montage, {
                 for (i = 0; i < path.length; i++) {
                     path[i].isSelected = true;
                 }
+                this._selectedChild.save();
             } else {
                 viewport.classList.add("grabbing");
                 viewport.unselect();
             }
             this._pointerX = event.pageX;
             this._pointerY = event.pageY;
+            this._startCoordinates = viewport.getCoordinatesForMouseEvent(event);
         }
     },
 
     handleMousemove: {
         value: function (event, viewport) {
             var dX = event.pageX - this._pointerX,
-                dY = event.pageY - this._pointerY;
+                dY = event.pageY - this._pointerY,
+                coordinates = viewport.getCoordinatesForMouseEvent(event),
+                deltaCoordinates = [
+                    coordinates[0] - this._startCoordinates[0],
+                    coordinates[1] - this._startCoordinates[1],
+                    coordinates[2] - this._startCoordinates[2]
+                ];
 
             if (this._selectedChild) {
-                this._selectedChild.translate(
-                    Vector3.
-                    create().
-                    initWithCoordinates([dX, dY, 0]).
-                    transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
-                    subtract(
-                        Vector3.
-                        create().
-                        initWithCoordinates([0, 0, 0]).
-                        transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
-                    )._data
-                );
+                this._selectedChild.restore();
+                this._selectedChild.translate(deltaCoordinates);
             } else {
                 viewport.translateX += dX;
                 viewport.translateY += dY;
