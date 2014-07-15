@@ -111,20 +111,6 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
-    getCoordinatesForMouseEvent: {
-        value: function (event) {
-            var vector = Vector3.create().
-                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
-                    transformMatrix3d(this.inverseTransformMatrix(this.matrix));
-
-            return [
-                vector.getCoordinate(0),
-                vector.getCoordinate(1),
-                vector.getCoordinate(2)
-            ];
-        }
-    },
-
     translateX: {
         get: function () {
             return this.matrix[12];
