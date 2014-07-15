@@ -171,117 +171,6 @@ exports.FlowViewport = Montage.create(Viewport, {
         }
     },
 
-    /*drawShapeSelectionHandlers: {
-        value: function () {
-            var self = this;
-
-            if (this.selection && this.selection[0] && this.selection[0].type === "FlowSpline") {
-                var shape = this.selection[0].clone().transformMatrix3d(this.matrix);
-
-                shape.forEach(function (bezier) {
-                    var i;
-
-                    for (i = 0; i < 2; i++) {
-                        self._context.lineWidth = i?1:7;
-                        self._context.strokeStyle = i?"red":"rgba(255,255,255,0.15)";
-                        if (bezier.getControlPoint(0) && bezier.getControlPoint(1)) {
-                            self._context.beginPath();
-                            self._context.moveTo(
-                                bezier.getControlPoint(0).x,
-                                bezier.getControlPoint(0).y
-                            );
-                            self._context.lineTo(
-                                bezier.getControlPoint(1).x,
-                                bezier.getControlPoint(1).y
-                            );
-                            self._context.stroke();
-                        }
-                        if (bezier.getControlPoint(2) && bezier.getControlPoint(3)) {
-                            self._context.beginPath();
-                            self._context.moveTo(
-                                bezier.getControlPoint(2).x,
-                                bezier.getControlPoint(2).y
-                            );
-                            self._context.lineTo(
-                                bezier.getControlPoint(3).x,
-                                bezier.getControlPoint(3).y
-                            );
-                            self._context.stroke();
-                        }
-                    }
-                });
-                shape.forEach(function (bezier, index) {
-                    if (!index) {
-                        if (bezier.getControlPoint(0)) {
-                            self._context.fillStyle = "white";
-                            self._context.fillRect(
-                                bezier.getControlPoint(0).x - 5 | 0,
-                                bezier.getControlPoint(0).y - 5 | 0,
-                                9,
-                                9
-                            );
-                            self._context.fillStyle = "black";
-                            self._context.fillRect(
-                                bezier.getControlPoint(0).x - 4 | 0,
-                                bezier.getControlPoint(0).y - 4 | 0,
-                                7,
-                                7
-                            );
-                        }
-                    }
-                    if (bezier.getControlPoint(3)) {
-                        self._context.fillStyle = "white";
-                        self._context.fillRect(
-                            bezier.getControlPoint(3).x - 5 | 0,
-                            bezier.getControlPoint(3).y - 5 | 0,
-                            9,
-                            9
-                        );
-                        self._context.fillStyle = "black";
-                        self._context.fillRect(
-                            bezier.getControlPoint(3).x - 4 | 0,
-                            bezier.getControlPoint(3).y - 4 | 0,
-                            7,
-                            7
-                        );
-                    }
-                    if (bezier.getControlPoint(1)) {
-                        self._context.fillStyle = "white";
-                        self._context.fillRect(
-                            bezier.getControlPoint(1).x - 5 | 0,
-                            bezier.getControlPoint(1).y - 5 | 0,
-                            9,
-                            9
-                        );
-                        self._context.fillStyle = "red";
-                        self._context.fillRect(
-                            bezier.getControlPoint(1).x - 4 | 0,
-                            bezier.getControlPoint(1).y - 4 | 0,
-                            7,
-                            7
-                        );
-                    }
-                    if (bezier.getControlPoint(2)) {
-                        self._context.fillStyle = "white";
-                        self._context.fillRect(
-                            bezier.getControlPoint(2).x - 5 | 0,
-                            bezier.getControlPoint(2).y - 5 | 0,
-                            9,
-                            9
-                        );
-                        self._context.fillStyle = "red";
-                        self._context.fillRect(
-                            bezier.getControlPoint(2).x - 4 | 0,
-                            bezier.getControlPoint(2).y - 4 | 0,
-                            7,
-                            7
-                        );
-                    }
-                });
-            }
-        }
-    },*/
-
     drawShapeSelection: {
         value: function () {
             if (this.selection && this.selection[0]) {
@@ -326,42 +215,6 @@ exports.FlowViewport = Montage.create(Viewport, {
         value: null
     },
 
-    /*drawShapeSelectionBoundingRectangle: {
-        value: function () {
-            if (this.selection && this.selection[0]) {
-                if (this.selection[0].getTransformedAxisAlignedBoundaries) {
-                    var boundaries = this.selectedShapeAxisAlignedBoundaries = this.selection[0].getTransformedAxisAlignedBoundaries(this.matrix),
-                        i, k = 9 - (Date.now() / 100 | 0) % 10, e = k, self = this;
-
-                    for (i = boundaries[0].min|0; i < boundaries[0].max|0; i++) {
-                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                        this._context.fillRect(i, boundaries[1].min|0, 1, 1);
-                        e++;
-                    }
-                    for (i = boundaries[1].min|0; i < boundaries[1].max|0; i++) {
-                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                        this._context.fillRect(boundaries[0].max|0, i, 1, 1);
-                        e++;
-                    }
-                    e = k;
-                    for (i = boundaries[1].min|0; i < boundaries[1].max|0; i++) {
-                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                        this._context.fillRect(boundaries[0].min|0, i, 1, 1);
-                        e++;
-                    }
-                    for (i = boundaries[0].min|0; i < boundaries[0].max|0; i++) {
-                        this._context.fillStyle = (e%10 < 5) ? "black" : "white";
-                        this._context.fillRect(i, boundaries[1].max|0, 1, 1);
-                        e++;
-                    }
-                    window.setTimeout(function () {
-                        self.needsDraw = true;
-                    }, 100);
-                }
-            }
-        }
-    },*/
-
     drawShapeSelectionScale: {
         value: function () {
             if (this.selectedShape && this.tool === "arrow") {
@@ -386,29 +239,6 @@ exports.FlowViewport = Montage.create(Viewport, {
             this._element.height = this._height;
             this.scene.canvas = this._element;
             this.scene.draw(this.matrix, this.type);
-
-            /*this.scene._data.sort(function (a, b) {
-                return a.zIndex - b.zIndex;
-            });
-            for (i = 0; i < length; i++) {
-                this.scene._data[i].canvas = this._element;
-                this.scene._data[i].draw(this.matrix);
-                if (this.scene._data[i].children.length) {
-                    var j;
-
-                    for (j = 0; j < this.scene._data[i].children.length; j++) {
-                        this.scene._data[i].children[j].draw(this.matrix);
-                    }
-                }
-            }*/
-            /*if (this.isShowingControlPoints) {
-                this.drawShapeSelectionHandlers();
-            }
-            if (this.isShowingSelection) {
-                this.drawShapeSelectionBoundingRectangle();
-            }*/
-            /*this.canvasCross.draw(this.matrix);
-            this.canvasCamera.draw(this.matrix);*/
         }
     }
 });
