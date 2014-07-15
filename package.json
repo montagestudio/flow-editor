@@ -6,6 +6,7 @@
     "dependencies": {
         "montage": "git://github.com/montagejs/montage.git#0e9886204f484ee0f6360e6a873d55ac446f9f80",
         "matte": "git://github.com/montagejs/matte.git#39747e27bcfacd1715cfafd4d25e3b0670273481",
+        "collections": "1.2.1",
         "native": "0.2.0"
     },
     "devDependencies": {

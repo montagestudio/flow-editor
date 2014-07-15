@@ -63,116 +63,63 @@ var PREDEFINED_COLORS = {
 
         toolbar: {
             initialToolSelected: "convert",
+            classBaseName: "flow-Editor-Toolbar-Button",
+            classSelectedTools: "flow-Editor-Toolbar-Button--selected",
             items: [
                 {
                     id: "convert",
                     title: "Move Tool",
-                    canBeSelected: true,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Convert"
-                        ]
-                    }
+                    canBeSelected: true
                 },
                 {
                     id: "pen",
                     title: "Pen Tool",
-                    canBeSelected: true,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Pen"
-                        ]
-                    }
+                    canBeSelected: true
                 },
                 {
                     id: "add",
                     title: "Pen Add Tool",
-                    canBeSelected: true,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Add"
-                        ]
-                    }
+                    canBeSelected: true
                 },
                 {
                     id: "remove",
                     title: "Pen Remove Tool",
-                    canBeSelected: true,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Remove"
-                        ]
-                    }
+                    canBeSelected: true
                 },
                 {
                     id: "helix",
                     title: "Helix Tool",
-                    canBeSelected: true,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Helix"
-                        ]
-                    }
+                    canBeSelected: true
                 },
                 {
                     id: "zoomIn",
                     title: "Zoom In Tool",
-                    canBeSelected: true,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Zoom-In"
-                        ]
-                    }
+                    canBeSelected: true
                 },
                 {
                     id: "zoomOut",
                     title: "Zoom Out Tool",
-                    canBeSelected: true,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Zoom-Out"
-                        ]
-                    }
+                    canBeSelected: true
                 },
                 {
                     id: "zoomExtents",
                     title: "Zoom Extents Tool",
-                    canBeSelected: false,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Zoom-Extends"
-                        ]
-                    }
+                    canBeSelected: false
                 },
                 {
                     id: "inspector",
                     title: "Inspector Tool",
-                    canBeSelected: false,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Inspector"
-                        ]
-                    }
+                    canBeSelected: false
                 },
                 {
                     id: "tree",
                     title: "Tree Tool",
-                    canBeSelected: false,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Tree"
-                        ]
-                    }
+                    canBeSelected: false
                 },
                 {
                     id: "close",
                     title: "Close",
-                    canBeSelected: false,
-                    cssRules:{
-                        class: [
-                            "flow-Editor-Toolbar-Button-Close"
-                        ]
-                    }
+                    canBeSelected: false
                 }
             ]
         }
