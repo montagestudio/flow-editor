@@ -1,7 +1,8 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Viewport = require("ui/viewport").Viewport,
-    ViewPortConfig = require("core/configuration").FlowEditorConfig.viewPort;
+    ViewPortConfig = require("core/configuration").FlowEditorConfig.viewPort,
+    Vector3 = require("ui/pen-tool-math").Vector3;
 
 exports.FlowViewport = Montage.create(Viewport, {
 
@@ -90,6 +91,7 @@ exports.FlowViewport = Montage.create(Viewport, {
                 this._originNeedsCenter = true;
 
                 window.addEventListener("resize", this, false);
+                window.addEventListener("scroll", this, false);
             }
         }
     },
@@ -135,10 +137,17 @@ exports.FlowViewport = Montage.create(Viewport, {
         }
     },
 
-
     handleResize: {
         value: function (event) {
             this._originNeedsCenter = true;
+            this._needsToMeasureViewportPositionInDocument = true;
+            this.needsDraw = true;
+        }
+    },
+
+    handleScroll: {
+        value: function (event) {
+            this._needsToMeasureViewportPositionInDocument = true;
             this.needsDraw = true;
         }
     },
@@ -146,7 +155,11 @@ exports.FlowViewport = Montage.create(Viewport, {
     getCoordinatesForMouseEvent: {
         value: function (event) {
             var vector = Vector3.create().
-                    initWithCoordinates([event.offsetX, event.offsetY, 0]).
+                    initWithCoordinates([
+                        event.pageX - window.pageXOffset - this._innerContentLeft,
+                        event.pageY - window.pageYOffset - this._innerContentTop,
+                        0
+                    ]).
                     transformMatrix3d(this.inverseTransformMatrix(this.matrix));
 
             return [
@@ -157,6 +170,10 @@ exports.FlowViewport = Montage.create(Viewport, {
         }
     },
 
+    _needsToMeasureViewportPositionInDocument: {
+        value: true
+    },
+
     willDraw: {
         value: function () {
             this._width = this._element.clientWidth;
@@ -165,8 +182,19 @@ exports.FlowViewport = Montage.create(Viewport, {
             if (this._originNeedsCenter) {
                 this.translateX = this._width / 2;
                 this.translateY = this._height / 2;
-
                 this._originNeedsCenter = false;
+            }
+            if (this._needsToMeasureViewportPositionInDocument) {
+                var boundingClientRect = this._element.getBoundingClientRect(),
+                    computedStyle = window.getComputedStyle(this._element),
+                    borderTop = parseInt(computedStyle.getPropertyValue("border-top-width"), 10);
+                    borderLeft = parseInt(computedStyle.getPropertyValue("border-left-width"), 10);
+                    paddingTop = parseInt(computedStyle.getPropertyValue("padding-top"), 10),
+                    paddingLeft = parseInt(computedStyle.getPropertyValue("padding-left"), 10);
+
+                this._innerContentTop = boundingClientRect.top + borderTop + paddingTop;
+                this._innerContentLeft = boundingClientRect.left + borderLeft + paddingLeft;
+                this._needsToMeasureViewportPositionInDocument = false;
             }
         }
     },

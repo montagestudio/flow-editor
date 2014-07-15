@@ -1,6 +1,5 @@
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component,
-    Vector3 = require("ui/pen-tool-math").Vector3;
+    Component = require("montage/ui/component").Component;
 
 exports.Viewport = Montage.create(Component, {
 
