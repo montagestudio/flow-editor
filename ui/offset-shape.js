@@ -41,20 +41,31 @@ exports.OffsetShape = CanvasShape.specialize({
         }
     },
 
-    _setLineDash: {
-        value: null
-    },
+    _drawLine: {
+        value: function (startPosition, endPosition, isDashed) {
+            var startX = Math.round(startPosition.x),
+                startY = Math.round(startPosition.y),
+                endX = Math.round(endPosition.x),
+                endY = Math.round(endPosition.y),
+                dX = endX - startX,
+                dY = endY - startY,
+                distance = Math.sqrt(dX * dX + dY * dY),
+                i;
 
-    setLineDash: {
-        value: function () {
-            if (!this._setLineDash) {
-                this._setLineDash = CanvasRenderingContext2D.prototype.setLineDash ||
-                    CanvasRenderingContext2D.prototype.webkitLineDash ||
-                    CanvasRenderingContext2D.prototype.mozDash ||
-                    function () {}; //Todo: make our own setLineDash function for older browsers.
+            this._context.beginPath();
+            if (isDashed) {
+                dX /= distance;
+                dY /= distance;
+                for (i = 0; i < distance; i += 4) {
+                    this._context.moveTo(startX + dX * i, startY + dY * i);
+                    this._context.lineTo(startX + dX * (i + 1.5), startY + dY * (i + 1.5));
+                }
+            } else {
+                this._context.moveTo(startX, startY);
+                this._context.lineTo(endX, endY);
             }
-
-            this._setLineDash.apply(this._context, arguments);
+            this._context.closePath();
+            this._context.stroke();
         }
     },
 
@@ -68,28 +79,13 @@ exports.OffsetShape = CanvasShape.specialize({
                 this._context.save();
 
                 if (startPosition.x === endPosition.x) {
-                    needDashedLine = false;
-
                     this._context.strokeStyle = GridConfig[this.viewPort.type].colorOrdinate;
 
                 } else if (startPosition.y === endPosition.y) {
-                    needDashedLine = false;
-
                     this._context.strokeStyle = GridConfig[this.viewPort.type].colorAbscissa;
                 }
 
-                if (needDashedLine) {
-                    this.setLineDash([1,6]);
-                }
-
-                this._context.beginPath();
-
-                this._context.moveTo(startPosition.x, startPosition.y);
-                this._context.lineTo(endPosition.x, endPosition.y);
-
-                this._context.closePath();
-                this._context.stroke();
-
+                this._drawLine(startPosition, endPosition, needDashedLine);
                 this._context.restore();
             }
         }
