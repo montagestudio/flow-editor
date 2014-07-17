@@ -1,7 +1,7 @@
 var PREDEFINED_COLORS = {
-        GRID_RED: "rgba(255,0,0,0.8)",
-        GRID_GREEN: "rgba(0,128,0,0.8)",
-        GRID_BLUE: "rgba(0,0,255,0.8)"
+        GRID_RED: "rgba(255,0,0, 1)",
+        GRID_GREEN: "rgba(0,128,0, 1)",
+        GRID_BLUE: "rgba(0,0,255, 1)"
     },
 
     FlowEditorConfig = {

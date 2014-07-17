@@ -3,6 +3,7 @@ var Montage = require("montage").Montage,
     FlowKnot = require("ui/flow-spline-handlers").FlowKnot,
     Vector3 = PenToolMath.Vector3,
     FlowSpline = require("ui/flow-spline").FlowSpline,
+    OffsetShape = require("ui/offset-shape").OffsetShape,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
     BezierCurve = PenToolMath.CubicBezierCurve,
     CanvasFlowHelix = require("ui/flow-helix").CanvasFlowHelix;
@@ -93,6 +94,10 @@ exports.ConvertTool = Montage.create(Montage, {
         value: null
     },
 
+    _offsetShape: {
+        value: null
+    },
+
     handleMousedown: {
         value: function (event, viewport, editor) {
             var path,
@@ -107,6 +112,10 @@ exports.ConvertTool = Montage.create(Montage, {
                     path[i].isSelected = true;
                 }
                 this._selectedChild.save();
+                this._offsetShape = OffsetShape.create().initWithContextAndCoordinates(viewport, [event.offsetX, event.offsetY, 0]);
+
+                viewport.scene.appendCanvasOffsetShape(this._offsetShape);
+
             } else {
                 viewport.classList.add("grabbing");
                 viewport.unselect();
@@ -131,6 +140,7 @@ exports.ConvertTool = Montage.create(Montage, {
             if (this._selectedChild) {
                 this._selectedChild.restore();
                 this._selectedChild.translate(deltaCoordinates);
+                this._offsetShape.translate(deltaCoordinates);
             } else {
                 viewport.translateX += dX;
                 viewport.translateY += dY;
@@ -144,6 +154,11 @@ exports.ConvertTool = Montage.create(Montage, {
         value: function (event, viewport) {
             if (!this._selectedTool) {
                 viewport.classList.remove("grabbing");
+            }
+
+            if (this._offsetShape) {
+                viewport.scene.removeCanvasOffsetShape(this._offsetShape);
+                this._offsetShape = null;
             }
         }
     },
