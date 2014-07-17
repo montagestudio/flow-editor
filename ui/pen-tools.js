@@ -103,18 +103,20 @@ exports.ConvertTool = Montage.create(Montage, {
             var path,
                 i;
 
-            this._selectedChild = viewport.findSelectedChild(event.offsetX, event.offsetY);
+            this.selectedChild = viewport.findSelectedChild(event.offsetX, event.offsetY);
 
-            if (this._selectedChild) {
-                path = viewport.findPathToNode(this._selectedChild);
+            if (this.selectedChild) {
+                path = viewport.findPathToNode(this.selectedChild);
                 viewport.unselect();
                 for (i = 0; i < path.length; i++) {
                     path[i].isSelected = true;
                 }
-                this._selectedChild.save();
+
                 this._offsetShape = OffsetShape.create().initWithContextAndCoordinates(viewport, [event.offsetX, event.offsetY, 0]);
 
                 viewport.scene.appendCanvasOffsetShape(this._offsetShape);
+
+                this.selectedChild.save();
 
             } else {
                 viewport.classList.add("grabbing");
@@ -137,10 +139,11 @@ exports.ConvertTool = Montage.create(Montage, {
                     coordinates[2] - this._startCoordinates[2]
                 ];
 
-            if (this._selectedChild) {
-                this._selectedChild.restore();
-                this._selectedChild.translate(deltaCoordinates);
+            if (this.selectedChild) {
+                this.selectedChild.restore();
+                this.selectedChild.translate(deltaCoordinates);
                 this._offsetShape.translate(deltaCoordinates);
+
             } else {
                 viewport.translateX += dX;
                 viewport.translateY += dY;
@@ -152,7 +155,7 @@ exports.ConvertTool = Montage.create(Montage, {
 
     handleMouseup: {
         value: function (event, viewport) {
-            if (!this._selectedTool) {
+            if (!this.selectedChild) {
                 viewport.classList.remove("grabbing");
             }
 
