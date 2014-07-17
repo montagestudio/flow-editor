@@ -5,11 +5,15 @@
     background: #eee;
 }
 
-.grabbing {
+.FlowViewPort-Tools--grabbing {
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
     cursor: -ms-grabbing;
     cursor: grabbing;
+}
+
+.FlowViewPort-Tools--moving {
+    cursor: all-scroll;
 }
 
 .FlowViewPort-Zoom-In {
