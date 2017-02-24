@@ -13,7 +13,7 @@ var Montage = require("montage").Montage,
  @class module:"ui/main.reel".Main
  @extends module:montage/ui/component.Component
  */
-exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# */ {
+exports.Main = Component.specialize(/** @lends module:"ui/main.reel".Main# */ {
 
     _flow: {
         value: null

@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Target = require("montage/core/target").Target;
 
-var CanvasShape = exports.CanvasShape = Montage.create(Target, {
+var CanvasShape = exports.CanvasShape = Target.specialize({
 
     type: {
         get: function () {

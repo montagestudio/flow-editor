@@ -8,13 +8,13 @@ var Montage = require("montage").Montage,
     CanvasFlowSpline = require("ui/flow-spline").CanvasFlowSpline,
     BezierCurve = require("ui/pen-tool-math").CubicBezierCurve;
 
-var FlowHelix = exports.FlowHelix = Montage.create(FlowSpline, {
+var FlowHelix = exports.FlowHelix = FlowSpline.specialize({
     type: {
         value: "FlowHelix"
     }
 });
 
-exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
+exports.CanvasFlowHelix = CanvasFlowSpline.specialize({
 
     _segments: {
         value: 32
@@ -151,7 +151,7 @@ exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
                     shape.popBezierCurve();
                 }
             } else {
-                this._shape = shape = FlowHelix.create().init();
+                this._shape = shape = new FlowHelix().init();
                 this.initWithData(shape);
             }
             for (i = 0; i < this._segments; i++) {
@@ -161,13 +161,13 @@ exports.CanvasFlowHelix = Montage.create(CanvasFlowSpline, {
                 angle2 = Math.PI - (i + 1) * Math.PI / 8;
                 point2 = this.scaleVector(this.pointInCircleAt(angle2), radius);
                 tangent2 = this.scaleVector(this.tangentInCircleAt(angle2), radius * bezierHandlerLength);
-                bezier = BezierCurve.create().init();
-                bezier.pushControlPoint(knot = FlowKnot.create().initWithCoordinates([-point[0] + this._x, i * this._pitch + this._y, -point[1] + this._z]));
+                bezier = new BezierCurve().init();
+                bezier.pushControlPoint(knot = new FlowKnot().initWithCoordinates([-point[0] + this._x, i * this._pitch + this._y, -point[1] + this._z]));
                 knot.density = this._density;
                 knot.rotateY = -angle - Math.PI / 2;
-                bezier.pushControlPoint(Vector3.create().initWithCoordinates([-point[0] + tangent[0] + this._x, (i + 1 / 3) * this._pitch + this._y, -point[1] + tangent[1] + this._z]));
-                bezier.pushControlPoint(Vector3.create().initWithCoordinates([-point2[0] - tangent2[0] + this._x, (i + 2 / 3) * this._pitch + this._y, -point2[1] - tangent2[1] + this._z]));
-                bezier.pushControlPoint(knot = FlowKnot.create().initWithCoordinates([-point2[0] + this._x, (i + 1) * this._pitch + this._y, -point2[1] + this._z]));
+                bezier.pushControlPoint(new Vector3().initWithCoordinates([-point[0] + tangent[0] + this._x, (i + 1 / 3) * this._pitch + this._y, -point[1] + tangent[1] + this._z]));
+                bezier.pushControlPoint(new Vector3().initWithCoordinates([-point2[0] - tangent2[0] + this._x, (i + 2 / 3) * this._pitch + this._y, -point2[1] - tangent2[1] + this._z]));
+                bezier.pushControlPoint(knot = new FlowKnot().initWithCoordinates([-point2[0] + this._x, (i + 1) * this._pitch + this._y, -point2[1] + this._z]));
                 knot.density = this._density;
                 knot.rotateY = -angle2 - Math.PI / 2;
                 shape.pushBezierCurve(bezier);

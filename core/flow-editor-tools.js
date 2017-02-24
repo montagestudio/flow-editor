@@ -46,7 +46,7 @@ exports.FlowEditorTools = Montage.specialize({
                 tool = null;
 
             if (PenTools[toolName]) {
-                tool = PenTools[toolName].create();
+                tool = new PenTools[toolName]();
 
                 this._cache.set(key, tool);
             }

@@ -3,7 +3,7 @@ var Montage = require("montage").Montage,
     CrossConfig = require("core/configuration").FlowEditorConfig.cross,
     Vector3 = require("ui/pen-tool-math").Vector3;
 
-var Cross = exports.Cross = Montage.create(Montage, {
+var Cross = exports.Cross = Montage.specialize({
 
     xColor: {
         value: CrossConfig.xColor
@@ -23,7 +23,7 @@ var Cross = exports.Cross = Montage.create(Montage, {
 
 });
 
-exports.CanvasCross = Montage.create(CanvasShape, {
+exports.CanvasCross = CanvasShape.specialize({
 
     constructor: {
         value: function () {
@@ -89,7 +89,7 @@ exports.CanvasCross = Montage.create(CanvasShape, {
 
     drawSelf: {
         value: function (transformMatrix) {
-            var vector = Vector3.create(),
+            var vector = new Vector3(),
                 matrix = transformMatrix.clone();
 
             matrix[12] = matrix[13] = matrix[14] = 0;

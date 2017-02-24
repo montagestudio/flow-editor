@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     CanvasShape = require("ui/canvas-shape").CanvasShape;
 
-exports.CanvasSplineAppendMark = Montage.create(CanvasShape, {
+exports.CanvasSplineAppendMark = CanvasShape.specialize({
 
     zIndex: {
         value: 9999

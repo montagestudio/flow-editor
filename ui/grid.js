@@ -5,7 +5,7 @@ var Montage = require("montage").Montage,
     GridConfig = require("core/configuration").FlowEditorConfig.grid,
     CanvasShape = require("ui/canvas-shape").CanvasShape;
 
-var Grid = exports.Grid = Montage.create(Scene, {
+var Grid = exports.Grid = Scene.specialize({
 
     gridlineEach: {
         value: 10
@@ -126,7 +126,7 @@ var Grid = exports.Grid = Montage.create(Scene, {
     }
 });
 
-exports.CanvasGrid = Montage.create(CanvasShape, {
+exports.CanvasGrid = CanvasShape.specialize({
 
     name: {
         value: "Flow"
@@ -165,7 +165,7 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
 
     appendFlowSpline: {
         value: function (flowSpline) {
-            var canvasFlowSpline = CanvasFlowSpline.create().initWithData(flowSpline);
+            var canvasFlowSpline = new CanvasFlowSpline().initWithData(flowSpline);
 
             this._data.pushShape(flowSpline);
             this.appendChild(canvasFlowSpline);
@@ -175,7 +175,7 @@ exports.CanvasGrid = Montage.create(CanvasShape, {
 
     insertFlowSpline: {
         value: function (flowSpline, position) {
-            var canvasFlowSpline = CanvasFlowSpline.create().initWithData(flowSpline);
+            var canvasFlowSpline = new CanvasFlowSpline().initWithData(flowSpline);
 
             this._data.insertShape(flowSpline, position);
             this.insertChild(canvasFlowSpline, position);
