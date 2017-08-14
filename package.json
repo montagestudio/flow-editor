@@ -1,15 +1,40 @@
 {
-    "name": "flow-editor",
-    "version": "0.15.0",
-	"private": true,
-    "main": "core/controller",
-    "dependencies": {
-        "montage": "git://github.com/montagejs/montage.git#0e9886204f484ee0f6360e6a873d55ac446f9f80",
-        "matte": "git://github.com/montagejs/matte.git#39747e27bcfacd1715cfafd4d25e3b0670273481",
-        "collections": "1.2.1",
-        "native": "0.2.0"
-    },
-    "devDependencies": {
-        "montage-testing": "git://github.com/montagejs/montage-testing.git#86e0c6181e9694bca128bfa6b6da4333668619e1"
-    }
- }
+  "name": "flow-editor",
+  "version": "0.15.0",
+  "private": true,
+  "main": "core/controller",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:montagestudio/flow-editor.git"
+  },
+  "dependencies": {
+    "collections": "^5.0.7",
+    "matte": "^0.3.2",
+    "montage": "^17.0.11",
+    "native": "0.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^3.4.0",
+    "http-server": "^0.9.0",
+    "jasmine-console-reporter": "^1.2.7",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
+    "open": "0.0.5"
+  },
+  "scripts": {
+    "test": "node test/run-node.js",
+    "test:karma": "karma start --no-auto-watch --single-run",
+    "test:karma-dev": "karma start --auto-watch --no-single-run",
+    "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\"",
+    "start:overview": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/overview/index.html\""
+  },
+  "mappings": {
+    "stage": "stage"
+  }
+}

@@ -1,10 +1,10 @@
 var Montage = require("montage").Montage,
-    Vector = require("ui/pen-tool-math").Vector,
-    Vector2 = require("ui/pen-tool-math").Vector2,
-    Vector3 = require("ui/pen-tool-math").Vector3,
-    BezierCurve = require("ui/pen-tool-math").BezierCurve,
-    BezierSpline = require("ui/pen-tool-math").BezierSpline,
-    CubicBezierSpline = require("ui/pen-tool-math").CubicBezierSpline;
+    Vector = require("flow-editor/ui/pen-tool-math").Vector,
+    Vector2 = require("flow-editor/ui/pen-tool-math").Vector2,
+    Vector3 = require("flow-editor/ui/pen-tool-math").Vector3,
+    BezierCurve = require("flow-editor/ui/pen-tool-math").BezierCurve,
+    BezierSpline = require("flow-editor/ui/pen-tool-math").BezierSpline,
+    CubicBezierSpline = require("flow-editor/ui/pen-tool-math").CubicBezierSpline;
 
 /* Vector spec */
 
