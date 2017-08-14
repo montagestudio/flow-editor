@@ -76,17 +76,17 @@ var MapReducible = exports.MapReducible = Target.specialize({
 
     dispatchEventIfNeeded: {
         value: function (type) {
-            if (this.nextTarget && !MapReducible._eventsToDispatch[type]) {
-                MapReducible._eventsToDispatch[type] = this;
-                if (MapReducible._timeout === null) {
-                    MapReducible._timeout = window.setTimeout(function () {
+            if (this.nextTarget && !this._eventsToDispatch[type]) {
+                this._eventsToDispatch[type] = this;
+                if (this._timeout === null) {
+                    this._timeout = window.setTimeout(function () {
                         var t;
 
-                        for (t in MapReducible._eventsToDispatch) {
-                            MapReducible._eventsToDispatch[t].dispatchEventNamed(t, true, true);
+                        for (t in this._eventsToDispatch) {
+                            this._eventsToDispatch[t].dispatchEventNamed(t, true, true);
                         }
-                        MapReducible._timeout = null;
-                        MapReducible._eventsToDispatch = {};
+                        this._timeout = null;
+                        this._eventsToDispatch = {};
                     }, 0);
                 }
             }
@@ -1188,7 +1188,7 @@ var BezierCurve = exports.BezierCurve = MapReducible.specialize({
     */
     getControlPoint: {
         value: function (index) {
-            return this._data[index];
+            return this._data.hasOwnProperty(index) ? this._data[index] : null;
         }
     },
 
@@ -1817,7 +1817,7 @@ var BezierSpline = exports.BezierSpline = MapReducible.specialize({
     */
     getBezierCurve: {
         value: function (index) {
-            return this._data[index];
+            return this._data.hasOwnProperty(index) ? this._data[index] : null;
         }
     },
 

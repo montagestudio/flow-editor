@@ -1114,7 +1114,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             bezierCurve.pushControlPoint(vector3);
             var controlPoint = bezierCurve.popControlPoint();
             expect(bezierCurve.order).toEqual(1);
-            expect(bezierCurve.getControlPoint(2)).not.toBeDefined();
+            expect(bezierCurve.getControlPoint(2)).toEqual(null);
             expect(controlPoint).toBe(vector3);
         });
         it("setControlPoint", function() {
@@ -1128,7 +1128,7 @@ describe("pen-tool-math Bezier-Curve-spec", function() {
             expect(bezierCurve.isComplete).toBeTruthy();
             bezierCurve.removeControlPoint(0);
             expect(bezierCurve.isComplete).toBeFalsy();
-            expect(bezierCurve.getControlPoint(0)).toBeUndefined();
+            expect(bezierCurve.getControlPoint(0)).toEqual(null);
             expect(bezierCurve.getControlPoint(1)).toBe(vector2);
         });
     });
@@ -1759,7 +1759,7 @@ describe("pen-tool-math Bezier-Spline-spec", function() {
             var curve = bezierSpline.popBezierCurve();
 
             expect(bezierSpline.length).toEqual(1);
-            expect(bezierSpline.getBezierCurve(1)).not.toBeDefined();
+            expect(bezierSpline.getBezierCurve(1)).toEqual(null);
             expect(curve).toBe(bezierCurve2);
             expect(curve.getControlPoint(0).x).toEqual(4);
             expect(bezierSpline.getBezierCurve(0).getControlPoint(3).x).toEqual(4);

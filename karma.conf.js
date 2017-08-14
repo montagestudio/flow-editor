@@ -23,10 +23,6 @@ module.exports = function(config) {
             included: false
         },
         {
-            pattern: 'ui/**/*.mjson',
-            included: false
-        },
-        {
             pattern: 'ui/**/*.css',
             included: false
         },
