@@ -107,7 +107,10 @@ exports.ConvertTool = Montage.create(Montage, {
 
             if (this.selectedChild) {
                 path = viewport.findPathToNode(this.selectedChild);
+
                 viewport.unselect();
+                viewport.classList.add("FlowViewPort-Tools--moving");
+
                 for (i = 0; i < path.length; i++) {
                     path[i].isSelected = true;
                 }
@@ -119,7 +122,7 @@ exports.ConvertTool = Montage.create(Montage, {
                 this.selectedChild.save();
 
             } else {
-                viewport.classList.add("grabbing");
+                viewport.classList.add("FlowViewPort-Tools--grabbing");
                 viewport.unselect();
             }
             this._pointerX = event.pageX;
@@ -156,7 +159,9 @@ exports.ConvertTool = Montage.create(Montage, {
     handleMouseup: {
         value: function (event, viewport) {
             if (!this.selectedChild) {
-                viewport.classList.remove("grabbing");
+                viewport.classList.remove("FlowViewPort-Tools--grabbing");
+            } else {
+                viewport.classList.remove("FlowViewPort-Tools--moving");
             }
 
             if (this._offsetShape) {
