@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.Viewport = Montage.create(Component, {
+exports.Viewport = Component.specialize({
 
     _scene: {
         value: null

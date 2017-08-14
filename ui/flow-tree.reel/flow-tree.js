@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.FlowTree = Montage.create(Component, {
+exports.FlowTree = Component.specialize({
 
     _scene: {
         value: null

@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 
-exports.Controller = Montage.create(Montage, {
+exports.Controller = Montage.specialize({
 
     hasEditor: {
         value: true

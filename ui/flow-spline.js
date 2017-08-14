@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
     FlowSplineHandlers = require("ui/flow-spline-handlers").FlowSplineHandlers,
     CanvasFlowSplineHandlers = require("ui/flow-spline-handlers").CanvasFlowSplineHandlers;
 
-exports.FlowSpline = Montage.create(BezierSpline, {
+exports.FlowSpline = BezierSpline.specialize({
 
     type: {
         value: "FlowSpline"
@@ -43,7 +43,7 @@ exports.FlowSpline = Montage.create(BezierSpline, {
 
 });
 
-exports.CanvasFlowSpline = Montage.create(CanvasShape, {
+exports.CanvasFlowSpline = CanvasShape.specialize({
 
     appendControlPoint: {
         value: function (controlPoint) {
@@ -53,17 +53,17 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
             if (this._data.length) {
                 bezierCurve = this._data.getBezierCurve(this._data.length - 1);
                 if (bezierCurve.length === 4) {
-                    bezierCurve = BezierCurve.create().init();
+                    bezierCurve = new BezierCurve.init();
                     this._data.pushBezierCurve(bezierCurve);
                 }
             } else {
-                bezierCurve = BezierCurve.create().init();
+                bezierCurve = new BezierCurve().init();
                 this._data.pushBezierCurve(bezierCurve);
             }
             bezierCurve.pushControlPoint(controlPoint);
             switch (bezierCurve.length) {
                 case 1:
-                    knot = CanvasFlowSplineHandlers.create();
+                    knot = new CanvasFlowSplineHandlers();
                     knot.initWithData(controlPoint);
                     knot.isVisible = this.isSelected;
                     this.appendChild(knot);
@@ -73,7 +73,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
                     knot.nextHandler = controlPoint;
                     break;
                 case 3:
-                    knot = CanvasFlowSplineHandlers.create();
+                    knot = new CanvasFlowSplineHandlers();
                     knot.initWithData(controlPoint);
                     knot.isVisible = this.isSelected;
                     knot.previousHandler = controlPoint;
@@ -96,7 +96,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
                     i = 2;
 
                 if (bezierCurve.isComplete) {
-                    bezierCurve = BezierCurve.create().init();
+                    bezierCurve = new BezierCurve().init();
                     this._data.insertCubicBezierCurveAtStart(bezierCurve);
                 } else {
                     while ((i >= 0) && bezierCurve.getControlPoint(i)) {
@@ -110,7 +110,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
                         knot.previousHandler = controlPoint;
                         break;
                     case 1:
-                        knot = CanvasFlowSplineHandlers.create();
+                        knot = new CanvasFlowSplineHandlers();
                         knot.initWithData(controlPoint);
                         knot.isVisible = this.isSelected;
                         knot.nextHandler = controlPoint;
@@ -217,7 +217,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
                     controlPoint = curve.getControlPoint(j);
                     switch (j) {
                         case 0:
-                            knot = CanvasFlowSplineHandlers.create();
+                            knot = new CanvasFlowSplineHandlers();
                             knot.initWithData(controlPoint);
                             knot.isVisible = this.isSelected;
                             this.appendChild(knot);
@@ -227,7 +227,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
                             knot.nextHandler = controlPoint;
                             break;
                         case 2:
-                            knot = CanvasFlowSplineHandlers.create();
+                            knot = new CanvasFlowSplineHandlers();
                             knot.initWithData(controlPoint);
                             knot.isVisible = this.isSelected;
                             knot.previousHandler = controlPoint;
@@ -325,7 +325,7 @@ exports.CanvasFlowSpline = Montage.create(CanvasShape, {
     pointOnShape: {
         value: function (x, y, transformMatrix) {
             var s = this._data.clone().transformMatrix3d(transformMatrix).scale([1, 1, 0]);
-            return (s.getCloserPointTo(Vector3.create().initWithCoordinates([x, y, 0])).distance < 10);
+            return (s.getCloserPointTo(new Vector3().initWithCoordinates([x, y, 0])).distance < 10);
         }
     },
 

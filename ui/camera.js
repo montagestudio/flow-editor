@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     CanvasVector3 = require("ui/canvas-vector3").CanvasVector3,
     MapReducible = require("ui/pen-tool-math").MapReducible;
 
-var Camera = exports.Camera = Montage.create(MapReducible, {
+var Camera = exports.Camera = MapReducible.specialize({
 
     type: {
         value: "FlowCamera"
@@ -12,7 +12,7 @@ var Camera = exports.Camera = Montage.create(MapReducible, {
 
 });
 
-exports.CanvasCamera = Montage.create(CanvasShape, {
+exports.CanvasCamera = CanvasShape.specialize({
 
     name: {
         value: "Camera"
@@ -112,12 +112,12 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
         set: function (value) {
             if (!this._cameraPosition) {
                 if (value) {
-                    var vector = Vector3.create().init();
+                    var vector = new Vector3().init();
 
                     vector.x = value[0];
                     vector.y = value[1];
                     vector.z = value[2];
-                    this._cameraPosition = CanvasVector3.create().initWithData(vector);
+                    this._cameraPosition = new CanvasVector3().initWithData(vector);
                     this.appendChild(this._cameraPosition);
                     vector.nextTarget = this._data;
                     this._cameraPosition.color = this.selectedColor;
@@ -149,12 +149,12 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
         set: function (value) {
             if (!this._cameraTargetPoint) {
                 if (value) {
-                    var vector = Vector3.create().init();
+                    var vector = new Vector3().init();
 
                     vector.x = value[0];
                     vector.y = value[1];
                     vector.z = value[2];
-                    this._cameraTargetPoint = CanvasVector3.create().initWithData(vector);
+                    this._cameraTargetPoint = new CanvasVector3().initWithData(vector);
                     this.appendChild(this._cameraTargetPoint);
                     vector.nextTarget = this._data;
                     this._cameraTargetPoint.name = "Target";
@@ -214,8 +214,8 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
     drawSelf: {
         value: function (transformMatrix) {
             if (this.cameraPosition) {
-                var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
-                    tFocus = Vector3.create().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix),
+                var tPos = new Vector3().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
+                    tFocus = new Vector3().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix),
                     angle = ((this.cameraFov * 0.5) * Math.PI * 2) / 360,
                     x, y, z,
                     line = [],
@@ -243,7 +243,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
                 this._context.beginPath();
                 this._context.lineWidth = 0.5;
                 for (i = 0; i < 4; i++) {
-                    line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
+                    line[i] = new Vector3().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
                     this._context.moveTo(tPos.x + 0.5, tPos.y + 0.5);
                     this._context.lineTo(line[i].x + 0.5, line[i].y + 0.5);
                     this._cameraSegments.push([tPos.x, tPos.y, line[i].x, line[i].y]);
@@ -251,7 +251,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
                 this._context.stroke();
                 this._context.globalAlpha = 0.4;
                 for (i = 4; i < 8; i++) {
-                    line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
+                    line[i] = new Vector3().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
                     this._context.moveTo(tPos.x + 0.5, tPos.y + 0.5);
                     this._context.lineTo(line[i].x + 0.5, line[i].y + 0.5);
                 }
@@ -279,8 +279,8 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
     pointOnShape: {
         value: function (pointerX, pointerY, transformMatrix) {
             if (this.cameraPosition) {
-                var tPos = Vector3.create().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
-                    tFocus = Vector3.create().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix),
+                var tPos = new Vector3().initWithCoordinates(this.cameraPosition).transformMatrix3d(transformMatrix),
+                    tFocus = new Vector3().initWithCoordinates(this.cameraTargetPoint).transformMatrix3d(transformMatrix),
                     angle = ((this.cameraFov * 0.5) * Math.PI * 2) / 360,
                     x, y, z,
                     line = [],
@@ -302,7 +302,7 @@ exports.CanvasCamera = Montage.create(CanvasShape, {
                     line[i] = [this.cameraPosition[0] + tmp[0], this.cameraPosition[1] + tmp[1], this.cameraPosition[2] + tmp[2]];
                 }
                 for (i = 0; i < 4; i++) {
-                    line[i] = Vector3.create().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
+                    line[i] = new Vector3().initWithCoordinates(line[i]).transformMatrix3d(transformMatrix);
                     this._cameraSegments.push([tPos.x, tPos.y, line[i].x, line[i].y]);
                 }
                 if (this.isSelected) {

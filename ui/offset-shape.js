@@ -13,8 +13,8 @@ exports.OffsetShape = CanvasShape.specialize({
 
             var inverseMatrix = viewPort.inverseTransformMatrix(viewPort.matrix);
 
-            this._data = Vector3.create().initWithCoordinates(coordinates).transformMatrix3d(inverseMatrix);
-            this._initialData = Vector3.create().initWithCoordinates(coordinates).transformMatrix3d(inverseMatrix);
+            this._data = new Vector3().initWithCoordinates(coordinates).transformMatrix3d(inverseMatrix);
+            this._initialData = new Vector3().initWithCoordinates(coordinates).transformMatrix3d(inverseMatrix);
 
             this._data.save();
 

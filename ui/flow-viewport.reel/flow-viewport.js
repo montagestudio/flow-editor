@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     ViewPortConfig = require("core/configuration").FlowEditorConfig.viewPort,
     Vector3 = require("ui/pen-tool-math").Vector3;
 
-exports.FlowViewport = Montage.create(Viewport, {
+exports.FlowViewport = Viewport.specialize({
 
     selection: {
         get: function () {
@@ -154,7 +154,7 @@ exports.FlowViewport = Montage.create(Viewport, {
 
     getCoordinatesForMouseEvent: {
         value: function (event) {
-            var vector = Vector3.create().
+            var vector = new Vector3().
                     initWithCoordinates([
                         event.pageX - window.pageXOffset - this._innerContentLeft,
                         event.pageY - window.pageYOffset - this._innerContentTop,

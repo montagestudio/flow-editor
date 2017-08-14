@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     CanvasShape = require("ui/canvas-shape").CanvasShape;
 
-exports.CanvasVector3 = Montage.create(CanvasShape, {
+exports.CanvasVector3 = CanvasShape.specialize({
 
     _isVisible: {
         value: false

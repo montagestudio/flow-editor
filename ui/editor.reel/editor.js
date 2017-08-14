@@ -22,7 +22,7 @@ var Montage = require("montage").Montage,
     CanvasSplineAppendMark = require("ui/canvas-spline-append-mark").CanvasSplineAppendMark,
     Promise = require("montage/core/promise").Promise;
 
-exports.Editor = Montage.create(Component, {
+exports.Editor = Component.specialize({
 
     flowEditorVersion: {
         value: 0.1
@@ -142,17 +142,17 @@ exports.Editor = Montage.create(Component, {
                     }
                 }
             } else {
-                grid = Grid.create().init();
+                grid = new Grid().init();
                 grid.nextTarget = true;
-                canvasGrid = CanvasGrid.create().initWithData(grid);
-                cross = CanvasCross.create().initWithData(Cross.create());
-                camera = Camera.create().init();
-                canvasGrid.appendMark = CanvasSplineAppendMark.create().initWithData(Vector3.create().initWithCoordinates([0, 0, 0]));
+                canvasGrid = new CanvasGrid().initWithData(grid);
+                cross = new CanvasCross().initWithData(new Cross());
+                camera = new Camera().init();
+                canvasGrid.appendMark = new CanvasSplineAppendMark().initWithData(new Vector3().initWithCoordinates([0, 0, 0]));
                 canvasGrid.appendMark.isHiddenInInspector = true;
                 canvasGrid.isExpanded = true;
                 cross.zIndex = 2;
                 cross.isHiddenInInspector = true;
-                this.camera = CanvasCamera.create().initWithData(camera);
+                this.camera = new CanvasCamera().initWithData(camera);
                 canvasGrid.appendChild(cross);
                 canvasGrid._data.pushShape(cross._data);
                 canvasGrid.appendCamera(this.camera);
@@ -205,7 +205,7 @@ exports.Editor = Montage.create(Component, {
                     spline = paths[j];
 
                     if (!(this.viewPortShared.scene && (canvasSpline = this.viewPortShared.scene.getShapeById(ids[j])))) {
-                        shape = FlowSpline.create().init();
+                        shape = new FlowSpline().init();
                         canvasSpline = canvasGrid.insertFlowSpline(shape, j + 3);
                         canvasSpline.id = ids[j];
                     } else {
@@ -241,13 +241,13 @@ exports.Editor = Montage.create(Component, {
                         if (i >= canvasSpline.children.length) {
                             if (!i) {
                                 if (spline.knots[i].knotPosition) {
-                                    canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
+                                    canvasSpline.appendControlPoint(knot = new FlowKnot().initWithCoordinates([
                                         spline.knots[i].knotPosition[0],
                                         spline.knots[i].knotPosition[1],
                                         spline.knots[i].knotPosition[2]
                                     ]));
 
-                                    canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
+                                    canvasSpline.appendControlPoint(new Vector3().initWithCoordinates([
                                         spline.knots[i].nextHandlerPosition[0],
                                         spline.knots[i].nextHandlerPosition[1],
                                         spline.knots[i].nextHandlerPosition[2]
@@ -264,20 +264,20 @@ exports.Editor = Montage.create(Component, {
                                     }
                                 }
                             } else {
-                                canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
+                                canvasSpline.appendControlPoint(new Vector3().initWithCoordinates([
                                     spline.knots[i].previousHandlerPosition[0],
                                     spline.knots[i].previousHandlerPosition[1],
                                     spline.knots[i].previousHandlerPosition[2]
                                 ]));
 
-                                canvasSpline.appendControlPoint(knot = FlowKnot.create().initWithCoordinates([
+                                canvasSpline.appendControlPoint(knot = new FlowKnot().initWithCoordinates([
                                     spline.knots[i].knotPosition[0],
                                     spline.knots[i].knotPosition[1],
                                     spline.knots[i].knotPosition[2]
                                 ]));
 
                                 if (spline.knots[i].nextHandlerPosition) {
-                                    canvasSpline.appendControlPoint(Vector3.create().initWithCoordinates([
+                                    canvasSpline.appendControlPoint(new Vector3().initWithCoordinates([
                                         spline.knots[i].nextHandlerPosition[0],
                                         spline.knots[i].nextHandlerPosition[1],
                                         spline.knots[i].nextHandlerPosition[2]
@@ -342,7 +342,7 @@ exports.Editor = Montage.create(Component, {
                     switch (specialPaths[j].type) {
                         case "FlowHelix":
                             if (!(this.viewPortShared.scene && (canvasHelix = this.viewPortShared.scene.getShapeById(ids[j])))) {
-                                canvasHelix = CanvasFlowHelix.create();
+                                canvasHelix = new CanvasFlowHelix();
                                 canvasHelix.id = ids[j];
                             } else {
                                 shape = canvasHelix._data;
@@ -682,7 +682,7 @@ exports.Editor = Montage.create(Component, {
 
     prepareForActivationEvents: {
         value: function () {
-            this._eventHandler = EventHandler.create().initWithDelegateAndViewPorts(this, this.viewPorts);
+            this._eventHandler = new EventHandler().initWithDelegateAndViewPorts(this, this.viewPorts);
         }
     },
 

@@ -8,7 +8,7 @@ var Montage = require("montage").Montage,
     BezierCurve = PenToolMath.CubicBezierCurve,
     CanvasFlowHelix = require("ui/flow-helix").CanvasFlowHelix;
 
-exports.ArrowTool = Montage.create(Montage, {
+exports.ArrowTool = Montage.specialize({
 
     start: {
         value: function (viewport) {
@@ -48,13 +48,11 @@ exports.ArrowTool = Montage.create(Montage, {
 
             if (viewport.selection && viewport.selection[0] && viewport.selection[0]._data.type !== "FlowGrid") {
                 viewport.selection[0].translate(
-                    Vector3.
-                    create().
+                    new Vector3().
                     initWithCoordinates([dX, dY, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
                     subtract(
-                        Vector3.
-                        create().
+                        new Vector3().
                         initWithCoordinates([0, 0, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                     )._data
@@ -70,7 +68,7 @@ exports.ArrowTool = Montage.create(Montage, {
 
 });
 
-exports.ConvertTool = Montage.create(Montage, {
+exports.ConvertTool = Montage.specialize({
 
     start: {
         value: function (viewport) {
@@ -115,7 +113,7 @@ exports.ConvertTool = Montage.create(Montage, {
                     path[i].isSelected = true;
                 }
 
-                this._offsetShape = OffsetShape.create().initWithContextAndCoordinates(viewport, [event.offsetX, event.offsetY, 0]);
+                this._offsetShape = new OffsetShape().initWithContextAndCoordinates(viewport, [event.offsetX, event.offsetY, 0]);
 
                 viewport.scene.appendCanvasOffsetShape(this._offsetShape);
 
@@ -173,7 +171,7 @@ exports.ConvertTool = Montage.create(Montage, {
 
 });
 
-exports.PenTool = Montage.create(Montage, {
+exports.PenTool = Montage.specialize({
 
     start: {
         value: function (viewport) {
@@ -218,36 +216,31 @@ exports.PenTool = Montage.create(Montage, {
                 if (this._previousKnot) {
                     this._previousKnot.isSelected = false;
                 }
-                this._editingCanvasSpline.appendControlPoint(Vector3.
-                    create().
+                this._editingCanvasSpline.appendControlPoint(new Vector3().
                     initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                 );
-                canvasKnot = this._editingCanvasSpline.appendControlPoint(FlowKnot.
-                    create().
+                canvasKnot = this._editingCanvasSpline.appendControlPoint(new FlowKnot().
                     initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                 );
                 canvasKnot.isSelected = true;
                 this._previousKnot = canvasKnot;
-                this._editingCanvasSpline.appendControlPoint(Vector3.
-                    create().
+                this._editingCanvasSpline.appendControlPoint(new Vector3().
                     initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                 );
             } else {
                 this._storeChanges = false;
-                this._editingSpline = FlowSpline.create().init();
+                this._editingSpline = new FlowSpline().init();
                 this._editingCanvasSpline = canvasSpline = viewport.scene.appendFlowSpline(this._editingSpline);
                 editor._splineCounter++;
                 canvasSpline.name = "Spline " + editor._splineCounter;
-                canvasKnot = canvasSpline.appendControlPoint(FlowKnot.
-                    create().
+                canvasKnot = canvasSpline.appendControlPoint(new FlowKnot().
                     initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                 );
-                canvasSpline.appendControlPoint(Vector3.
-                    create().
+                canvasSpline.appendControlPoint(new Vector3().
                     initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                 );
@@ -268,13 +261,11 @@ exports.PenTool = Montage.create(Montage, {
                 vector2;
 
             vector.translate(
-                Vector3.
-                create().
+                new Vector3().
                 initWithCoordinates([dX, dY, 0]).
                 transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
                 subtract(
-                    Vector3.
-                    create().
+                    new Vector3().
                     initWithCoordinates([0, 0, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                 )._data
@@ -294,7 +285,7 @@ exports.PenTool = Montage.create(Montage, {
 
 });
 
-exports.AddTool = Montage.create(Montage, {
+exports.AddTool = Montage.specialize({
 
     start: {
         value: function (viewport) {
@@ -389,8 +380,7 @@ exports.AddTool = Montage.create(Montage, {
                             this._insertMode = "appendToEnd";
                             viewport.scene.appendMark.isVisible = false;
                             if (!selected.nextHandler) {
-                                this._editingCanvasSpline.appendControlPoint(Vector3.
-                                    create().
+                                this._editingCanvasSpline.appendControlPoint(new Vector3().
                                     initWithCoordinates([
                                         selected.data.x * 2 - selected.previousHandler.x,
                                         selected.data.y * 2 - selected.previousHandler.y,
@@ -409,8 +399,7 @@ exports.AddTool = Montage.create(Montage, {
                                 this._insertMode = "insertToStart";
                                 viewport.scene.appendMark.isVisible = false;
                                 if (!selected.previousHandler) {
-                                    this._editingCanvasSpline.insertControlPointAtStart(Vector3.
-                                        create().
+                                    this._editingCanvasSpline.insertControlPointAtStart(new Vector3().
                                         initWithCoordinates([
                                             selected.data.x * 2 - selected.nextHandler.x,
                                             selected.data.y * 2 - selected.nextHandler.y,
@@ -432,20 +421,17 @@ exports.AddTool = Montage.create(Montage, {
                     if (this._previousKnot) {
                         this._previousKnot.isSelected = false;
                     }
-                    this._editingCanvasSpline.appendControlPoint(Vector3.
-                        create().
+                    this._editingCanvasSpline.appendControlPoint(new Vector3().
                         initWithCoordinates([event.offsetX, event.offsetY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                     );
-                    canvasKnot = this._editingCanvasSpline.appendControlPoint(FlowKnot.
-                        create().
+                    canvasKnot = this._editingCanvasSpline.appendControlPoint(new FlowKnot().
                         initWithCoordinates([event.offsetX, event.offsetY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                     );
                     canvasKnot.isSelected = true;
                     this._previousKnot = canvasKnot;
-                    this._editingCanvasSpline.appendControlPoint(Vector3.
-                        create().
+                    this._editingCanvasSpline.appendControlPoint(new Vector3().
                         initWithCoordinates([event.offsetX, event.offsetY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                     );
@@ -453,20 +439,17 @@ exports.AddTool = Montage.create(Montage, {
                     if (this._previousKnot) {
                         this._previousKnot.isSelected = false;
                     }
-                    this._editingCanvasSpline.insertControlPointAtStart(Vector3.
-                        create().
+                    this._editingCanvasSpline.insertControlPointAtStart(new Vector3().
                         initWithCoordinates([event.offsetX, event.offsetY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                     );
-                    canvasKnot = this._editingCanvasSpline.insertControlPointAtStart(FlowKnot.
-                        create().
+                    canvasKnot = this._editingCanvasSpline.insertControlPointAtStart(new FlowKnot().
                         initWithCoordinates([event.offsetX, event.offsetY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                     );
                     canvasKnot.isSelected = true;
                     this._previousKnot = canvasKnot;
-                    this._editingCanvasSpline.insertControlPointAtStart(Vector3.
-                        create().
+                    this._editingCanvasSpline.insertControlPointAtStart(new Vector3().
                         initWithCoordinates([event.offsetX, event.offsetY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                     );
@@ -489,13 +472,11 @@ exports.AddTool = Montage.create(Montage, {
                 if (this._insertMode === "appendToEnd") {
                     vector = this._editingSpline._data[this._editingSpline.length - 1]._data[1];
                     vector.translate(
-                        Vector3.
-                        create().
+                        new Vector3().
                         initWithCoordinates([dX, dY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
                         subtract(
-                            Vector3.
-                            create().
+                            new Vector3().
                             initWithCoordinates([0, 0, 0]).
                             transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                         )._data
@@ -511,13 +492,11 @@ exports.AddTool = Montage.create(Montage, {
                 } else {
                     vector = this._editingSpline._data[0]._data[2];
                     vector.translate(
-                        Vector3.
-                        create().
+                        new Vector3().
                         initWithCoordinates([dX, dY, 0]).
                         transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
                         subtract(
-                            Vector3.
-                            create().
+                            new Vector3().
                             initWithCoordinates([0, 0, 0]).
                             transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                         )._data
@@ -539,7 +518,7 @@ exports.AddTool = Montage.create(Montage, {
 
 });
 
-exports.HelixTool = Montage.create(Montage, {
+exports.HelixTool = Montage.specialize({
 
     start: {
         value: function (viewport) {
@@ -563,10 +542,9 @@ exports.HelixTool = Montage.create(Montage, {
 
     handleMousedown: {
         value: function (event, viewport, editor) {
-            var canvasHelix = CanvasFlowHelix.create(),
+            var canvasHelix = new CanvasFlowHelix(),
                 axisOriginPosition =
-                    Vector3.
-                    create().
+                    new Vector3().
                     initWithCoordinates([event.offsetX, event.offsetY, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
                     _data;
@@ -592,13 +570,11 @@ exports.HelixTool = Montage.create(Montage, {
                 dY = event.pageY - this._pointerY;
 
             this.helix.translate(
-                Vector3.
-                create().
+                new Vector3().
                 initWithCoordinates([dX, dY, 0]).
                 transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix)).
                 subtract(
-                    Vector3.
-                    create().
+                    new Vector3().
                     initWithCoordinates([0, 0, 0]).
                     transformMatrix3d(viewport.inverseTransformMatrix(viewport.matrix))
                 )._data
@@ -610,7 +586,7 @@ exports.HelixTool = Montage.create(Montage, {
 
 });
 
-exports.ZoomInTool = Montage.create(Montage, {
+exports.ZoomInTool = Montage.specialize({
 
     start: {
         value: function (viewport) {
@@ -645,7 +621,7 @@ exports.ZoomInTool = Montage.create(Montage, {
     }
 });
 
-exports.ZoomOutTool = Montage.create(Montage, {
+exports.ZoomOutTool = Montage.specialize({
 
     start: {
         value: function (viewport) {
@@ -681,7 +657,7 @@ exports.ZoomOutTool = Montage.create(Montage, {
 
 });
 
-exports.RemoveTool = Montage.create(Montage, {
+exports.RemoveTool = Montage.specialize({
 
     start: {
         value: function (viewport) {

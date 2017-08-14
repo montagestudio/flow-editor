@@ -85,7 +85,7 @@ exports.FlowKnot = Vector3.specialize({
     }
 });
 
-exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
+exports.CanvasFlowSplineHandlers = CanvasShape.specialize({
 
     _isVisible: {
         value: false
@@ -233,7 +233,7 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
                 vector;
 
             this._previousHandler = value;
-            vector = CanvasVector3.create().initWithData(value);
+            vector = new CanvasVector3().initWithData(value);
             this.appendChild(vector);
             vector.canvas = self.canvas;
             vector.color = self._selectedColor;
@@ -265,7 +265,7 @@ exports.CanvasFlowSplineHandlers = Montage.create(CanvasShape, {
                 vector;
 
             this._nextHandler = value;
-            vector = CanvasVector3.create().initWithData(value);
+            vector = new CanvasVector3().initWithData(value);
             this.appendChild(vector);
             vector.canvas = self.canvas;
             vector.color = self._selectedColor;
