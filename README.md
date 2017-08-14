@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/montagestudio/flow-editor.svg?branch=master)](http://travis-ci.com/montagestudio/flow-editor)
+[![Build Status](https://travis-ci.com/montagestudio/flow-editor.svg?token=DkxazY7pbviHZyy38ZZb&branch=master)](http://travis-ci.com/montagestudio/flow-editor)
 
 # flow-editor
 
