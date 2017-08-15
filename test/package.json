@@ -15,6 +15,7 @@
     },
     "mappings": {
         "montage": "../node_modules/montage",
+        "collections": "../node_modules/collections",
         "montage-testing": "../node_modules/montage-testing",
         "flow-editor": "../"
     }
