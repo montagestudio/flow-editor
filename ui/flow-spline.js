@@ -53,7 +53,7 @@ exports.CanvasFlowSpline = CanvasShape.specialize({
             if (this._data.length) {
                 bezierCurve = this._data.getBezierCurve(this._data.length - 1);
                 if (bezierCurve.length === 4) {
-                    bezierCurve = new BezierCurve.init();
+                    bezierCurve = new BezierCurve().init();
                     this._data.pushBezierCurve(bezierCurve);
                 }
             } else {

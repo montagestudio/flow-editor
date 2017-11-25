@@ -17,14 +17,6 @@ var CanvasShape = exports.CanvasShape = Target.specialize({
         value: null
     },
 
-    _idCounter: {
-        value: 0
-    },
-
-    _idHash: {
-        value: {}
-    },
-
     getShapeById: {
         value: function (id) {
             return CanvasShape._idHash[id];
@@ -575,6 +567,16 @@ var CanvasShape = exports.CanvasShape = Target.specialize({
             }
             return null;
         }
+    }
+
+}, {
+
+    _idCounter: {
+        value: 0
+    },
+
+    _idHash: {
+        value: {}
     }
 
 });

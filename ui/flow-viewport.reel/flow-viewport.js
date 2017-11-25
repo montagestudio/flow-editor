@@ -83,7 +83,7 @@ exports.FlowViewport = Viewport.specialize({
 
     enterDocument: {
         value: function (firstTime) {
-            Viewport.enterDocument.call(this);
+            Viewport.prototype.enterDocument.call(this);
 
             if (firstTime) {
                 this._context = this._element.getContext("2d");
