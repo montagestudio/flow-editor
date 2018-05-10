@@ -76,20 +76,7 @@ var MapReducible = exports.MapReducible = Target.specialize({
 
     dispatchEventIfNeeded: {
         value: function (type) {
-            if (this.nextTarget && !this._eventsToDispatch[type]) {
-                this._eventsToDispatch[type] = this;
-                if (this._timeout === null) {
-                    this._timeout = window.setTimeout(function () {
-                        var t;
-
-                        for (t in this._eventsToDispatch) {
-                            this._eventsToDispatch[t].dispatchEventNamed(t, true, true);
-                        }
-                        this._timeout = null;
-                        this._eventsToDispatch = {};
-                    }, 0);
-                }
-            }
+            this.dispatchEventNamed(type, true, true);
         }
     }
 
